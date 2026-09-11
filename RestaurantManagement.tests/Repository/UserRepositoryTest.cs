@@ -29,7 +29,7 @@ namespace RestaurantManagement.tests.Repository
         private UserRepository _userrepo;
 
 
-        [TestInitialize] 
+        [TestInitialize]
         public void setup()
         {
             DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
@@ -47,7 +47,7 @@ namespace RestaurantManagement.tests.Repository
             {
                 Email = "divesh@gmail.com",
                 Name = "DIVESH",
-                Password="89hubh",
+                Password = "89hubh",
                 PhoneNumber = "0i09896",
                 BirthDate = DateTime.Parse("2002-01-01 00:00:00"),
                 Balance = 1000,
@@ -142,7 +142,7 @@ namespace RestaurantManagement.tests.Repository
             Assert.AreEqual(testUser, result);
         }
 
-     
+
 
 
     }

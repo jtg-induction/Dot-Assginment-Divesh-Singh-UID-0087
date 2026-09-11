@@ -7,7 +7,7 @@ namespace RestaurantManagement
         {
             //AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-    
+
 
 
 

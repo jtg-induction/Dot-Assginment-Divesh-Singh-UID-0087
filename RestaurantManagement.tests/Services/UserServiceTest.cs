@@ -28,8 +28,8 @@ namespace RestaurantManagement.tests.Services
         {
             _mockrepo = new Mock<IUserRepository>();
             _mockpass = new Mock<IPasswordService>();
-            _userser = new UserService(_mockrepo.Object,_mockpass.Object);
-           
+            _userser = new UserService(_mockrepo.Object, _mockpass.Object);
+
         }
 
         /// <summary>
