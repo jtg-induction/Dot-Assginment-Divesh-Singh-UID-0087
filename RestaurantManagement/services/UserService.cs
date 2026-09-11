@@ -48,35 +48,35 @@ namespace RestaurantManagement.Services
 
 			var userentity = new User()
 			{
-						Name = adduser.Name,
-						Password =_passwordService.HashPassword(adduser.Password),
-						Email = adduser.Email,
-						BirthDate = adduser.BirthDate,
-						PhoneNumber = adduser.PhoneNumber,
-						Role = UserRole.Customer
-					};
-					await _userrepository.AddUserAsync(userentity);
+				Name = adduser.Name,
+				Password = _passwordService.HashPassword(adduser.Password),
+				Email = adduser.Email,
+				BirthDate = adduser.BirthDate,
+				PhoneNumber = adduser.PhoneNumber,
+				Role = UserRole.Customer
+			};
+			await _userrepository.AddUserAsync(userentity);
 
 		}
-        public async Task<User> LoginUserAsync(UserCredential userCredential)
-        {
-            User user = await _userrepository.GetUserAsync(userCredential.Email);
-            if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
-            {
-                throw new ResourceException(ValidationMessages.NotFound);
+		public async Task<User> LoginUserAsync(UserCredential userCredential)
+		{
+			User user = await _userrepository.GetUserAsync(userCredential.Email);
+			if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
+			{
+				throw new ResourceException(ValidationMessages.NotFound);
 
-            }
+			}
 
-            if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
-            {
-                throw new ResourceException(ValidationMessages.NotFound);
-            }
-            return user;
-        }
-        public async Task<User> GetUserAsync(int id)
-{
-	return await _userrepository.GetUserAsync(id);
-}
+			if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
+			{
+				throw new ResourceException(ValidationMessages.NotFound);
+			}
+			return user;
+		}
+		public async Task<User> GetUserAsync(int id)
+		{
+			return await _userrepository.GetUserAsync(id);
+		}
 
-  }
+	}
 }
