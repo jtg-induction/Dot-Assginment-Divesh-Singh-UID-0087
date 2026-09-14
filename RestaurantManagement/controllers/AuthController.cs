@@ -35,7 +35,7 @@ namespace RestaurantManagement.Controllers
         {
             await _userservice.AdduserAsync(adduser);
             return Ok(ValidationMessages.succes);
-             }
         }
     }
+}
 

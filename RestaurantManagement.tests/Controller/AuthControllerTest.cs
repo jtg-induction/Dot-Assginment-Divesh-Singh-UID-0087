@@ -70,7 +70,7 @@ namespace RestaurantManagement.tests.Controller
             //Assert.Fail(createdResult);
             //Assert.Fail($"Name was: {createdResult==null}");
             Assert.IsNotNull(createdResult);
-          
+
         }
     }
 }

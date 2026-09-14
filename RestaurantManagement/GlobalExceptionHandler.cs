@@ -1,4 +1,4 @@
-﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
 using System;
 using System.Net;
@@ -42,7 +42,7 @@ namespace RestaurantManagement.Handlers
             // 3. Fallback for all unexpected database or system crashes (500 Internal Server Error)
             var genericResponse = context.Request.CreateResponse(
                 HttpStatusCode.InternalServerError,
-                new { Message =ValidationMessages.InternalServerError}
+                new { Message = ValidationMessages.InternalServerError }
             );
             context.Result = new ResponseMessageResult(genericResponse);
         }
