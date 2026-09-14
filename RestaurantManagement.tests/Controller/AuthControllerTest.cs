@@ -79,7 +79,7 @@ namespace RestaurantManagement.tests.Controller
             //Assert.Fail(createdResult);
             //Assert.Fail($"Name was: {createdResult==null}");
             Assert.IsNotNull(createdResult);
-          }
+        }
 
         /// <summary>
         /// Verifies that an invalid email produces a model-state error response.
@@ -201,7 +201,8 @@ namespace RestaurantManagement.tests.Controller
             try
             {
                 var response = await _authController.Refresh();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 exception = e;
             }
