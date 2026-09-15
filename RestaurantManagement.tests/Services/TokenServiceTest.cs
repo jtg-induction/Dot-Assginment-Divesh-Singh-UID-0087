@@ -77,7 +77,6 @@ namespace RestaurantManagement.Tests.Services
         }
 
 
-
         /// <summary>Verifies that attempting to revoke a missing token returns an invalid token message.</summary>
         [TestMethod]
         public async Task Revoked_NonExistentToken_ReturnsInvalidTokenMessage()
@@ -148,7 +147,6 @@ namespace RestaurantManagement.Tests.Services
 
             // ASSERT
             Assert.IsNotNull(exception);
-
         }
 
         /// <summary>Verifies that a cookie is written to the HTTP response stream with safe attributes.</summary>

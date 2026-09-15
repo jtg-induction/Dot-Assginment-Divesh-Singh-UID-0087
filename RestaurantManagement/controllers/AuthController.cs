@@ -49,11 +49,8 @@ namespace RestaurantManagement.Controllers
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            System.Diagnostics.Debug.WriteLine(_userService == null);
+         
+            //System.Diagnostics.Debug.WriteLine(_userService == null);
             var user = await _userService.CheckUserAsync(login);
             //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.Indented));
 

@@ -78,30 +78,12 @@ namespace RestaurantManagement.tests.Controller
             var createdResult = response as OkNegotiatedContentResult<string>;
             //Assert.Fail(createdResult);
             //Assert.Fail($"Name was: {createdResult==null}");
-            Assert.IsNotNull(createdResult, ValidationMessages.succes);
-          }
+            Assert.IsNotNull(createdResult);
+        }
 
         /// <summary>
         /// Verifies that an invalid email produces a model-state error response.
         /// </summary>
-        [TestMethod]
-        public async Task InvalidUserCredential()
-        {
-            //ARRANGE
-            var incominguser = new UserCredential()
-            {
-                Email = "divesgmail.com",
-                Password = "123234@aA"
-            };
-            _authController.ModelState.AddModelError("Email", "Email is invalid");
-            //ACT
-            var response = await _authController.Login(incominguser);
-
-
-            //ASSERT
-            var badRequestResult = response as InvalidModelStateResult;
-            Assert.IsNotNull(badRequestResult);
-        }
         [TestMethod]
         public async Task CorrectLoginDetail()
         {
@@ -156,7 +138,7 @@ namespace RestaurantManagement.tests.Controller
             //ARRANGE
             _tokenServiceMock.Setup(r => r.GetRefreshTokenFromCookie()).Returns("djbdgbiuf");
             _tokenServiceMock.Setup(r => r.ClearRefreshTokenCookie());
-            _tokenServiceMock.Setup(r => r.RevokedAsync("jfgbkugkdub")).ReturnsAsync(ValidationMessages.succes);
+            _tokenServiceMock.Setup(r => r.RevokedAsync("jfgbkugkdub"));
 
             //ACT
             var response = await _authController.Logout();
