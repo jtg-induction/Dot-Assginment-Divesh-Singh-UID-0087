@@ -69,30 +69,45 @@ namespace RestaurantManagement.Services
 
 			}
 
-			if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
+			if (!BCrypt.Net.BCrypt.Verify(userCredential.Password, user.Password))
 			{
 				throw new ResourceException(ValidationMessages.NotFound);
 			}
 			return user;
 		}
-		public async Task<User> GetUserAsync(int id)
+
+		public async Task DeactivateAccount(UserCredential user)
 		{
-			return await _userrepository.GetUserAsync(id);
+			User userdetail = await _userrepository.GetUserAsync(user.Email);
+
+			if (userdetail == null)
+			{
+				throw new ResourceException(ValidationMessages.NotFound);
+			}
+			await _userrepository.Deactivate(userdetail);
+		}
+		public async Task ActivateAccount(UserCredential user)
+		{
+			User userdetail = await _userrepository.GetUserAsync(user.Email);
+			if (userdetail == null)
+			{
+				throw new ResourceException(ValidationMessages.NotFound);
+			}
+			await _userrepository.Activate(userdetail);
 		}
 
-	}
-public async Task<User> GetUserAsync(int id)
+		public async Task<User> GetUserAsync(int id)
 		{
 			return await _userrepository.GetUserAsync(id);
 		}
 
 		public async Task<User> GetUserIfActive(int id)
 		{
-			if (await _userrepository.IsActiveAsync(id))
+			if (!await _userrepository.IsActiveAsync(id))
 			{
-				return await _userrepository.GetUserAsync(id);
+				throw new ResourceException(ValidationMessages.NotFound);
 			}
-			throw new ResourceException(ValidationMessages.NotFound);
+			return await _userrepository.GetUserAsync(id);
 
 		}
 

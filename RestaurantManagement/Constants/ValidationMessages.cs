@@ -15,5 +15,6 @@
                 public const string NotFound = "Not Found";
                 public const string InValidEmail = "Invalid email format.";
                 public const string PasswordRequired = "Password is required.";
+                public const string InvalidPaswword = "Invaid Password";
         }
 }

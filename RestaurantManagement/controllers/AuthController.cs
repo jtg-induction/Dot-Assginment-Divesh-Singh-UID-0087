@@ -1,10 +1,21 @@
-﻿using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Constants;
-using RestaurantManagement.Services;
+//using OWIN.WebApi.Controllers;
+//using RestaurantManagement.Common;
 using RestaurantManagement.Models;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Services;
+//using RestaurantManagement.services;
+using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
-using System.Web.Http;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+//using RestaurantManagement.services;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http;
+using System.Web.UI.WebControls;
 
 namespace RestaurantManagement.Controllers
 {
@@ -54,19 +65,16 @@ namespace RestaurantManagement.Controllers
 
             var user = await _userService.CheckUserAsync(login);
 
-            if (user != null)
-            {
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
-                var accesstoken = _jwtClaim.CraftJwt(user);
 
-                _tokenService.SetRefreshTokenCookie(refreshtoken);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
+            var accesstoken = _jwtClaim.CraftJwt(user);
 
-                return Ok(new { AccessToken = accesstoken });
-            }
+            _tokenService.SetRefreshTokenCookie(refreshtoken);
 
-            return Unauthorized();
+            return Ok(new { AccessToken = accesstoken });
+
         }
         [HttpPost]
         [Route("logout")]
@@ -89,6 +97,26 @@ namespace RestaurantManagement.Controllers
             var accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             return Ok(new { AccessToken = accesstoken });
+
+        }
+        [HttpPut]
+        [Route("deactivate")]
+        public async Task<IHttpActionResult> DeactivateAccount(UserCredential login)
+        {
+
+            await _userService.DeactivateAccount(login);
+            return Ok(ValidationMessages.succes);
+
+
+        }
+        [HttpPut]
+        [Route("activate")]
+        public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
+        {
+
+            await _userService.ActivateAccount(login);
+            return Ok(ValidationMessages.succes);
+
 
         }
 

@@ -94,5 +94,16 @@ namespace RestaurantManagement.Repository
             _db.Entry(user).State = EntityState.Modified;
             await _db.SaveChangesAsync();
         }
+
+        public async Task Deactivate(User user)
+        {
+            user.IsActive = false;
+           await _db.SaveChangesAsync();
+        }
+        public async Task Activate(User user)
+        {
+            user.IsActive = true;
+          await  _db.SaveChangesAsync();
+        }
     }
 }
