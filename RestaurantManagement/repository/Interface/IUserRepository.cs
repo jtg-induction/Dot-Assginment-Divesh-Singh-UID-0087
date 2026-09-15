@@ -36,5 +36,10 @@ namespace RestaurantManagement.repository
                 /// <param name="email">The email address of the user.</param>
                 /// <returns>The matching user.</returns>
                 Task<User> GetUserAsync(string email);
+
+                Task<User> GetUserAsync(int id);
+
+
+
         }
 }

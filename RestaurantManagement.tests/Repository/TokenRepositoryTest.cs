@@ -7,6 +7,7 @@ using RestaurantManagement.Repository;
 using System;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestaurantManagement.tests.Repository
 {
@@ -21,7 +22,7 @@ namespace RestaurantManagement.tests.Repository
         private int _defaultUserId;
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
             _context = new ApplicationDbContext(connection);
@@ -42,25 +43,25 @@ namespace RestaurantManagement.tests.Repository
             _context.SaveChanges();
 
             // Capture the generated identity primary key
-            _defaultUserId = seedUser.userId;
+            _defaultUserId = seedUser.UserId;
         }
 
         /// <summary>Verifies that an existing token string can be retrieved.</summary>
         [TestMethod]
-        public void CheckTokenIsRetrieved()
+        public async Task CheckTokenIsRetrieved()
         {
             var testToken = new RefreshToken
             {
                 Token = "token-abc-123",
                 IsRevoked = false,
-                UpdatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
                 UserId = _defaultUserId
             };
 
             _context.RefreshTokens.Add(testToken);
             _context.SaveChanges();
 
-            var result = _tokenrepo.GetToken("token-abc-123");
+            var result = await _tokenrepo.GetTokenAsync("token-abc-123");
 
             Assert.IsNotNull(result);
             Assert.AreEqual("token-abc-123", result.Token);
@@ -68,7 +69,7 @@ namespace RestaurantManagement.tests.Repository
 
         /// <summary>Verifies that a new refresh token can be added to the database.</summary>
         [TestMethod]
-        public void Addtoken()
+        public async Task AddToken()
         {
             // Optional: Arrange a custom distinct user if needed for this specific test
             var linkedUser = new User
@@ -88,29 +89,29 @@ namespace RestaurantManagement.tests.Repository
             {
                 Token = "token-new-456",
                 IsRevoked = false,
-                UpdatedAt = DateTimeOffset.UtcNow,
-                UserId = linkedUser.userId
+                UpdatedAt = DateTime.UtcNow,
+                UserId = linkedUser.UserId
             };
 
             // ACT
-            _tokenrepo.Addtoken(testToken);
+            await _tokenrepo.AddTokenAsync(testToken);
 
             // ASSERT
             var result = _context.RefreshTokens.FirstOrDefault(t => t.Token == "token-new-456");
             Assert.IsNotNull(result);
             Assert.AreEqual(testToken.Token, result.Token);
-            Assert.AreEqual(linkedUser.userId, result.UserId);
+            Assert.AreEqual(linkedUser.UserId, result.UserId);
         }
 
         /// <summary>Verifies that an existing token can be revoked successfully.</summary>
         [TestMethod]
-        public void RevokedToken()
+        public async Task RevokedToken()
         {
             var testToken = new RefreshToken
             {
                 Token = "token-to-revoke",
                 IsRevoked = false,
-                UpdatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt =DateTime.UtcNow,
                 UserId = _defaultUserId
             };
 
@@ -118,7 +119,7 @@ namespace RestaurantManagement.tests.Repository
             _context.SaveChanges();
 
             // ACT
-            _tokenrepo.RevokedToken(testToken.TokenId);
+            await _tokenrepo.RevokedTokenAsync(testToken.TokenId);
 
             // ASSERT
             var result = _context.RefreshTokens.Find(testToken.TokenId);
@@ -128,29 +129,29 @@ namespace RestaurantManagement.tests.Repository
 
         /// <summary>Verifies that the revocation status check reports the correct value.</summary>
         [TestMethod]
-        public void CheckIsRevokedStatus()
+        public async Task CheckIsRevokedStatus()
         {
-            var activeToken = new RefreshToken { Token = "active-token", IsRevoked = false, UpdatedAt = DateTimeOffset.UtcNow, UserId = _defaultUserId };
-            var revokedToken = new RefreshToken { Token = "revoked-token", IsRevoked = true, UpdatedAt = DateTimeOffset.UtcNow, UserId = _defaultUserId };
+            var activeToken = new RefreshToken { Token = "active-token", IsRevoked = false, UpdatedAt = DateTime.UtcNow, UserId = _defaultUserId };
+            var revokedToken = new RefreshToken { Token = "revoked-token", IsRevoked = true, UpdatedAt = DateTime.UtcNow, UserId = _defaultUserId };
 
             _context.RefreshTokens.Add(activeToken);
             _context.RefreshTokens.Add(revokedToken);
             _context.SaveChanges();
 
             // ACT & ASSERT
-            Assert.IsFalse(_tokenrepo.IsRevoked(activeToken.TokenId));
-            Assert.IsTrue(_tokenrepo.IsRevoked(revokedToken.TokenId));
+            Assert.IsFalse(await _tokenrepo.IsRevokedAsync(activeToken.TokenId));
+            Assert.IsTrue(await _tokenrepo.IsRevokedAsync(revokedToken.TokenId));
         }
 
         /// <summary>Verifies that a token string and its modification timestamp can be updated.</summary>
         [TestMethod]
-        public void UpdateToken()
+        public async Task UpdateToken()
         {
             var testToken = new RefreshToken
             {
                 Token = "old-token-string",
                 IsRevoked = false,
-                UpdatedAt = DateTimeOffset.UtcNow.AddDays(-5),
+                UpdatedAt = DateTime.UtcNow.AddDays(-5),
                 UserId = _defaultUserId
             };
 
@@ -160,7 +161,7 @@ namespace RestaurantManagement.tests.Repository
             string updatedString = "new-token-string-789";
 
             // ACT
-            _tokenrepo.UpdateToken(testToken.TokenId, updatedString);
+            await _tokenrepo.UpdateTokenAsync(testToken.TokenId, updatedString);
 
             // ASSERT
             var result = _context.RefreshTokens.Find(testToken.TokenId);
@@ -168,7 +169,7 @@ namespace RestaurantManagement.tests.Repository
             Assert.AreEqual(updatedString, result.Token);
 
             // Verifies the modification timestamp was updated to roughly now (within 5 seconds)
-            Assert.IsTrue((DateTimeOffset.UtcNow - result.UpdatedAt).TotalSeconds < 5);
+            Assert.IsTrue((DateTime.UtcNow - result.UpdatedAt).TotalSeconds < 5);
         }
     }
 }

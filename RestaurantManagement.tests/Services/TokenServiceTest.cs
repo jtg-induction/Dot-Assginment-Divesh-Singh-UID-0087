@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using RestaurantManagement.Common;
+//using RestaurantManagement.Common;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
+using System.Threading.Tasks;
+using RestaurantManagement.Constants;
 
 namespace RestaurantManagement.Tests.Services
 {
@@ -48,7 +50,7 @@ namespace RestaurantManagement.Tests.Services
         public void TokenGenerator_ReturnsValidBase64String()
         {
             // ACT
-            string token = _service.TokenGenrator();
+            string token = _service.TokenGenerator();
 
             // ASSERT
             Assert.IsFalse(string.IsNullOrWhiteSpace(token));
@@ -59,89 +61,93 @@ namespace RestaurantManagement.Tests.Services
 
         /// <summary>Verifies that adding a refresh token saves it to the database repository layer.</summary>
         [TestMethod]
-        public void AddRefreshToken_ValidUserId_SavesTokenAndReturnsString()
+        public async Task AddRefreshToken_ValidUserId_SavesTokenAndReturnsString()
         {
             // ARRANGE
             int targetUserId = 5;
 
+            _mockRepo.Setup(r => r.AddTokenAsync(It.IsAny<RefreshToken>())).Returns(Task.CompletedTask);
+
             // ACT
-            string resultToken = _service.AddRefreshToken(targetUserId);
+            string resultToken = await _service.AddRefreshTokenAsync(targetUserId);
 
             // ASSERT
             Assert.IsFalse(string.IsNullOrWhiteSpace(resultToken));
-            _mockRepo.Verify(r => r.Addtoken(It.Is<RefreshToken>(t => t.UserId == targetUserId && t.Token == resultToken)), Times.Once);
+            _mockRepo.Verify(r => r.AddTokenAsync(It.Is<RefreshToken>(t => t.UserId == targetUserId && t.Token == resultToken)), Times.Once);
         }
 
         /// <summary>Verifies that an existing token is marked as revoked and returns success.</summary>
         [TestMethod]
-        public void Revoked_ExistingToken_UpdatesDatabaseAndReturnsSuccess()
+        public async Task Revoked_ExistingToken_UpdatesDatabaseAndReturnsSuccess()
         {
             // ARRANGE
             string tokenStr = "valid-token-to-revoke";
             var existingToken = new RefreshToken { TokenId = 12, Token = tokenStr };
 
-            _mockRepo.Setup(r => r.GetToken(tokenStr)).Returns(existingToken);
+            _mockRepo.Setup(r => r.GetTokenAsync(tokenStr)).ReturnsAsync(existingToken);
+            _mockRepo.Setup(r => r.RevokedTokenAsync(12)).Returns(Task.CompletedTask);
 
             // ACT
-            string result = _service.Revoked(tokenStr);
+            string result = await _service.RevokedAsync(tokenStr);
 
             // ASSERT
-            Assert.AreEqual(ValidationMessages.succes, result);
-            _mockRepo.Verify(r => r.RevokedToken(12), Times.Once);
+            Assert.AreEqual(ValidationMessages.Success, result);
+            _mockRepo.Verify(r => r.RevokedTokenAsync(12), Times.Once);
         }
 
         /// <summary>Verifies that attempting to revoke a missing token returns an invalid token message.</summary>
         [TestMethod]
-        public void Revoked_NonExistentToken_ReturnsInvalidTokenMessage()
+        public async Task Revoked_NonExistentToken_ReturnsInvalidTokenMessage()
         {
             // ARRANGE
-            _mockRepo.Setup(r => r.GetToken(It.IsAny<string>())).Returns((RefreshToken)null);
+            _mockRepo.Setup(r => r.GetTokenAsync(It.IsAny<string>())).ReturnsAsync((RefreshToken)null);
 
             // ACT
-            string result = _service.Revoked("missing-token");
+            string result = await _service.RevokedAsync("missing-token");
 
             // ASSERT
-            Assert.AreEqual(ValidationMessages.InValidToken, result);
-            _mockRepo.Verify(r => r.RevokedToken(It.IsAny<int>()), Times.Never);
+            Assert.AreEqual(ValidationMessages.Revoked, result);
+            _mockRepo.Verify(r => r.RevokedTokenAsync(It.IsAny<int>()), Times.Never);
         }
 
         /// <summary>Verifies that refreshing an active, valid token saves a replacement code and returns it.</summary>
         [TestMethod]
-        public void RefreshTheToken_ValidActiveToken_UpdatesWithNewValue()
+        public async Task RefreshTheToken_ValidActiveToken_UpdatesWithNewValue()
         {
             // ARRANGE
             string oldToken = "active-refresh-token";
             var tokenEntity = new RefreshToken { TokenId = 9, Token = oldToken };
 
-            _mockRepo.Setup(r => r.GetToken(oldToken)).Returns(tokenEntity);
-            _mockRepo.Setup(r => r.IsRevoked(9)).Returns(false);
+            _mockRepo.Setup(r => r.GetTokenAsync(oldToken)).ReturnsAsync(tokenEntity);
+            _mockRepo.Setup(r => r.IsRevokedAsync(9)).ReturnsAsync(false);
+            _mockRepo.Setup(r => r.UpdateTokenAsync(9, It.IsAny<string>())).Returns(Task.CompletedTask);
 
             // ACT
-            string freshToken = _service.RefreshTheToken(oldToken);
+            string freshToken = await _service.RefreshTheTokenAsync(oldToken);
 
             // ASSERT
             Assert.IsFalse(string.IsNullOrWhiteSpace(freshToken));
             Assert.AreNotEqual(oldToken, freshToken);
-            _mockRepo.Verify(r => r.UpdateToken(9, freshToken), Times.Once);
+            _mockRepo.Verify(r => r.UpdateTokenAsync(9, freshToken), Times.Once);
         }
 
         /// <summary>Verifies that refreshing a token which is already flagged as revoked fails directly.</summary>
         [TestMethod]
-        public void RefreshTheToken_AlreadyRevokedToken_ReturnsRevokedMessage()
+        public async Task RefreshTheToken_AlreadyRevokedToken_ReturnsRevokedMessage()
         {
             // ARRANGE
             string badToken = "revoked-refresh-token";
             var tokenEntity = new RefreshToken { TokenId = 9, Token = badToken };
 
-            _mockRepo.Setup(r => r.GetToken(badToken)).Returns(tokenEntity);
-            _mockRepo.Setup(r => r.IsRevoked(9)).Returns(true);
+            _mockRepo.Setup(r => r.GetTokenAsync(badToken)).ReturnsAsync(tokenEntity);
+            _mockRepo.Setup(r => r.IsRevokedAsync(9)).ReturnsAsync(true);
 
             // ACT
-            string result = _service.RefreshTheToken(badToken);
+            string result = await _service.RefreshTheTokenAsync(badToken);
 
             // ASSERT
             Assert.AreEqual(ValidationMessages.Revoked, result);
-            _mockRepo.Verify(r => r.UpdateToken(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockRepo.Verify(r => r.UpdateTokenAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         /// <summary>Verifies that a cookie is written to the HTTP response stream with safe attributes.</summary>

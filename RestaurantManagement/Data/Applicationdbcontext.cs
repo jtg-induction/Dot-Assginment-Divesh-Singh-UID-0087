@@ -10,17 +10,17 @@ namespace RestaurantManagement.Data
     /// </summary>
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(): base("name=DefaultConnection")
+        public ApplicationDbContext() : base("name=DefaultConnection")
         {
         }
 
         /// <summary>
         /// Initializes a new instance using the configured default database connection.
         /// </summary>
-       // public ApplicationDbContext(DbConnection existingConnection)
-       //: base(existingConnection, contextOwnsConnection: true)
-       // {
-       // }
+        public ApplicationDbContext(DbConnection existingConnection)
+       : base(existingConnection, contextOwnsConnection: true)
+        {
+        }
 
         /// <summary>Gets or sets the users in the application.</summary>
         public DbSet<User> Users { get; set; }

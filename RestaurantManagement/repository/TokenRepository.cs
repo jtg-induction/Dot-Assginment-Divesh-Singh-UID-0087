@@ -6,6 +6,8 @@ using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RestaurantManagement.Repository
@@ -22,33 +24,34 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
-       public RefreshToken GetToken(string token)
+       public async Task<RefreshToken> GetTokenAsync(string token)
         {
-            return _db.RefreshTokens.FirstOrDefault(e => e.Token==token);
+            return await _db.RefreshTokens.FirstOrDefaultAsync(e => e.Token == token);
         }
-        public void Addtoken(RefreshToken token)
+        public async Task AddTokenAsync(RefreshToken token)
         {
             _db.RefreshTokens.Add(token);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
-       public  void RevokedToken(int id)
+       public async Task RevokedTokenAsync(int id)
         {
-           var refreshToken= _db.RefreshTokens.Find(id);
+           var refreshToken = await _db.RefreshTokens.FindAsync(id);
             refreshToken.IsRevoked = true;
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
         }
-      public   bool IsRevoked(int id)
+      public async Task<bool> IsRevokedAsync(int id)
         {
-            return _db.RefreshTokens.Find(id).IsRevoked;
+            var refreshToken = await _db.RefreshTokens.FindAsync(id);
+            return refreshToken.IsRevoked;
 
         }
-       public  void UpdateToken(int id,string token)
+       public async Task UpdateTokenAsync(int id, string token)
         {
-            var refreshtoken = _db.RefreshTokens.Find(id);
+            var refreshtoken = await _db.RefreshTokens.FindAsync(id);
             refreshtoken.Token = token;
-            refreshtoken.UpdatedAt = DateTimeOffset.UtcNow;
-            _db.SaveChanges();
+            refreshtoken.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
         }
     }
 }

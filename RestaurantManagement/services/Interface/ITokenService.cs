@@ -9,14 +9,14 @@ namespace RestaurantManagement.Services.Interface
 {
     public interface ITokenService
     {
-        string TokenGenrator();
+        string TokenGenerator();
         string GetRefreshTokenFromCookie();
         void ClearRefreshTokenCookie();
         void SetRefreshTokenCookie(string token);
-        string AddRefreshToken(int Id);
-        string Revoked(string token);
-        string RefreshTheToken(String token);
-        RefreshToken Gettokendetail(String token);
+        Task<string> AddRefreshTokenAsync(int id);
+        Task<string> RevokedAsync(string token);
+        Task<string> RefreshTheTokenAsync(string token);
+        Task<RefreshToken> GetTokenDetailAsync(string token);
      
 
     }

@@ -63,9 +63,9 @@ namespace RestaurantManagement.Repository
             _db.Users.Add(userentity);
             await _db.SaveChangesAsync();
         }
-       public User GetUser(int id)
+        public async Task<User> GetUserAsync(int id)
         {
-            return _db.Users.Find(id);
+            return await _db.Users.FindAsync(id);
         }
 
 

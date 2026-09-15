@@ -1,6 +1,6 @@
 ﻿using RestaurantManagement.Models.Dto;
 using System.Web.Http;
-using RestaurantManagement.services;
+//using RestaurantManagement.services;
 using System.Threading.Tasks;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Services;
@@ -23,9 +23,9 @@ namespace RestaurantManagement.Controllers
     [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
-        private readonly IUserService _userservice;
-        private readonly ITokenService _tokenservice;
-        private readonly IObtainJwtService _jwtclaim;
+        private readonly IUserService _userService;
+        private readonly ITokenService _tokenService;
+        private readonly IObtainJwtService _jwtClaim;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
@@ -33,17 +33,18 @@ namespace RestaurantManagement.Controllers
         /// <param name="userservice">The user service used to manage users.</param>
         public AuthController(IUserService userserice)
         {
-            _userservice = userserice;
+            _userService = userserice;
+        }
         /// <param name="userser">The user service used to manage users.</param>
-            //public AuthController(IUserService userser)
-            //{
-            //    _userservice = userser;
-            //}
+        //public AuthController(IUserService userser)
+        //{
+        //    _userservice = userser;
+        //}
         public AuthController(IUserService userser, IObtainJwtService jwtclaim, ITokenService tokenService)
         {
-            _userservice = userser;
-            _jwtclaim = jwtclaim;
-            _tokenservice = tokenService;
+            _userService = userser;
+            _jwtClaim = jwtclaim;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -60,28 +61,29 @@ namespace RestaurantManagement.Controllers
         }
         [HttpPost]
         [Route("logout")]
-        public IHttpActionResult Logout()
+        public async Task<IHttpActionResult> Logout()
         {
-            string currentRefreshToken = _tokenservice.GetRefreshTokenFromCookie();
-            _tokenservice.ClearRefreshTokenCookie();
-            _tokenservice.Revoked(currentRefreshToken);
-            return Ok(ValidationMessages.succes);
+            string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
+            _tokenService.ClearRefreshTokenCookie();
+            await _tokenService.RevokedAsync(currentRefreshToken);
+            return Ok(ValidationMessages.Success);
         }
 
         [HttpPost]
         [Route("refresh")]
-        public IHttpActionResult Refresh()
+        public async Task<IHttpActionResult> Refresh()
         {
-            string Token = _tokenservice.GetRefreshTokenFromCookie();
+            string token = _tokenService.GetRefreshTokenFromCookie();
             var tokenHandler = new JwtSecurityTokenHandler();
-            var refreshtoken = _tokenservice.RefreshTheToken(Token);
+            var refreshtoken = await _tokenService.RefreshTheTokenAsync(token);
             if (refreshtoken.Equals(ValidationMessages.Revoked))
             {
                 return Unauthorized();
             }
-            var user = _userservice.GetUser(_tokenservice.Gettokendetail(refreshtoken).UserId);
-            var accesstoken = _jwtclaim.CraftJwt(user);
-            _tokenservice.SetRefreshTokenCookie(refreshtoken);
+            var tokenDetail = await _tokenService.GetTokenDetailAsync(refreshtoken);
+            var user = await _userService.GetUserAsync(tokenDetail.UserId);
+            var accesstoken = _jwtClaim.CraftJwt(user);
+            _tokenService.SetRefreshTokenCookie(refreshtoken);
 
             return Ok(new { AccessToken = accesstoken });
 

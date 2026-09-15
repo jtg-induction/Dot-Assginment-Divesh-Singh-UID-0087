@@ -48,11 +48,11 @@ namespace RestaurantManagement.Services
 			{
 					var userentity = new User()
 					{
-						Name = adduser.Name,
-						Password =_passwordHasher.HashPassword(adduser.Password),
-						Email = adduser.Email,
-						BirthDate = adduser.BirthDate,
-						PhoneNumber = adduser.PhoneNumber,
+						Name = addUser.Name,
+						Password =_passwordService.HashPassword(addUser.Password),
+						Email = addUser.Email,
+						BirthDate = addUser.BirthDate,
+						PhoneNumber = addUser.PhoneNumber,
 						Role = UserRole.Customer
 					};
 					await _userrepository.AddUserAsync(userentity);
@@ -65,12 +65,12 @@ namespace RestaurantManagement.Services
 				return ValidationMessages.DuplicateEmailAndPhone;
 			}
 }
-public User CheckUser(UserCredential usercr)
+public async Task<User> CheckUserAsync(UserCredential userCredential)
 {
-	User user = _userrepository.GetUser(usercr.Email);
+	User user = await _userRepository.GetUserAsync(userCredential.Email);
 	if (user != null)
 	{
-		if (BCrypt.Net.BCrypt.Verify(usercr.Password, user.Password))
+		if (BCrypt.Net.BCrypt.Verify(userCredential.Password, user.Password))
 		{
 			return user;
 		}
@@ -78,6 +78,14 @@ public User CheckUser(UserCredential usercr)
 		{
 			return null;
 		}
+
+	}
+	return user;
+}
+public async Task<User> GetUserAsync(int id)
+{
+	return await _userRepository.GetUserAsync(id);
+}
 
 	}
 	return user;

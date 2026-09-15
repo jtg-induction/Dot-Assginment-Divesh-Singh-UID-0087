@@ -25,7 +25,7 @@ namespace RestaurantManagement.Services
                 var permClaims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("UserId",$"{user.userId}"),
+                new Claim("UserId",$"{user.UserId}"),
                 new Claim("Role", $"{user.Role}")
             };
                 var token = new JwtSecurityToken(issuer,

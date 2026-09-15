@@ -1,9 +1,9 @@
 ﻿using Moq;
 using RestaurantManagement.Constants;
-﻿using BCrypt.Net;
+using BCrypt.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using RestaurantManagement.Common;
+//using RestaurantManagement.Common;
 using RestaurantManagement.Controllers;
 using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
@@ -12,6 +12,7 @@ using RestaurantManagement.repository;
 using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
 using System;
+using System.Threading.Tasks;
 
 namespace RestaurantManagement.tests.Services
 {
@@ -26,7 +27,7 @@ namespace RestaurantManagement.tests.Services
         private UserService _userser;
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             _mockrepo = new Mock<IUserRepository>();
             _mockpass = new Mock<IPasswordService>();
@@ -71,11 +72,6 @@ namespace RestaurantManagement.tests.Services
 
             //Assert.Fail(res);
 
-            // ACT
-            var res = _userser.Adduser(testuser);
-
-            // Assert
-            Assert.AreEqual(ValidationMessages.succes, res);
         }
 
         /// <summary>
@@ -110,11 +106,6 @@ namespace RestaurantManagement.tests.Services
             // 1. Verify no exceptions (like ResourceException) were thrown
             Assert.IsNotNull(thrownException);
 
-            // ACT
-            var res = _userser.Adduser(testuser);
-
-            // Assert - Updated to reference the shared validation constant
-            Assert.AreEqual(ValidationMessages.DuplicateEmailAndPhone, res);
         }
 
         #endregion
@@ -125,42 +116,42 @@ namespace RestaurantManagement.tests.Services
         /// Verifies that a valid credential mapping matches the hash securely and logs in the profile context.
         /// </summary>
         [TestMethod]
-        public void CheckUser_CorrectCredentials_ReturnsMatchedUser()
+        public async Task CheckUser_CorrectCredentials_ReturnsMatchedUser()
         {
             // Arrange
             string inputPlaintext = "123234@aA";
             string validBCryptString = BCrypt.Net.BCrypt.HashPassword(inputPlaintext);
 
             var trackingCredentials = new UserCredential { Email = "divesh@gmail.com", Password = inputPlaintext };
-            var foundDbUser = new User { userId = 1, Email = "divesh@gmail.com", Password = validBCryptString };
+            var foundDbUser = new User { UserId = 1, Email = "divesh@gmail.com", Password = validBCryptString };
 
-            _mockrepo.Setup(r => r.GetUser(trackingCredentials.Email)).Returns(foundDbUser);
+            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync(foundDbUser);
 
             // ACT
-            var evaluatedUser = _userser.CheckUser(trackingCredentials);
+            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
 
             // Assert
             Assert.IsNotNull(evaluatedUser);
-            Assert.AreEqual(foundDbUser.userId, evaluatedUser.userId);
+            Assert.AreEqual(foundDbUser.UserId, evaluatedUser.UserId);
         }
 
         /// <summary>
         /// Verifies that bad credentials fail validation routing gates and discard user assignment structures.
         /// </summary>
         [TestMethod]
-        public void CheckUser_IncorrectPassword_ReturnsNull()
+        public async Task CheckUser_IncorrectPassword_ReturnsNull()
         {
             // Arrange
             string mismatchedPlaintext = "incorrectPassword";
             string realBCryptHash = BCrypt.Net.BCrypt.HashPassword("correctPassword");
 
             var trackingCredentials = new UserCredential { Email = "divesh@gmail.com", Password = mismatchedPlaintext };
-            var foundDbUser = new User { userId = 1, Email = "divesh@gmail.com", Password = realBCryptHash };
+            var foundDbUser = new User { UserId = 1, Email = "divesh@gmail.com", Password = realBCryptHash };
 
-            _mockrepo.Setup(r => r.GetUser(trackingCredentials.Email)).Returns(foundDbUser);
+            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync(foundDbUser);
 
             // ACT
-            var evaluatedUser = _userser.CheckUser(trackingCredentials);
+            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
 
             // Assert
             Assert.IsNull(evaluatedUser);
@@ -170,14 +161,14 @@ namespace RestaurantManagement.tests.Services
         /// Verifies searching an unregistered email addresses stops computation and responds with a null handle.
         /// </summary>
         [TestMethod]
-        public void CheckUser_UnregisteredEmail_ReturnsNull()
+        public async Task CheckUser_UnregisteredEmail_ReturnsNull()
         {
             // Arrange
             var trackingCredentials = new UserCredential { Email = "nonexistent@gmail.com", Password = "any" };
-            _mockrepo.Setup(r => r.GetUser(trackingCredentials.Email)).Returns((User)null);
+            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync((User)null);
 
             // ACT
-            var evaluatedUser = _userser.CheckUser(trackingCredentials);
+            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
 
             // Assert
             Assert.IsNull(evaluatedUser);
@@ -191,21 +182,21 @@ namespace RestaurantManagement.tests.Services
         /// Verifies that passing an identity integer retrieves the matching entity footprint from the database.
         /// </summary>
         [TestMethod]
-        public void GetUser_ValidIdentifier_ReturnsMatchingRecord()
+        public async Task GetUser_ValidIdentifier_ReturnsMatchingRecord()
         {
             // Arrange
             int queryTargetId = 15;
-            var baselineUser = new User { userId = queryTargetId, Name = "Divesh Profile" };
+            var baselineUser = new User { UserId = queryTargetId, Name = "Divesh Profile" };
 
-            _mockrepo.Setup(r => r.GetUser(queryTargetId)).Returns(baselineUser);
+            _mockrepo.Setup(r => r.GetUserAsync(queryTargetId)).ReturnsAsync(baselineUser);
 
             // ACT
-            var matchedUserResult = _userser.GetUser(queryTargetId);
+            var matchedUserResult = await _userser.GetUserAsync(queryTargetId);
 
             // Assert
             Assert.IsNotNull(matchedUserResult);
-            Assert.AreEqual(queryTargetId, matchedUserResult.userId);
-            _mockrepo.Verify(r => r.GetUser(queryTargetId), Times.Once);
+            Assert.AreEqual(queryTargetId, matchedUserResult.UserId);
+            _mockrepo.Verify(r => r.GetUserAsync(queryTargetId), Times.Once);
         }
 
         #endregion

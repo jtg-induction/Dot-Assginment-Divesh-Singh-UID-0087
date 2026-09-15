@@ -9,16 +9,11 @@ namespace RestaurantManagement.Services
         /// <summary>
         /// Defines operations for managing users.
         /// </summary>
-        public interface IUserService
-        {
-                /// <summary>
-                /// Adds a new user.
-                /// </summary>
-                /// <param name="adduser">The user details to add.</param>
-                /// <returns>A message describing the result of the operation.</returns>
-                Task AdduserAsync(AddUserRequest adduser);
-                string Adduser(AddUserRequest adduser);
-                User CheckUser(UserCredential usercr);
-                User GetUser(int id);
-        }
+        /// <param name="adduser">The user details to add.</param>
+        /// <returns>A message describing the result of the operation.</returns>
+        Task<string> AddUserAsync(AddUserRequest addUser);
+
+        Task<User> CheckUserAsync(UserCredential userCredential);
+        Task<User> GetUserAsync(int id);
+}
 }

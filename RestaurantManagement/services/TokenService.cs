@@ -1,4 +1,4 @@
-﻿using RestaurantManagement.Common;
+﻿using RestaurantManagement.Constants;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RestaurantManagement.Services
@@ -14,14 +15,14 @@ namespace RestaurantManagement.Services
     public class TokenService:ITokenService
     {
       
-        private readonly ITokenRepository _tokenrepository;
+        private readonly ITokenRepository _tokenRepository;
         public TokenService( ITokenRepository tokenrepo)
         {
             
-            _tokenrepository = tokenrepo;
+            _tokenRepository = tokenrepo;
         }
 
-        public string TokenGenrator()
+        public string TokenGenerator()
         {
             var randomNumber = new byte[32];
 
@@ -63,38 +64,38 @@ namespace RestaurantManagement.Services
             }
         }
     
-        public string AddRefreshToken(int Id)
+        public async Task<string> AddRefreshTokenAsync(int id)
         {
-            var refreshtoken = TokenGenrator();
+            var refreshtoken = TokenGenerator();
             var token = new Models.Entity.RefreshToken()
             {
-                UserId = Id,
+                UserId = id,
                 Token = refreshtoken,
             };
-            _tokenrepository.Addtoken(token);
+            await _tokenRepository.AddTokenAsync(token);
 
             return refreshtoken;
         }
-       public  string Revoked(string token)
+      public async Task<string> RevokedAsync(string token)
         {
-            var refreshtoken= _tokenrepository.GetToken(token);
+          var refreshtoken = await _tokenRepository.GetTokenAsync(token);
             if (refreshtoken != null)
             {
-                _tokenrepository.RevokedToken(refreshtoken.TokenId);
-                return ValidationMessages.succes;
+                await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
+                return ValidationMessages.Success;
             }
             else
             {
-                return ValidationMessages.InValidToken;
+                return ValidationMessages.Revoked;
             }
         }
-       public  string RefreshTheToken(String token)
+       public async Task<string> RefreshTheTokenAsync(string token)
         {
-           var refreshToken = _tokenrepository.GetToken(token);
-            if (refreshToken!=null && !_tokenrepository.IsRevoked(refreshToken.TokenId))
+           var refreshToken = await _tokenRepository.GetTokenAsync(token);
+            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId))
             {
-                var Newrefreshtoken = TokenGenrator();
-                _tokenrepository.UpdateToken(refreshToken.TokenId, Newrefreshtoken);
+                var Newrefreshtoken = TokenGenerator();
+                await _tokenRepository.UpdateTokenAsync(refreshToken.TokenId, Newrefreshtoken);
                 return Newrefreshtoken;
             }
             else
@@ -104,9 +105,9 @@ namespace RestaurantManagement.Services
 
         }
 
-        public RefreshToken Gettokendetail(string token)
+        public async Task<RefreshToken> GetTokenDetailAsync(string token)
         {
-            return _tokenrepository.GetToken(token);
+            return await _tokenRepository.GetTokenAsync(token);
         }
     }
 }
