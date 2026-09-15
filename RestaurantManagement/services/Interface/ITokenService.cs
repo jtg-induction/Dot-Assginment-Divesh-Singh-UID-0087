@@ -14,7 +14,7 @@ namespace RestaurantManagement.Services.Interface
         void ClearRefreshTokenCookie();
         void SetRefreshTokenCookie(string token);
         Task<string> AddRefreshTokenAsync(int id);
-        Task<string> RevokedAsync(string token);
+        Task RevokedAsync(string token);
         Task<string> RefreshTheTokenAsync(string token);
         Task<RefreshToken> GetTokenDetailAsync(string token);
      

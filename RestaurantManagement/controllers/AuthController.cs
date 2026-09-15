@@ -63,11 +63,8 @@ namespace RestaurantManagement.Controllers
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            System.Diagnostics.Debug.WriteLine(_userService == null);
+         
+            //System.Diagnostics.Debug.WriteLine(_userService == null);
             var user = await _userService.CheckUserAsync(login);
             //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.Indented));
 
@@ -102,10 +99,6 @@ namespace RestaurantManagement.Controllers
             string token = _tokenService.GetRefreshTokenFromCookie();
             var tokenHandler = new JwtSecurityTokenHandler();
             var refreshtoken = await _tokenService.RefreshTheTokenAsync(token);
-            if (refreshtoken.Equals(ValidationMessages.Revoked))
-            {
-                return Unauthorized();
-            }
             var tokenDetail = await _tokenService.GetTokenDetailAsync(refreshtoken);
             var user = await _userService.GetUserAsync(tokenDetail.UserId);
             var accesstoken = _jwtClaim.CraftJwt(user);

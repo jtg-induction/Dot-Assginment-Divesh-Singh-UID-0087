@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
@@ -76,18 +77,18 @@ namespace RestaurantManagement.Services
 
             return refreshtoken;
         }
-      public async Task<string> RevokedAsync(string token)
+      public async Task RevokedAsync(string token)
         {
           var refreshtoken = await _tokenRepository.GetTokenAsync(token);
             if (refreshtoken != null)
             {
                 await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
-                return ValidationMessages.succes;
+               
             }
-            else
-            {
-                return ValidationMessages.Revoked;
-            }
+           
+                throw new ResourceException(ValidationMessages.Revoked);
+               
+            
         }
        public async Task<string> RefreshTheTokenAsync(string token)
         {
@@ -100,7 +101,7 @@ namespace RestaurantManagement.Services
             }
             else
             {
-                return ValidationMessages.Revoked;
+                throw new ResourceException(ValidationMessages.Revoked);
             }
 
         }

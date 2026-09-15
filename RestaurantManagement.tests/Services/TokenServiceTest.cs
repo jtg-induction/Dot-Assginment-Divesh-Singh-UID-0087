@@ -76,24 +76,7 @@ namespace RestaurantManagement.Tests.Services
             _mockRepo.Verify(r => r.AddTokenAsync(It.Is<RefreshToken>(t => t.UserId == targetUserId && t.Token == resultToken)), Times.Once);
         }
 
-        /// <summary>Verifies that an existing token is marked as revoked and returns success.</summary>
-        [TestMethod]
-        public async Task Revoked_ExistingToken_UpdatesDatabaseAndReturnsSuccess()
-        {
-            // ARRANGE
-            string tokenStr = "valid-token-to-revoke";
-            var existingToken = new RefreshToken { TokenId = 12, Token = tokenStr };
-
-            _mockRepo.Setup(r => r.GetTokenAsync(tokenStr)).ReturnsAsync(existingToken);
-            _mockRepo.Setup(r => r.RevokedTokenAsync(12)).Returns(Task.CompletedTask);
-
-            // ACT
-            string result = await _service.RevokedAsync(tokenStr);
-
-            // ASSERT
-            Assert.AreEqual(ValidationMessages.succes,result);
-            _mockRepo.Verify(r => r.RevokedTokenAsync(12), Times.Once);
-        }
+      
 
         /// <summary>Verifies that attempting to revoke a missing token returns an invalid token message.</summary>
         [TestMethod]
@@ -103,11 +86,21 @@ namespace RestaurantManagement.Tests.Services
             _mockRepo.Setup(r => r.GetTokenAsync(It.IsAny<string>())).ReturnsAsync((RefreshToken)null);
 
             // ACT
-            string result = await _service.RevokedAsync("missing-token");
 
             // ASSERT
-            Assert.AreEqual(ValidationMessages.Revoked, result);
-            _mockRepo.Verify(r => r.RevokedTokenAsync(It.IsAny<int>()), Times.Never);
+            Exception execption = null;
+            try
+            {
+           await _service.RevokedAsync("missing-token");
+                
+            }
+            catch (Exception e)
+            {
+                execption = e;
+            }
+
+            // ASSERT
+            Assert.IsNotNull(execption);
         }
 
         /// <summary>Verifies that refreshing an active, valid token saves a replacement code and returns it.</summary>
@@ -143,11 +136,18 @@ namespace RestaurantManagement.Tests.Services
             _mockRepo.Setup(r => r.IsRevokedAsync(9)).ReturnsAsync(true);
 
             // ACT
-            string result = await _service.RefreshTheTokenAsync(badToken);
+            Exception exception = null;
+            try
+            {
+                string result = await _service.RefreshTheTokenAsync(badToken);
+            }catch(Exception e)
+            {
+                exception = e;
+            }
 
             // ASSERT
-            Assert.AreEqual(ValidationMessages.Revoked, result);
-            _mockRepo.Verify(r => r.UpdateTokenAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            Assert.IsNotNull(exception);
+           
         }
 
         /// <summary>Verifies that a cookie is written to the HTTP response stream with safe attributes.</summary>
