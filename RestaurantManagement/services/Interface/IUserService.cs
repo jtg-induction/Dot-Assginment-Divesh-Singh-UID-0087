@@ -1,7 +1,10 @@
 ﻿using RestaurantManagement.Models.Dto;
 using System.Threading.Tasks;
+using RestaurantManagement.Models;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 
-namespace RestaurantManagement.services
+namespace RestaurantManagement.Services
 {
         /// <summary>
         /// Defines operations for managing users.
@@ -14,5 +17,8 @@ namespace RestaurantManagement.services
                 /// <param name="adduser">The user details to add.</param>
                 /// <returns>A message describing the result of the operation.</returns>
                 Task AdduserAsync(AddUserRequest adduser);
+                string Adduser(AddUserRequest adduser);
+                User CheckUser(UserCredential usercr);
+                User GetUser(int id);
         }
 }

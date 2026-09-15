@@ -14,5 +14,7 @@
         /// Indicates that an operation completed successfully.
         /// </summary>
         public const string succes = "succes";
+        public const string Revoked = "Refresh Token is already revoked";
+        public const string InValidToken = "Token Invalid";
     }
 }

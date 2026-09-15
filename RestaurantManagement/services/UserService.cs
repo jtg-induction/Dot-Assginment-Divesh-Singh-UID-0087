@@ -4,7 +4,8 @@ using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
-using RestaurantManagement.services;
+using RestaurantManagement.Repository.Interface;
+//using RestaurantManagement.services;
 using RestaurantManagement.Services.Interface;
 using System.Threading.Tasks;
 
@@ -27,6 +28,7 @@ namespace RestaurantManagement.Services
 		{
 			_userrepository = userrepository;
 			_passwordHasher = passwordHasher;
+
 		}
 
 		/// <summary>
@@ -44,17 +46,46 @@ namespace RestaurantManagement.Services
 
 			var userentity = new User()
 			{
-				Name = adduser.Name,
-				Password = _passwordHasher.HashPassword(adduser.Password),
-				Email = adduser.Email,
-				BirthDate = adduser.BirthDate,
-				PhoneNumber = adduser.PhoneNumber,
-				Role = UserRole.Customer
-			};
-			await _userrepository.AddUserAsync(userentity);
+					var userentity = new User()
+					{
+						Name = adduser.Name,
+						Password =_passwordHasher.HashPassword(adduser.Password),
+						Email = adduser.Email,
+						BirthDate = adduser.BirthDate,
+						PhoneNumber = adduser.PhoneNumber,
+						Role = UserRole.Customer
+					};
+					await _userrepository.AddUserAsync(userentity);
+					return ValidationMessages.succes;
+
 
 		}
-
+			else
+			{
+				return ValidationMessages.DuplicateEmailAndPhone;
+			}
+}
+public User CheckUser(UserCredential usercr)
+{
+	User user = _userrepository.GetUser(usercr.Email);
+	if (user != null)
+	{
+		if (BCrypt.Net.BCrypt.Verify(usercr.Password, user.Password))
+		{
+			return user;
+		}
+		else
+		{
+			return null;
+		}
 
 	}
+	return user;
+}
+public User GetUser(int id)
+{
+	return _userrepository.GetUser(id);
+}
+
+    }
 }

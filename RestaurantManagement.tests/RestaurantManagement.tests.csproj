@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
     <PackageReference Include="Effort.EF6" Version="2.2.18" />
     <PackageReference Include="EntityFramework" Version="6.6.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />

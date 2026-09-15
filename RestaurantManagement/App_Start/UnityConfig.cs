@@ -1,11 +1,13 @@
 using RestaurantManagement.Data;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
-using RestaurantManagement.services;
+using RestaurantManagement.Repository.Interface;
+//using RestaurantManagement.services;
 using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
 using System;
 using Unity;
+using Unity.Injection;
 using Unity.Lifetime;
 
 namespace RestaurantManagement
@@ -51,6 +53,11 @@ namespace RestaurantManagement
             container.RegisterType<IUserService, UserService>();
             // 4. Register your Password Hasher
             container.RegisterType<IPasswordService, PasswordService>();
+            container.RegisterType<IPasswordHasher, BcryptPasswordHasher>();
+            container.RegisterType<ITokenRepository, TokenRepository>();
+            container.RegisterType<ITokenService, TokenService>();
+            container.RegisterType<ITokenRepository, TokenRepository>();
+            container.RegisterType<IObtainJwtService, ObtainJwtService>();
         }
     }
 }

@@ -1,11 +1,17 @@
-﻿using Microsoft.Extensions.DependencyModel;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.DependencyModel;
 using Moq;
+using OWIN.WebApi.Controllers;
+using RestaurantManagement.Common;
 using RestaurantManagement.Controllers;
+using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using RestaurantManagement.services;
 using RestaurantManagement.Services;
+using RestaurantManagement.Services.Interface;
 using System.Text.Json;
 using System.Web.Http.Results;
 using System.Web.UI.WebControls.WebParts;
@@ -25,7 +31,8 @@ namespace RestaurantManagement.tests.Controller
         /// Mock user service used by the controller under test.
         /// </summary>
         private Mock<IUserService> _mockser;
-
+        private Mock<ITokenService> _mocktoken;
+        private Mock<IObtainJwtController> _mockjwt;
         /// <summary>
         /// Controller instance being tested.
         /// </summary>
@@ -38,7 +45,9 @@ namespace RestaurantManagement.tests.Controller
         public void setup()
         {
             _mockser = new Mock<IUserService>();
-            _signup = new AuthController(_mockser.Object);
+            _mocktoken = new Mock<ITokenService>();
+            _mockjwt = new Mock<IObtainJwtController>();
+            _signup = new AuthController(_mockser.Object, _mockjwt.Object, _mocktoken.Object);
         }
 
         /// <summary>
