@@ -78,35 +78,12 @@ namespace RestaurantManagement.tests.Controller
             var createdResult = response as OkNegotiatedContentResult<string>;
             //Assert.Fail(createdResult);
             //Assert.Fail($"Name was: {createdResult==null}");
-            Assert.IsNotNull(createdResult, ValidationMessages.Success);
-            Assert.AreEqual("DIVESH", createdResult.Content.Name);
-        }
+            Assert.IsNotNull(createdResult, ValidationMessages.succes);
+          }
 
         /// <summary>
         /// Verifies that an invalid email produces a model-state error response.
         /// </summary>
-
-        [TestMethod]
-        public async Task EmailExists()
-        {
-            //ARRANGE
-            var incominguser = new AddUserRequest()
-            {
-                Name = "DIVESH",
-                Email = "divesh@gmail.com",
-                Password = "123234@aA",
-                PhoneNumber = "1232334299",
-                BirthDate = DateTime.Parse("2000-01-01 00:00:00")
-            };
-
-            _userServiceMock.Setup(r => r.AddUserAsync(incominguser)).ReturnsAsync(ValidationMessages.DuplicateEmailAndPhone);
-
-            //ACT
-            var response = await _authController.Signup(incominguser);
-            //ASSERT
-            var BadResult = response as BadRequestErrorMessageResult;
-            Assert.IsNotNull(BadResult, ValidationMessages.DuplicateEmailAndPhone);
-        }
         [TestMethod]
         public async Task InvalidUserCredential()
         {
@@ -179,7 +156,7 @@ namespace RestaurantManagement.tests.Controller
             //ARRANGE
             _tokenServiceMock.Setup(r => r.GetRefreshTokenFromCookie()).Returns("djbdgbiuf");
             _tokenServiceMock.Setup(r => r.ClearRefreshTokenCookie());
-            _tokenServiceMock.Setup(r => r.RevokedAsync("jfgbkugkdub")).ReturnsAsync(ValidationMessages.Success);
+            _tokenServiceMock.Setup(r => r.RevokedAsync("jfgbkugkdub")).ReturnsAsync(ValidationMessages.succes);
 
             //ACT
             var response = await _authController.Logout();

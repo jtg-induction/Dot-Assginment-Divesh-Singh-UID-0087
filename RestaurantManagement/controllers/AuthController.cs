@@ -11,7 +11,6 @@ namespace RestaurantManagement.Controllers
     /// <summary>
     /// Provides authentication-related API endpoints.
     /// </summary>
-    [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
         private readonly IUserService _userService;
@@ -45,6 +44,32 @@ namespace RestaurantManagement.Controllers
             var accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             return Ok(new { AccessToken = accesstoken });
+        }
+        [HttpPost]
+        [Route("login")]
+        public async Task<IHttpActionResult> Login(UserCredential login)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            System.Diagnostics.Debug.WriteLine(_userService == null);
+            var user = await _userService.CheckUserAsync(login);
+            //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.Indented));
+
+            if (user != null)
+            {
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
+                var accesstoken = _jwtClaim.CraftJwt(user);
+
+                _tokenService.SetRefreshTokenCookie(refreshtoken);
+
+                return Ok(new { AccessToken = accesstoken });
+            }
+
+            return Unauthorized();
         }
         [HttpPost]
         [Route("logout")]
