@@ -82,7 +82,7 @@ namespace RestaurantManagement.Services
             if (refreshtoken != null)
             {
                 await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
-                return ValidationMessages.Success;
+                return ValidationMessages.succes;
             }
             else
             {

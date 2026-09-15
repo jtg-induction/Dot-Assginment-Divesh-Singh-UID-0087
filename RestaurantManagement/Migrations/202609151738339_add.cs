@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class inital : DbMigration
+    public partial class add : DbMigration
     {
         public override void Up()
         {
@@ -116,6 +116,21 @@
                 .Index(t => t.PhoneNumber, unique: true);
             
             CreateTable(
+                "dbo.RefreshTokens",
+                c => new
+                    {
+                        TokenId = c.Int(nullable: false, identity: true),
+                        UserId = c.Int(nullable: false),
+                        Token = c.String(nullable: false),
+                        IsRevoked = c.Boolean(nullable: false),
+                        CreatedAt = c.DateTime(nullable: false),
+                        UpdatedAt = c.DateTime(nullable: false),
+                    })
+                .PrimaryKey(t => t.TokenId)
+                .ForeignKey("dbo.Users", t => t.UserId, cascadeDelete: true)
+                .Index(t => t.UserId);
+            
+            CreateTable(
                 "dbo.RestaurantOwners",
                 c => new
                     {
@@ -144,13 +159,7 @@
                 .ForeignKey("dbo.Users", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.AddressId);
-            Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_mi_Price_NotNegative CHECK (Price >= 0);");
-            Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_oi_Price_NotNegative CHECK (Price >= 0);");
-            Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_AvailableQuantity_NotNegative CHECK (AvailableQuantity >= 0);");
-            Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_Quantity_NotNegative CHECK (Quantity >= 0);");
-            Sql("ALTER TABLE dbo.Orders ADD CONSTRAINT CK_TotalAmount_NotNegative CHECK (TotalAmount >= 0);");
-            Sql("ALTER TABLE dbo.Users ADD CONSTRAINT CK_Balance_NotNegative CHECK (Balance >= 0);");
-
+            
         }
         
         public override void Down()
@@ -159,6 +168,7 @@
             DropForeignKey("dbo.UserAddresses", "AddressId", "dbo.Addresses");
             DropForeignKey("dbo.RestaurantOwners", "UserId", "dbo.Users");
             DropForeignKey("dbo.RestaurantOwners", "RestaurantId", "dbo.Restaurants");
+            DropForeignKey("dbo.RefreshTokens", "UserId", "dbo.Users");
             DropForeignKey("dbo.OrderItems", "OrderId", "dbo.Orders");
             DropForeignKey("dbo.Orders", "UserId", "dbo.Users");
             DropForeignKey("dbo.Orders", "RestaurantId", "dbo.Restaurants");
@@ -168,6 +178,7 @@
             DropIndex("dbo.UserAddresses", new[] { "UserId" });
             DropIndex("dbo.RestaurantOwners", new[] { "UserId" });
             DropIndex("dbo.RestaurantOwners", new[] { "RestaurantId" });
+            DropIndex("dbo.RefreshTokens", new[] { "UserId" });
             DropIndex("dbo.Users", new[] { "PhoneNumber" });
             DropIndex("dbo.Users", new[] { "Email" });
             DropIndex("dbo.Orders", new[] { "RestaurantId" });
@@ -179,18 +190,13 @@
             DropIndex("dbo.MenuItems", new[] { "RestaurantId" });
             DropTable("dbo.UserAddresses");
             DropTable("dbo.RestaurantOwners");
+            DropTable("dbo.RefreshTokens");
             DropTable("dbo.Users");
             DropTable("dbo.Orders");
             DropTable("dbo.OrderItems");
             DropTable("dbo.Restaurants");
             DropTable("dbo.MenuItems");
             DropTable("dbo.Addresses");
-            Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_mi_Price_NotNegative;");
-            Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_oi_Price_NotNegative;");
-            Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_AvailableQuantity_NotNegative;");
-            Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_Quantity_NotNegative;");
-            Sql("ALTER TABLE dbo.Orders DROP CONSTRAINT CK_TotalAmount_NotNegative;");
-            Sql("ALTER TABLE dbo.Users DROP CONSTRAINT CK_Balance_NotNegative;");
         }
     }
 }

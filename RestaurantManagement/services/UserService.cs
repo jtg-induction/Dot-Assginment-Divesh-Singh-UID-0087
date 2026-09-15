@@ -1,9 +1,11 @@
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
+using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
 //using RestaurantManagement.services;
 using RestaurantManagement.Services.Interface;
@@ -14,10 +16,11 @@ namespace RestaurantManagement.Services
 	/// <summary>
 	/// Provides user registration services.
 	/// </summary>
+
 	public class UserService : IUserService
 	{
 		private readonly IUserRepository _userrepository;
-		private readonly IPasswordService _passwordHasher;
+		private readonly IPasswordService _passwordService;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserService"/> class.
@@ -27,7 +30,7 @@ namespace RestaurantManagement.Services
 		public UserService(IUserRepository userrepository, IPasswordService passwordHasher)
 		{
 			_userrepository = userrepository;
-			_passwordHasher = passwordHasher;
+			_passwordService = passwordHasher;
 
 		}
 
@@ -46,28 +49,19 @@ namespace RestaurantManagement.Services
 
 			var userentity = new User()
 			{
-					var userentity = new User()
-					{
-						Name = addUser.Name,
-						Password =_passwordService.HashPassword(addUser.Password),
-						Email = addUser.Email,
-						BirthDate = addUser.BirthDate,
-						PhoneNumber = addUser.PhoneNumber,
+						Name = adduser.Name,
+						Password =_passwordService.HashPassword(adduser.Password),
+						Email = adduser.Email,
+						BirthDate = adduser.BirthDate,
+						PhoneNumber = adduser.PhoneNumber,
 						Role = UserRole.Customer
 					};
 					await _userrepository.AddUserAsync(userentity);
-					return ValidationMessages.succes;
-
 
 		}
-			else
-			{
-				return ValidationMessages.DuplicateEmailAndPhone;
-			}
-}
 public async Task<User> CheckUserAsync(UserCredential userCredential)
 {
-	User user = await _userRepository.GetUserAsync(userCredential.Email);
+	User user = await _userrepository.GetUserAsync(userCredential.Email);
 	if (user != null)
 	{
 		if (BCrypt.Net.BCrypt.Verify(userCredential.Password, user.Password))
@@ -84,16 +78,8 @@ public async Task<User> CheckUserAsync(UserCredential userCredential)
 }
 public async Task<User> GetUserAsync(int id)
 {
-	return await _userRepository.GetUserAsync(id);
+	return await _userrepository.GetUserAsync(id);
 }
 
-	}
-	return user;
-}
-public User GetUser(int id)
-{
-	return _userrepository.GetUser(id);
-}
-
-    }
+  }
 }

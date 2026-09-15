@@ -53,7 +53,6 @@ namespace RestaurantManagement
             container.RegisterType<IUserService, UserService>();
             // 4. Register your Password Hasher
             container.RegisterType<IPasswordService, PasswordService>();
-            container.RegisterType<IPasswordHasher, BcryptPasswordHasher>();
             container.RegisterType<ITokenRepository, TokenRepository>();
             container.RegisterType<ITokenService, TokenService>();
             container.RegisterType<ITokenRepository, TokenRepository>();

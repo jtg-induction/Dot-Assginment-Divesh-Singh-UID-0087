@@ -91,7 +91,7 @@ namespace RestaurantManagement.Tests.Services
             string result = await _service.RevokedAsync(tokenStr);
 
             // ASSERT
-            Assert.AreEqual(ValidationMessages.Success, result);
+            Assert.AreEqual(ValidationMessages.succes,result);
             _mockRepo.Verify(r => r.RevokedTokenAsync(12), Times.Once);
         }
 

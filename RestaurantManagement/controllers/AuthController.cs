@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Services;
 //using OWIN.WebApi.Controllers;
-using RestaurantManagement.Common;
+//using RestaurantManagement.Common;
 using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
@@ -60,13 +60,39 @@ namespace RestaurantManagement.Controllers
             return Ok(ValidationMessages.succes);
         }
         [HttpPost]
+        [Route("login")]
+        public async Task<IHttpActionResult> Login(UserCredential login)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            System.Diagnostics.Debug.WriteLine(_userService == null);
+            var user = await _userService.CheckUserAsync(login);
+            //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.Indented));
+
+            if (user != null)
+            {
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
+                var accesstoken = _jwtClaim.CraftJwt(user);
+
+                _tokenService.SetRefreshTokenCookie(refreshtoken);
+
+                return Ok(new { AccessToken = accesstoken });
+            }
+
+            return Unauthorized();
+        }
+        [HttpPost]
         [Route("logout")]
         public async Task<IHttpActionResult> Logout()
         {
             string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
             _tokenService.ClearRefreshTokenCookie();
             await _tokenService.RevokedAsync(currentRefreshToken);
-            return Ok(ValidationMessages.Success);
+            return Ok(ValidationMessages.succes);
         }
 
         [HttpPost]
@@ -91,6 +117,5 @@ namespace RestaurantManagement.Controllers
 
 
     }
-}
 }
 

@@ -324,17 +324,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalExceptionHandler.cs" />
-    <Compile Include="Migrations\202609151212037_inital.cs" />
-    <Compile Include="Migrations\202609151212037_inital.Designer.cs">
-      <DependentUpon>202609151212037_inital.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202609142037528_add.cs" />
-    <Compile Include="Migrations\202609142037528_add.Designer.cs">
-      <DependentUpon>202609142037528_add.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202609151026308_inital1.cs" />
-    <Compile Include="Migrations\202609151026308_inital1.Designer.cs">
-      <DependentUpon>202609151026308_inital1.cs</DependentUpon>
+    <Compile Include="Migrations\202609151738339_add.cs" />
+    <Compile Include="Migrations\202609151738339_add.Designer.cs">
+      <DependentUpon>202609151738339_add.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
@@ -361,9 +353,7 @@
     <Compile Include="Services\Exceptions\ResourceException.cs" />
     <Compile Include="Services\PasswordService.cs" />
     <Compile Include="Services\Interface\IPasswordService.cs" />
-    <Compile Include="Services\BcryptPasswordHasher.cs" />
     <Compile Include="Services\Interface\IObtainJwtService.cs" />
-    <Compile Include="Services\Interface\IPasswordHasher.cs" />
     <Compile Include="Services\Interface\ITokenService.cs" />
     <Compile Include="Services\Interface\IUserService.cs" />
     <Compile Include="Services\ObtainJwtService.cs" />
@@ -391,20 +381,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202609151212037_inital.resx">
-      <DependentUpon>202609151212037_inital.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202609151026308_inital1.resx">
-      <DependentUpon>202609151026308_inital1.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.0.2\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\MSTest.Analyzers.4.0.2\analyzers\dotnet\cs\MSTest.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202609142037528_add.resx">
-      <DependentUpon>202609142037528_add.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202609151738339_add.resx">
+      <DependentUpon>202609151738339_add.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
