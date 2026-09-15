@@ -1,4 +1,4 @@
-﻿using DotNetEnv;
+using DotNetEnv;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Jwt;

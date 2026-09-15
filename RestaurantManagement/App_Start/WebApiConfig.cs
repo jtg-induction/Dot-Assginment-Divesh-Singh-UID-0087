@@ -18,6 +18,9 @@ namespace RestaurantManagement
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            // Force Web API to trust and read the "Bearer" token principal verified by OWIN
+            config.Filters.Add(new HostAuthenticationFilter("Bearer"));
+
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Filters.Add(new Filters.ValidateModelAttribute());
             // Web API routes

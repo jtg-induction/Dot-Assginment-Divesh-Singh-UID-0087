@@ -16,5 +16,10 @@ namespace RestaurantManagement.Services
         Task AdduserAsync(AddUserRequest adduser);
         Task<User> LoginUserAsync(UserCredential userCredential);
         Task<User> GetUserAsync(int id);
+        Task<User> GetUserIfActive(int id);
+
+        Task UpdateAccount(User user,UpdateAccountDto updateaccount);
+
+
     }
 }

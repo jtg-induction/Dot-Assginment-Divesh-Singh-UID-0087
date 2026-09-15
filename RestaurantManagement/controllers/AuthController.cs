@@ -11,6 +11,8 @@ namespace RestaurantManagement.Controllers
     /// <summary>
     /// Provides authentication-related API endpoints.
     /// </summary>
+    [AllowAnonymous]
+    [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
         private readonly IUserService _userService;
@@ -49,10 +51,8 @@ namespace RestaurantManagement.Controllers
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
         {
-         
-            //System.Diagnostics.Debug.WriteLine(_userService == null);
+
             var user = await _userService.CheckUserAsync(login);
-            //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user, Newtonsoft.Json.Formatting.Indented));
 
             if (user != null)
             {
