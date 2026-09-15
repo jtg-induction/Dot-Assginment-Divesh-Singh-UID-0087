@@ -14,13 +14,13 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
-    public class TokenService:ITokenService
+    public class TokenService : ITokenService
     {
-      
+
         private readonly ITokenRepository _tokenRepository;
-        public TokenService( ITokenRepository tokenrepo)
+        public TokenService(ITokenRepository tokenrepo)
         {
-            
+
             _tokenRepository = tokenrepo;
         }
 
@@ -65,7 +65,7 @@ namespace RestaurantManagement.Services
                 HttpContext.Current.Response.Cookies["X-Refresh-Token"].Expires = DateTime.UtcNow.AddDays(-1);
             }
         }
-    
+
         public async Task<string> AddRefreshTokenAsync(int id)
         {
             var refreshtoken = TokenGenerator();
@@ -78,23 +78,23 @@ namespace RestaurantManagement.Services
 
             return refreshtoken;
         }
-      public async Task RevokedAsync(string token)
+        public async Task RevokedAsync(string token)
         {
-          var refreshtoken = await _tokenRepository.GetTokenAsync(token);
+            var refreshtoken = await _tokenRepository.GetTokenAsync(token);
             if (refreshtoken == null)
             {
-                
+
                 throw new ResourceException(ValidationMessages.Revoked);
-               
+
             }
-                await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
-           
-               
-            
+            await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
+
+
+
         }
-       public async Task<string> RefreshTheTokenAsync(string token)
+        public async Task<string> RefreshTheTokenAsync(string token)
         {
-           var refreshToken = await _tokenRepository.GetTokenAsync(token);
+            var refreshToken = await _tokenRepository.GetTokenAsync(token);
             if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId))
             {
                 var Newrefreshtoken = TokenGenerator();

@@ -337,6 +337,10 @@
     <Compile Include="Migrations\202609151738339_add.Designer.cs">
       <DependentUpon>202609151738339_add.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202609151026308_inital1.cs" />
+    <Compile Include="Migrations\202609151026308_inital1.Designer.cs">
+      <DependentUpon>202609151026308_inital1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
     <Compile Include="Models\Dto\RefreshTokenRequest.cs" />

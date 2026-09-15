@@ -76,7 +76,7 @@ namespace RestaurantManagement.Tests.Services
             _mockRepo.Verify(r => r.AddTokenAsync(It.Is<RefreshToken>(t => t.UserId == targetUserId && t.Token == resultToken)), Times.Once);
         }
 
-      
+
 
         /// <summary>Verifies that attempting to revoke a missing token returns an invalid token message.</summary>
         [TestMethod]
@@ -91,8 +91,8 @@ namespace RestaurantManagement.Tests.Services
             Exception execption = null;
             try
             {
-           await _service.RevokedAsync("missing-token");
-                
+                await _service.RevokedAsync("missing-token");
+
             }
             catch (Exception e)
             {
@@ -140,14 +140,15 @@ namespace RestaurantManagement.Tests.Services
             try
             {
                 string result = await _service.RefreshTheTokenAsync(badToken);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 exception = e;
             }
 
             // ASSERT
             Assert.IsNotNull(exception);
-           
+
         }
 
         /// <summary>Verifies that a cookie is written to the HTTP response stream with safe attributes.</summary>

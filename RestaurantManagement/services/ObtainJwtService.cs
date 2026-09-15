@@ -14,7 +14,7 @@ using Claim = System.Security.Claims.Claim;
 
 namespace RestaurantManagement.Services
 {
-    public class ObtainJwtService:IObtainJwtService
+    public class ObtainJwtService : IObtainJwtService
     {
         public string CraftJwt(User user)
         {
@@ -41,5 +41,5 @@ namespace RestaurantManagement.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        }
     }
+}
