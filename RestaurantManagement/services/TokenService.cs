@@ -95,7 +95,7 @@ namespace RestaurantManagement.Services
         public async Task<string> RefreshTheTokenAsync(string token)
         {
             var refreshToken = await _tokenRepository.GetTokenAsync(token);
-            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId))
+            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId) && !await _tokenRepository.IsExpiryed(refreshToken.TokenId))
             {
                 var Newrefreshtoken = TokenGenerator();
                 await _tokenRepository.UpdateTokenAsync(refreshToken.TokenId, Newrefreshtoken);

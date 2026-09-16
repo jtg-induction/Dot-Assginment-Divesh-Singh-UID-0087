@@ -19,7 +19,7 @@ namespace RestaurantManagement.Services
         Task<User> GetUserIfActive(int id);
 
         Task UpdateAccount(User user, UpdateAccountDto updateaccount);
-        Task DeactivateAccount(UserCredential user);
+        Task DeactivateAccount(int id);
         Task ActivateAccount(UserCredential user);
 
 

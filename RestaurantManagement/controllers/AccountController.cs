@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Helper;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Services;
 using System;
@@ -24,15 +25,8 @@ namespace RestaurantManagement.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateAccount(UpdateAccountDto model)
         {
-            var claimsIdentity = User.Identity as ClaimsIdentity;
-            var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int currentUserId))
-            {
-                return Unauthorized();
-            }
+            int currentUserId =await ClaimHelper.GetUserIdFromClaim(User.Identity);
             var user = await _userservice.GetUserIfActive(currentUserId);
-
           await  _userservice.UpdateAccount(user, model);
             return Ok(ValidationMessages.Success);
 

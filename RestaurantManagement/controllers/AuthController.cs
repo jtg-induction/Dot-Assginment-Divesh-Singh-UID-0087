@@ -1,4 +1,6 @@
 using RestaurantManagement.Constants;
+using RestaurantManagement.Helper;
+
 //using OWIN.WebApi.Controllers;
 //using RestaurantManagement.Common;
 using RestaurantManagement.Models;
@@ -22,7 +24,6 @@ namespace RestaurantManagement.Controllers
     /// <summary>
     /// Provides authentication-related API endpoints.
     /// </summary>
-    [AllowAnonymous]
     [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
@@ -41,6 +42,7 @@ namespace RestaurantManagement.Controllers
         /// </summary>
         /// <param name="adduser">The new user's registration details.</param>
         /// <returns>The result of the registration request.</returns>
+    [AllowAnonymous]
         [HttpPost]
         [Route("signup")]
         public async Task<IHttpActionResult> Signup(AddUserRequest adduser)
@@ -48,6 +50,7 @@ namespace RestaurantManagement.Controllers
             await _userService.AdduserAsync(adduser);
             return Ok(ValidationMessages.Success);
         }
+    [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
@@ -58,6 +61,7 @@ namespace RestaurantManagement.Controllers
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             return Ok(new { AccessToken = accesstoken });
         }
+        [Authorize]
         [HttpPost]
         [Route("logout")]
         public async Task<IHttpActionResult> Logout()
@@ -68,6 +72,7 @@ namespace RestaurantManagement.Controllers
             return Ok(ValidationMessages.Success);
         }
 
+    [Authorize]
         [HttpPost]
         [Route("refresh")]
         public async Task<IHttpActionResult> Refresh()
@@ -81,16 +86,18 @@ namespace RestaurantManagement.Controllers
             return Ok(new { AccessToken = accesstoken });
 
         }
+        [Authorize]
         [HttpPut]
         [Route("deactivate")]
-        public async Task<IHttpActionResult> DeactivateAccount(UserCredential login)
+        public async Task<IHttpActionResult> DeactivateAccount()
         {
-
-            await _userService.DeactivateAccount(login);
+            int currentUserId = await ClaimHelper.GetUserIdFromClaim(User.Identity);
+            await _userService.DeactivateAccount(currentUserId);
             return Ok(ValidationMessages.Success);
 
 
         }
+    [AllowAnonymous]
         [HttpPut]
         [Route("activate")]
         public async Task<IHttpActionResult> ActivateAccount(UserCredential login)

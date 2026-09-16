@@ -53,5 +53,12 @@ namespace RestaurantManagement.Repository
             refreshtoken.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
+
+        public async Task<bool> IsExpiryed(int id)
+        {
+            var refreshtoken = await _db.RefreshTokens.FindAsync(id);
+
+            return (DateTime.UtcNow - refreshtoken.UpdatedAt).TotalSeconds > 604800;
+        }
     }
 }
