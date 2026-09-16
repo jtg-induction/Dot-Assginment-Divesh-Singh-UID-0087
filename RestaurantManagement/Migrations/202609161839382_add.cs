@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class inital : DbMigration
+    public partial class add : DbMigration
     {
         public override void Up()
         {
@@ -144,13 +144,7 @@
                 .ForeignKey("dbo.Users", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.AddressId);
-            Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_mi_Price_NotNegative CHECK (Price >= 0);");
-            Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_oi_Price_NotNegative CHECK (Price >= 0);");
-            Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_AvailableQuantity_NotNegative CHECK (AvailableQuantity >= 0);");
-            Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_Quantity_NotNegative CHECK (Quantity >= 0);");
-            Sql("ALTER TABLE dbo.Orders ADD CONSTRAINT CK_TotalAmount_NotNegative CHECK (TotalAmount >= 0);");
-            Sql("ALTER TABLE dbo.Users ADD CONSTRAINT CK_Balance_NotNegative CHECK (Balance >= 0);");
-
+            
         }
         
         public override void Down()
@@ -185,12 +179,6 @@
             DropTable("dbo.Restaurants");
             DropTable("dbo.MenuItems");
             DropTable("dbo.Addresses");
-            Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_mi_Price_NotNegative;");
-            Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_oi_Price_NotNegative;");
-            Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_AvailableQuantity_NotNegative;");
-            Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_Quantity_NotNegative;");
-            Sql("ALTER TABLE dbo.Orders DROP CONSTRAINT CK_TotalAmount_NotNegative;");
-            Sql("ALTER TABLE dbo.Users DROP CONSTRAINT CK_Balance_NotNegative;");
         }
     }
 }
