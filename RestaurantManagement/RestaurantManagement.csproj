@@ -240,6 +240,7 @@
     <Compile Include="Check.cs" />
     <Compile Include="Constants\ValidationMessages.cs" />
     <Compile Include="Constants\EntityConstants.cs" />
+    <Compile Include="Constants\ValidationRules.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Filters\ValidateModelAttribute.cs" />

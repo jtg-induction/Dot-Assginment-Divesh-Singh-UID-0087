@@ -20,7 +20,7 @@ namespace RestaurantManagement.Models.Dto
         /// </summary>
         [Required]
         [StringLength(EntityConstants.MaxPasswordLength, MinimumLength =EntityConstants.MinPasswordLength)]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$")]
+        [RegularExpression(ValidationRules.PasswordRegexPattern)]
         public string Password { get; set; }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace RestaurantManagement.Models.Dto
         /// Gets or sets the user's phone number.
         /// </summary>
         [Required]
-        [RegularExpression(ValidationMessages.PhoneRegexPattern, ErrorMessage = ValidationMessages.InvalidPhoneFormat)]
+        [RegularExpression(ValidationRules.PhoneRegexPattern, ErrorMessage = ValidationMessages.InvalidPhoneFormat)]
         public string PhoneNumber { get; set; }
 
     }

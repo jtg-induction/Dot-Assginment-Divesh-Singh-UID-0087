@@ -33,7 +33,6 @@ namespace RestaurantManagement.Controllers
         [Route("signup")]
         public async Task<IHttpActionResult> Signup(AddUserRequest adduser)
         {
-            //System.Diagnostics.Debug.WriteLine(adduser);
             await _userservice.AdduserAsync(adduser);
             return Ok(ValidationMessages.succes);
              }
