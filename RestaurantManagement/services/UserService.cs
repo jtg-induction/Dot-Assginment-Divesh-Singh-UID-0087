@@ -7,7 +7,6 @@ using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
-//using RestaurantManagement.services;
 using RestaurantManagement.Services.Interface;
 using System.Threading.Tasks;
 
@@ -59,24 +58,22 @@ namespace RestaurantManagement.Services
 					await _userrepository.AddUserAsync(userentity);
 
 		}
-public async Task<User> CheckUserAsync(UserCredential userCredential)
-{
-	User user = await _userrepository.GetUserAsync(userCredential.Email);
-	if (user != null)
-	{
-		if (BCrypt.Net.BCrypt.Verify(userCredential.Password, user.Password))
-		{
-			return user;
-		}
-		else
-		{
-			return null;
-		}
+        public async Task<User> LoginUserAsync(UserCredential userCredential)
+        {
+            User user = await _userrepository.GetUserAsync(userCredential.Email);
+            if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
+            {
+                throw new ResourceException(ValidationMessages.NotFound);
 
-	}
-	return user;
-}
-public async Task<User> GetUserAsync(int id)
+            }
+
+            if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
+            {
+                throw new ResourceException(ValidationMessages.NotFound);
+            }
+            return user;
+        }
+        public async Task<User> GetUserAsync(int id)
 {
 	return await _userrepository.GetUserAsync(id);
 }

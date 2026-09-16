@@ -38,8 +38,9 @@ namespace RestaurantManagement.repository
                 Task<User> GetUserAsync(string email);
 
                 Task<User> GetUserAsync(int id);
+        Task<bool> IsActiveAsync(int id);
 
 
 
-        }
+    }
 }

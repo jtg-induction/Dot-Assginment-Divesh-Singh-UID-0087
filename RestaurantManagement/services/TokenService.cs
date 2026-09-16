@@ -7,6 +7,7 @@ using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
@@ -80,13 +81,14 @@ namespace RestaurantManagement.Services
       public async Task RevokedAsync(string token)
         {
           var refreshtoken = await _tokenRepository.GetTokenAsync(token);
-            if (refreshtoken != null)
+            if (refreshtoken == null)
             {
-                await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
+                
+                throw new ResourceException(ValidationMessages.Revoked);
                
             }
+                await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
            
-                throw new ResourceException(ValidationMessages.Revoked);
                
             
         }

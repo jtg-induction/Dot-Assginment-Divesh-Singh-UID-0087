@@ -12,5 +12,8 @@
                 public const string InvalidPhoneFormat = "Invalid phone number format. It must contain only 10 digits.";
                 public const string InternalServerError = "An unexpected error occurred on the server. Please try again later.";
                 public const string Revoked = "Invalid Token";
-        }
+               public const string NotFound = "Not Found";
+        public const string InValidEmail = "Invalid email format.";
+        public const string PasswordRequired = "Password is required.";
+    }
 }
