@@ -72,13 +72,6 @@ namespace RestaurantManagement.Repository
             var user = await _db.Users.FindAsync(id);
             return user != null && user.IsActive;
         }
-
-        public async Task<bool> IsActiveAsync(int id)
-        {
-            var user = await _db.Users.FindAsync(id);
-            return user != null && user.IsActive;
-        }
-
         public async Task<bool> EmailExistsOtherThanThisIdAsync(string email, int id)
         {
            return await  _db.Users.AnyAsync(u => u.Email == email && u.UserId != id);

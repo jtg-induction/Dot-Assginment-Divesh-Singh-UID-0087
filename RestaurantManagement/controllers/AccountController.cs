@@ -34,7 +34,7 @@ namespace RestaurantManagement.Controllers
             var user = await _userservice.GetUserIfActive(currentUserId);
 
           await  _userservice.UpdateAccount(user, model);
-            return Ok(ValidationMessages.succes);
+            return Ok(ValidationMessages.Success);
 
         }
        

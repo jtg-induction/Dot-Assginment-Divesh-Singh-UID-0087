@@ -59,24 +59,6 @@ namespace RestaurantManagement.Controllers
             return Ok(new { AccessToken = accesstoken });
         }
         [HttpPost]
-        [Route("login")]
-        public async Task<IHttpActionResult> Login(UserCredential login)
-        {
-
-            var user = await _userService.CheckUserAsync(login);
-
-
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
-            var accesstoken = _jwtClaim.CraftJwt(user);
-
-            _tokenService.SetRefreshTokenCookie(refreshtoken);
-
-            return Ok(new { AccessToken = accesstoken });
-
-        }
-        [HttpPost]
         [Route("logout")]
         public async Task<IHttpActionResult> Logout()
         {
@@ -105,7 +87,7 @@ namespace RestaurantManagement.Controllers
         {
 
             await _userService.DeactivateAccount(login);
-            return Ok(ValidationMessages.succes);
+            return Ok(ValidationMessages.Success);
 
 
         }
@@ -115,7 +97,7 @@ namespace RestaurantManagement.Controllers
         {
 
             await _userService.ActivateAccount(login);
-            return Ok(ValidationMessages.succes);
+            return Ok(ValidationMessages.Success);
 
 
         }
