@@ -328,12 +328,14 @@
     <Compile Include="Constants\ValidationRules.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\RestaurantController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Filters\ValidateModelAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalExceptionHandler.cs" />
+    <Compile Include="Helper\ClaimHelper.cs" />
     <Compile Include="Migrations\202609151738339_add.cs" />
     <Compile Include="Migrations\202609151738339_add.Designer.cs">
       <DependentUpon>202609151738339_add.cs</DependentUpon>
@@ -341,6 +343,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
     <Compile Include="Models\Dto\RefreshTokenRequest.cs" />
+    <Compile Include="Models\Dto\RestaurantMenuRequest.cs" />
     <Compile Include="Models\Dto\UpdateAccountDto.cs" />
     <Compile Include="Models\Dto\UserCredential.cs" />
     <Compile Include="Models\Entity\Address.cs" />
@@ -356,18 +359,28 @@
     <Compile Include="Models\Enum\AddressType.cs" />
     <Compile Include="Models\Enum\OrderStatus.cs" />
     <Compile Include="Models\Enum\UserRole.cs" />
+    <Compile Include="Models\Response\BaseResponse.cs" />
+    <Compile Include="Models\Response\GetMenuItemResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Interface\IMenuRepository.cs" />
+    <Compile Include="Repository\Interface\IRestaurantRepository.cs" />
     <Compile Include="Repository\Interface\ITokenRepository.cs" />
     <Compile Include="Repository\Interface\IUserRepository.cs" />
+    <Compile Include="Repository\MenuRepository.cs" />
+    <Compile Include="Repository\RestaurantRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Services\Exceptions\ResourceException.cs" />
+    <Compile Include="Services\Interface\IRestaurantService.cs" />
+    <Compile Include="Services\Interface\IMenuService.cs" />
+    <Compile Include="Services\MenuService.cs" />
     <Compile Include="Services\PasswordService.cs" />
     <Compile Include="Services\Interface\IPasswordService.cs" />
     <Compile Include="Services\Interface\IObtainJwtService.cs" />
     <Compile Include="Services\Interface\ITokenService.cs" />
     <Compile Include="Services\Interface\IUserService.cs" />
     <Compile Include="Services\ObtainJwtService.cs" />
+    <Compile Include="Services\RestaurantService.cs" />
     <Compile Include="Services\TokenService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Startup.cs" />

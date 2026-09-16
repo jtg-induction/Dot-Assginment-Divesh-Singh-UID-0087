@@ -43,7 +43,9 @@ namespace RestaurantManagement.Services
 		public async Task AdduserAsync(AddUserRequest adduser)
 		{
 			if (await _userrepository.EmailExistsAsync(adduser.Email))
+			{
 				throw new ResourceException(ValidationMessages.DuplicateEmail);
+			}
 
 			if (await _userrepository.PhoneNumberExistsAsync(adduser.PhoneNumber))
 				throw new ResourceException(ValidationMessages.DuplicatePhone);
@@ -63,7 +65,7 @@ namespace RestaurantManagement.Services
 		public async Task<User> LoginUserAsync(UserCredential userCredential)
 		{
 			User user = await _userrepository.GetUserAsync(userCredential.Email);
-			if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
+			if (user == null ||!await _userrepository.IsActiveAsync(user.UserId))
 			{
 				throw new ResourceException(ValidationMessages.NotFound);
 
@@ -76,9 +78,9 @@ namespace RestaurantManagement.Services
 			return user;
 		}
 
-		public async Task DeactivateAccount(UserCredential user)
+		public async Task DeactivateAccount(int id)
 		{
-			User userdetail = await _userrepository.GetUserAsync(user.Email);
+			User userdetail = await _userrepository.GetUserAsync(id);
 
 			if (userdetail == null)
 			{
