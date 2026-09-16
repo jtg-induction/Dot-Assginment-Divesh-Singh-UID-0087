@@ -9,12 +9,16 @@ namespace RestaurantManagement.Models
 {
     public class UserCredential
     {
-        [EmailAddress(ErrorMessage =ValidationMessages.InValidEmail)]
-        [StringLength(100)]
+        /// <summary>
+        /// Gets or sets the user's email address.
+        /// </summary>
+        [Required(ErrorMessage = ValidationMessages.EmailRequired)]
+        [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         public string Email { get; set; }
-        [Required(ErrorMessage =ValidationMessages.PasswordRequired)]
-        [StringLength(EntityConstants.MaxPasswordLength, MinimumLength = EntityConstants.MinPasswordLength)]
-        [RegularExpression(ValidationRules.PasswordRegexPattern)]
+
+        [Required(ErrorMessage = ValidationMessages.PasswordRequired)]
+        [StringLength(EntityConstants.MaxPasswordLength, MinimumLength = EntityConstants.MinPasswordLength, ErrorMessage = ValidationMessages.PasswordLength)]
+        [RegularExpression(ValidationRules.PasswordRegexPattern, ErrorMessage = ValidationMessages.PasswordComplexity)]
         public string Password { get; set; }
     }
 }

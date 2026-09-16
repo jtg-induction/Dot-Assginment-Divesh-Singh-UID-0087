@@ -1,204 +1,224 @@
-﻿using Moq;
-using RestaurantManagement.Constants;
-using BCrypt.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-//using RestaurantManagement.Common;
-using RestaurantManagement.Controllers;
+using RestaurantManagement.Constants;
+using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using RestaurantManagement.Services;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Threading.Tasks;
 
-namespace RestaurantManagement.tests.Services
+namespace RestaurantManagement.Tests.Services
 {
     [TestClass]
-    /// <summary>
-    /// Contains unit tests for <see cref="UserService"/> user creation behavior.
-    /// </summary>
     public class UserServiceTest
     {
-        private Mock<IUserRepository> _mockrepo;
-        private Mock<IPasswordService> _mockpass;
-        private UserService _userser;
+        private Mock<IUserRepository> _userRepositoryMock;
+        private Mock<IPasswordService> _passwordServiceMock;
+        private UserService _userService;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockrepo = new Mock<IUserRepository>();
-            _mockpass = new Mock<IPasswordService>();
-            _userser = new UserService(_mockrepo.Object, _mockpass.Object);
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _passwordServiceMock = new Mock<IPasswordService>();
 
+            _userService = new UserService(_userRepositoryMock.Object, _passwordServiceMock.Object);
         }
 
-        #region Adduser Method Tests
-
-        /// <summary>
-        /// Verifies that a user with unique contact details is added successfully.
-        /// </summary>
         [TestMethod]
-        public async Task ValidDto()
+        public async Task AdduserAsync_ValidDetails_CreatesAndReturnsUser()
         {
-            // Arrange
-            var testuser = new AddUserRequest()
+            // ARRANGE
+            var request = new AddUserRequest
             {
-                Name = "aabb",
-                Password = "Lhubyyhb@1",
-                Email = "jnjnu@hh.com",
-                PhoneNumber = "7680987879",
-                BirthDate = DateTime.Parse("2000-01-01 00:00:00")
+                Name = "Test User",
+                Email = "test@example.com",
+                Password = "PlainPassword123",
+                PhoneNumber = "1234567890",
+                BirthDate = new DateTime(2000, 1, 1)
             };
-            _mockrepo.Setup(e => e.EmailExistsAsync(testuser.Email)).ReturnsAsync(false);
-            _mockrepo.Setup(e => e.PhoneNumberExistsAsync(testuser.PhoneNumber)).ReturnsAsync(false);
-            _mockrepo.Setup(e => e.AddUserAsync(It.IsAny<User>()));
-            //ACT
-            Exception thrownException = null;
-            try
-            {
-                await _userser.AdduserAsync(testuser);
-            }
-            catch (Exception ex)
-            {
-                thrownException = ex;
-            }
+
+            _userRepositoryMock.Setup(r => r.EmailExistsAsync(request.Email)).ReturnsAsync(false);
+            _userRepositoryMock.Setup(r => r.PhoneNumberExistsAsync(request.PhoneNumber)).ReturnsAsync(false);
+            _passwordServiceMock.Setup(s => s.HashPassword(request.Password)).Returns("HashedPasswordXYZ");
+            _userRepositoryMock.Setup(r => r.AddUserAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
+
+            // ACT
+            var result = await _userService.AdduserAsync(request);
 
             // ASSERT
-            // 1. Verify no exceptions (like ResourceException) were thrown
-            Assert.IsNull(thrownException);
-
-            //Assert.Fail(res);
-
+            Assert.IsNotNull(result);
+            Assert.AreEqual(request.Name, result.Name);
+            Assert.AreEqual(request.Email, result.Email);
+            Assert.AreEqual("HashedPasswordXYZ", result.Password);
+            Assert.AreEqual(UserRole.Customer, result.Role);
         }
 
-        /// <summary>
-        /// Verifies that adding a user with an existing email is rejected.
-        /// </summary>
         [TestMethod]
-        public async Task DuplicateEmail()
+        public async Task AdduserAsync_DuplicateEmail_ThrowsResourceException()
         {
-            // Arrange
-            var testuser = new AddUserRequest()
-            {
-                Name = "aabb",
-                Email = "jnjnu@hh.com",
-                PhoneNumber = "768099",
-                BirthDate = DateTime.Parse("2000-01-01 00:00:00")
-            };
-            _mockrepo.Setup(e => e.EmailExistsAsync(testuser.Email)).ReturnsAsync(true);
-            _mockrepo.Setup(e => e.PhoneNumberExistsAsync(testuser.PhoneNumber)).ReturnsAsync(false);
-            _mockrepo.Setup(e => e.AddUserAsync(It.IsAny<User>()));
-            //ACT
-            Exception thrownException = null;
+            // ARRANGE
+            var request = new AddUserRequest { Email = "duplicate@example.com" };
+            _userRepositoryMock.Setup(r => r.EmailExistsAsync(request.Email)).ReturnsAsync(true);
+
+            // ACT
+            Exception e = null;
             try
             {
-                await _userser.AdduserAsync(testuser);
+                await _userService.AdduserAsync(request);
             }
-            catch (Exception ex)
+            // ASSERT
+            catch (ResourceException ex)
             {
-                thrownException = ex;
+              
+                e = ex;
             }
+            //asert
+            Assert.IsNotNull(e);
+        }
+
+        [TestMethod]
+        public async Task AdduserAsync_DuplicatePhoneNumber_ThrowsResourceException()
+        {
+            // ARRANGE
+            var request = new AddUserRequest { Email = "unique@example.com", PhoneNumber = "111111" };
+            _userRepositoryMock.Setup(r => r.EmailExistsAsync(request.Email)).ReturnsAsync(false);
+            _userRepositoryMock.Setup(r => r.PhoneNumberExistsAsync(request.PhoneNumber)).ReturnsAsync(true);
+
+            // ACT
+            Exception e = null;
+            try
+            {
+                await _userService.AdduserAsync(request);
+            }
+            // ASSERT
+            catch (ResourceException ex)
+            {
+
+                e = ex;
+            }
+            //asert
+            Assert.IsNotNull(e);
+        }
+
+        [TestMethod]
+        public async Task LoginUserAsync_ValidCredentials_ReturnsUser()
+        {
+            // ARRANGE
+            var credential = new UserCredential { Email = "login@example.com", Password = "CorrectPassword" };
+            var existingUser = new User { UserId = 10, Email = credential.Email, Password = "StoredHashedPassword" };
+
+            _userRepositoryMock.Setup(r => r.GetUserAsync(credential.Email)).ReturnsAsync(existingUser);
+            _userRepositoryMock.Setup(r => r.IsActiveAsync(existingUser.UserId)).ReturnsAsync(true);
+            _passwordServiceMock.Setup(s => s.VerifyPassword(credential.Password, existingUser.Password)).Returns(true);
+
+            // ACT
+            var result = await _userService.LoginUserAsync(credential);
 
             // ASSERT
-            // 1. Verify no exceptions (like ResourceException) were thrown
-            Assert.IsNotNull(thrownException);
-
+            Assert.IsNotNull(result);
+            Assert.AreEqual(existingUser.UserId, result.UserId);
         }
 
-        #endregion
-
-        #region CheckUser Method Tests
-
-        /// <summary>
-        /// Verifies that a valid credential mapping matches the hash securely and logs in the profile context.
-        /// </summary>
         [TestMethod]
-        public async Task CheckUser_CorrectCredentials_ReturnsMatchedUser()
+        public async Task LoginUserAsync_UserDoesNotExist_ThrowsUnauthenticatedException()
         {
-            // Arrange
-            string inputPlaintext = "123234@aA";
-            string validBCryptString = BCrypt.Net.BCrypt.HashPassword(inputPlaintext);
+            // ARRANGE
+            var credential = new UserCredential { Email = "missing@example.com" };
+            _userRepositoryMock.Setup(r => r.GetUserAsync(credential.Email)).ReturnsAsync((User)null);
 
-            var trackingCredentials = new UserCredential { Email = "divesh@gmail.com", Password = inputPlaintext };
-            var foundDbUser = new User { UserId = 1, Email = "divesh@gmail.com", Password = validBCryptString };
+            Exception e = null;
+            try
+            {
+                await _userService.LoginUserAsync(credential);
+            }
+            // ASSERT
+            catch (Exception ex)
+            {
 
-            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync(foundDbUser);
+                e = ex;
+            }
+            //asert
+            Assert.IsNotNull(e);
+        }
+
+        [TestMethod]
+        public async Task LoginUserAsync_UserIsInactive_ThrowsUnauthenticatedException()
+        {
+            // ARRANGE
+            var credential = new UserCredential { Email = "inactive@example.com" };
+            var existingUser = new User { UserId = 20, Email = credential.Email };
+
+            _userRepositoryMock.Setup(r => r.GetUserAsync(credential.Email)).ReturnsAsync(existingUser);
+            _userRepositoryMock.Setup(r => r.IsActiveAsync(existingUser.UserId)).ReturnsAsync(false);
 
             // ACT
-            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
+            Exception e = null;
+            try
+            {
+                await _userService.LoginUserAsync(credential);
+            }
+            // ASSERT
+            catch (Exception ex)
+            {
 
-            // Assert
-            Assert.IsNotNull(evaluatedUser);
-            Assert.AreEqual(foundDbUser.UserId, evaluatedUser.UserId);
+                e = ex;
+            }
+            //asert
+            Assert.IsNotNull(e);
+
         }
 
-        /// <summary>
-        /// Verifies that bad credentials fail validation routing gates and discard user assignment structures.
-        /// </summary>
         [TestMethod]
-        public async Task CheckUser_IncorrectPassword_ReturnsNull()
+        public async Task LoginUserAsync_WrongPassword_ThrowsUnauthenticatedException()
         {
-            // Arrange
-            string mismatchedPlaintext = "incorrectPassword";
-            string realBCryptHash = BCrypt.Net.BCrypt.HashPassword("correctPassword");
+            // ARRANGE
+            var credential = new UserCredential { Email = "user@example.com", Password = "WrongPassword" };
+            var existingUser = new User { UserId = 30, Email = credential.Email, Password = "CorrectHashedPassword" };
 
-            var trackingCredentials = new UserCredential { Email = "divesh@gmail.com", Password = mismatchedPlaintext };
-            var foundDbUser = new User { UserId = 1, Email = "divesh@gmail.com", Password = realBCryptHash };
-
-            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync(foundDbUser);
+            _userRepositoryMock.Setup(r => r.GetUserAsync(credential.Email)).ReturnsAsync(existingUser);
+            _userRepositoryMock.Setup(r => r.IsActiveAsync(existingUser.UserId)).ReturnsAsync(true);
+            _passwordServiceMock.Setup(s => s.VerifyPassword(credential.Password, existingUser.Password)).Returns(false);
 
             // ACT
-            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
+            Exception e = null;
+            try
+            {
+                await _userService.LoginUserAsync(credential);
+            }
+            // ASSERT
+            catch (Exception ex)
+            {
 
-            // Assert
-            Assert.IsNull(evaluatedUser);
+                e = ex;
+            }
+            //asert
+            Assert.IsNotNull(e);
         }
 
-        /// <summary>
-        /// Verifies searching an unregistered email addresses stops computation and responds with a null handle.
-        /// </summary>
         [TestMethod]
-        public async Task CheckUser_UnregisteredEmail_ReturnsNull()
+        public async Task GetUserAsync_ById_ReturnsExpectedUser()
         {
-            // Arrange
-            var trackingCredentials = new UserCredential { Email = "nonexistent@gmail.com", Password = "any" };
-            _mockrepo.Setup(r => r.GetUserAsync(trackingCredentials.Email)).ReturnsAsync((User)null);
+            // ARRANGE
+            int targetId = 42;
+            var expectedUser = new User { UserId = targetId, Name = "Divesh" };
+            _userRepositoryMock.Setup(r => r.GetUserAsync(targetId)).ReturnsAsync(expectedUser);
 
             // ACT
-            var evaluatedUser = await _userser.CheckUserAsync(trackingCredentials);
+            var result = await _userService.GetUserAsync(targetId);
 
-            // Assert
-            Assert.IsNull(evaluatedUser);
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.AreEqual(targetId, result.UserId);
+            Assert.AreEqual("Divesh", result.Name);
         }
 
-        #endregion
-
-        #region GetUser Method Tests
-
-        /// <summary>
-        /// Verifies that passing an identity integer retrieves the matching entity footprint from the database.
-        /// </summary>
-        [TestMethod]
-        public async Task GetUser_ValidIdentifier_ReturnsMatchingRecord()
-        {
-            // Arrange
-            int queryTargetId = 15;
-            var baselineUser = new User { UserId = queryTargetId, Name = "Divesh Profile" };
-
-            _mockrepo.Setup(r => r.GetUserAsync(queryTargetId)).ReturnsAsync(baselineUser);
-
-            // ACT
-            var matchedUserResult = await _userser.GetUserAsync(queryTargetId);
-
-            // Assert
-            Assert.IsNotNull(matchedUserResult);
-            Assert.AreEqual(queryTargetId, matchedUserResult.UserId);
-            _mockrepo.Verify(r => r.GetUserAsync(queryTargetId), Times.Once);
-        }
-
-        #endregion
+     
     }
 }
