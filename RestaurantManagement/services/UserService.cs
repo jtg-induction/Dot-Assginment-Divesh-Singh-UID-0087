@@ -7,6 +7,7 @@ using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System.Threading.Tasks;
 
@@ -38,7 +39,7 @@ namespace RestaurantManagement.Services
 		/// </summary>
 		/// <param name="adduser">The details of the user to register.</param>
 		/// <returns>A validation message describing the registration result.</returns>
-		public async Task AdduserAsync(AddUserRequest adduser)
+		public async Task<User> AdduserAsync(AddUserRequest adduser)
 		{
 			if (await _userrepository.EmailExistsAsync(adduser.Email))
 				throw new ResourceException(ValidationMessages.DuplicateEmail);
@@ -48,35 +49,36 @@ namespace RestaurantManagement.Services
 
 			var userentity = new User()
 			{
-						Name = adduser.Name,
-						Password =_passwordService.HashPassword(adduser.Password),
-						Email = adduser.Email,
-						BirthDate = adduser.BirthDate,
-						PhoneNumber = adduser.PhoneNumber,
-						Role = UserRole.Customer
-					};
-					await _userrepository.AddUserAsync(userentity);
+				Name = adduser.Name,
+				Password = _passwordService.HashPassword(adduser.Password),
+				Email = adduser.Email,
+				BirthDate = adduser.BirthDate,
+				PhoneNumber = adduser.PhoneNumber,
+				Role = UserRole.Customer
+			};
+			await _userrepository.AddUserAsync(userentity);
+			return userentity;
 
 		}
         public async Task<User> LoginUserAsync(UserCredential userCredential)
-        {
-            User user = await _userrepository.GetUserAsync(userCredential.Email);
-            if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
-            {
-                throw new ResourceException(ValidationMessages.NotFound);
+		{
+			User user = await _userrepository.GetUserAsync(userCredential.Email);
+			if (user == null || !await _userrepository.IsActiveAsync(user.UserId) )
+			{
+				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 
-            }
+			}
 
-            if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
-            {
-                throw new ResourceException(ValidationMessages.NotFound);
-            }
-            return user;
-        }
-        public async Task<User> GetUserAsync(int id)
-{
-	return await _userrepository.GetUserAsync(id);
-}
+			if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
+			{
+				throw new UnauthenticatedException(ValidationMessages.PasswordIncorrect);
+			}
+			return user;
+		}
+		public async Task<User> GetUserAsync(int id)
+		{
+			return await _userrepository.GetUserAsync(id);
+		}
 
-  }
+	}
 }

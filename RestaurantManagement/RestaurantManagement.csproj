@@ -354,12 +354,16 @@
     <Compile Include="Models\Enum\AddressType.cs" />
     <Compile Include="Models\Enum\OrderStatus.cs" />
     <Compile Include="Models\Enum\UserRole.cs" />
+    <Compile Include="Models\Response\BaseResponse.cs" />
+    <Compile Include="Models\Response\CreatedUserResponse.cs" />
+    <Compile Include="Models\Response\LoginResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Interface\ITokenRepository.cs" />
     <Compile Include="Repository\Interface\IUserRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Services\Exceptions\ResourceException.cs" />
+    <Compile Include="Services\Exceptions\UnauthenticatedException.cs" />
     <Compile Include="Services\PasswordService.cs" />
     <Compile Include="Services\Interface\IPasswordService.cs" />
     <Compile Include="Services\Interface\IObtainJwtService.cs" />

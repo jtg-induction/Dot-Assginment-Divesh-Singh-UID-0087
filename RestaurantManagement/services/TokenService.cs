@@ -69,7 +69,7 @@ namespace RestaurantManagement.Services
         public async Task<string> AddRefreshTokenAsync(int id)
         {
             var refreshtoken = TokenGenerator();
-            var token = new Models.Entity.RefreshToken()
+            var token = new RefreshToken()
             {
                 UserId = id,
                 Token = refreshtoken,
@@ -81,21 +81,18 @@ namespace RestaurantManagement.Services
       public async Task RevokedAsync(string token)
         {
           var refreshtoken = await _tokenRepository.GetTokenAsync(token);
-            if (refreshtoken == null)
+            if (refreshtoken == null )
             {
                 
-                throw new ResourceException(ValidationMessages.Revoked);
+                throw new UnauthorizedAccessException(ValidationMessages.Revoked);
                
             }
                 await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
-           
-               
-            
         }
        public async Task<string> RefreshTheTokenAsync(string token)
         {
            var refreshToken = await _tokenRepository.GetTokenAsync(token);
-            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId))
+            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId) && !await _tokenRepository.IsExpiryed(refreshToken.TokenId))
             {
                 var Newrefreshtoken = TokenGenerator();
                 await _tokenRepository.UpdateTokenAsync(refreshToken.TokenId, Newrefreshtoken);
@@ -103,7 +100,7 @@ namespace RestaurantManagement.Services
             }
             else
             {
-                throw new ResourceException(ValidationMessages.Revoked);
+                throw new UnauthorizedAccessException(ValidationMessages.Revoked);
             }
 
         }
