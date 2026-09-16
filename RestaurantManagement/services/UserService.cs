@@ -33,7 +33,7 @@ namespace RestaurantManagement.Services
 		/// </summary>
 		/// <param name="adduser">The details of the user to register.</param>
 		/// <returns>A validation message describing the registration result.</returns>
-		public async Task AdduserAsync(AddUserRequest adduser)
+		public async Task<User> AdduserAsync(AddUserRequest adduser)
 		{
             if (await _userrepository.EmailExistsAsync(adduser.Email))
                 throw new ResourceException(ValidationMessages.DuplicateEmail);
@@ -51,6 +51,7 @@ namespace RestaurantManagement.Services
 						Role = UserRole.Customer
 					};
 					await _userrepository.AddUserAsync(userentity);
+			return userentity;
 				
 			}
 

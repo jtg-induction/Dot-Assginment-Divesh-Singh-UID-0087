@@ -4,6 +4,8 @@ using RestaurantManagement.services;
 using System.Threading.Tasks;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Services;
+using RestaurantManagement.Models.Response;
+using RestaurantManagement.Models.Entity;
 
 namespace RestaurantManagement.Controllers
 {
@@ -33,9 +35,25 @@ namespace RestaurantManagement.Controllers
         [Route("signup")]
         public async Task<IHttpActionResult> Signup(AddUserRequest adduser)
         {
-            await _userservice.AdduserAsync(adduser);
-            return Ok(ValidationMessages.succes);
-             }
+           User user =await _userservice.AdduserAsync(adduser);
+            var createdresponse = new CreatedUserResponse
+            {
+                UserId=user.UserId,
+                Name=user.Name,
+                Email=user.Email,
+                PhoneNumber=user.PhoneNumber,
+                BirthDate=user.BirthDate,
+                CreatedAt=user.CreatedAt,
+                UpdatedAt=user.UpdatedAt
+            };
+            var response = new BaseResponse<CreatedUserResponse>
+            {
+                success = true,
+                message = ValidationMessages.UserCreated,
+                data = createdresponse
+            };
+            return  Created(string.Empty, response);
+        }
         }
     }
 

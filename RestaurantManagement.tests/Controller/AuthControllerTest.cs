@@ -1,17 +1,13 @@
-﻿using Microsoft.Extensions.DependencyModel;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Http.Results;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Controllers;
 using RestaurantManagement.Models.Dto;
-using RestaurantManagement.Models.Entity;
-using RestaurantManagement.repository;
+using RestaurantManagement.Models.Entity; 
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.services;
-using RestaurantManagement.Services;
-using System.Text.Json;
-using System.Web.Http.Results;
-using System.Web.UI.WebControls.WebParts;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
-using System.Threading.Tasks;
-using RestaurantManagement.Constants;
 
 namespace RestaurantManagement.tests.Controller
 {
@@ -42,12 +38,12 @@ namespace RestaurantManagement.tests.Controller
         }
 
         /// <summary>
-        /// Verifies that a user is created when all submitted details are valid.
+        /// Verifies that a user is successfully created when all submitted details are valid.
         /// </summary>
         [TestMethod]
         public async Task all_correct_detail()
         {
-            //ARRANGE
+            // ARRANGE
             var incominguser = new AddUserRequest()
             {
                 Name = "DIVESH",
@@ -57,20 +53,31 @@ namespace RestaurantManagement.tests.Controller
                 BirthDate = DateTime.Parse("2000-01-01 00:00:00")
             };
 
-            _mockser.Setup(r => r.AdduserAsync(incominguser));
+            // Set up a mock database user entity matching your controller property mapping expectations
+            var mockCreatedUser = new User
+            {
+                UserId = 1,
+                Name = incominguser.Name,
+                Email = incominguser.Email,
+                PhoneNumber = incominguser.PhoneNumber,
+                BirthDate = incominguser.BirthDate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            //ACT
+            // Setup the async service method to return our fake created user entity object
+            _mockser.Setup(r => r.AdduserAsync(It.IsAny<AddUserRequest>()))
+                    .ReturnsAsync(mockCreatedUser);
+
+            // ACT
             var response = await _signup.Signup(incominguser);
-            //ASSERT
-            //if (response as CreatedNegotiatedContentResult<AddUserRequest>!=null)
-            //{
-            //    Assert.Fail(response.Meassage);
-            //}
-            var createdResult = response as OkNegotiatedContentResult<string>;
-            //Assert.Fail(createdResult);
-            //Assert.Fail($"Name was: {createdResult==null}");
+
+            // ASSERT
+            // Cast perfectly matches the CreatedAtRoute response type from your controller
+            var createdResult = response as CreatedAtRouteNegotiatedContentResult<BaseResponse<CreatedUserResponse>>;
+
             Assert.IsNotNull(createdResult);
-          
+        
         }
     }
 }
