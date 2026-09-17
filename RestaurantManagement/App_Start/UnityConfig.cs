@@ -1,7 +1,7 @@
 using RestaurantManagement.Data;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
-using RestaurantManagement.services;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
 using System;
@@ -51,6 +51,9 @@ namespace RestaurantManagement
             container.RegisterType<IUserService, UserService>();
             // 4. Register your Password Hasher
             container.RegisterType<IPasswordService, PasswordService>();
+            container.RegisterType<ITokenService, TokenService>();
+            container.RegisterType<ITokenRepository, TokenRepository>();
+            container.RegisterType<IObtainJwtService, ObtainJwtService>();
         }
     }
 }

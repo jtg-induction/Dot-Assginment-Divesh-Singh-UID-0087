@@ -1,19 +1,21 @@
 ﻿using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using System.Threading.Tasks;
+using RestaurantManagement.Models;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 
-namespace RestaurantManagement.services
+namespace RestaurantManagement.Services
 {
-    /// <summary>
-    /// Defines operations for managing users.
-    /// </summary>
-    public interface IUserService
-    {
-        /// <summary>
-        /// Adds a new user.
-        /// </summary>
-        /// <param name="adduser">The user details to add.</param>
-        /// <returns>A message describing the result of the operation.</returns>
-        Task<User> AdduserAsync(AddUserRequest adduser);
-    }
+        public interface IUserService
+        {
+                /// <summary>
+                /// Defines operations for managing users.
+                /// </summary>
+                /// <param name="adduser">The user details to add.</param>
+                /// <returns>A message describing the result of the operation.</returns>
+                Task<User> AdduserAsync(AddUserRequest adduser);
+                Task<User> LoginUserAsync(UserCredential userCredential);
+                Task<User> GetUserAsync(int id);
+        }
 }

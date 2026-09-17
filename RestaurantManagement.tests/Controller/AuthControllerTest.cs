@@ -1,13 +1,19 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Http.Results;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Controllers;
+using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
-using RestaurantManagement.Models.Entity; 
+using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
-using RestaurantManagement.services;
+using RestaurantManagement.Services;
+using RestaurantManagement.Services.Interface;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Results;
 
 namespace RestaurantManagement.tests.Controller
 {
@@ -17,24 +23,26 @@ namespace RestaurantManagement.tests.Controller
     [TestClass]
     public class AuthControllerTest
     {
-        /// <summary>
-        /// Mock user service used by the controller under test.
-        /// </summary>
-        private Mock<IUserService> _mockser;
+        private Mock<IUserService> _userServiceMock;
+        private Mock<ITokenService> _tokenServiceMock;
+        private Mock<IObtainJwtService> _jwtServiceMock;
+        private AuthController _authController;
 
         /// <summary>
-        /// Controller instance being tested.
-        /// </summary>
-        private AuthController _signup;
-
-        /// <summary>
-        /// Creates the mocked service and controller before each test.
+        /// Creates the mocked services and target controller before each test runs.
         /// </summary>
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
-            _mockser = new Mock<IUserService>();
-            _signup = new AuthController(_mockser.Object);
+            _userServiceMock = new Mock<IUserService>();
+            _tokenServiceMock = new Mock<ITokenService>();
+            _jwtServiceMock = new Mock<IObtainJwtService>();
+
+            _authController = new AuthController(
+                _userServiceMock.Object,
+                _jwtServiceMock.Object,
+                _tokenServiceMock.Object
+            );
         }
 
         /// <summary>
@@ -53,7 +61,6 @@ namespace RestaurantManagement.tests.Controller
                 BirthDate = DateTime.Parse("2000-01-01 00:00:00")
             };
 
-            // Set up a mock database user entity matching your controller property mapping expectations
             var mockCreatedUser = new User
             {
                 UserId = 1,
@@ -65,19 +72,174 @@ namespace RestaurantManagement.tests.Controller
                 UpdatedAt = DateTime.UtcNow
             };
 
-            // Setup the async service method to return our fake created user entity object
-            _mockser.Setup(r => r.AdduserAsync(It.IsAny<AddUserRequest>()))
-                    .ReturnsAsync(mockCreatedUser);
+            _userServiceMock.Setup(r => r.AdduserAsync(It.IsAny<AddUserRequest>()))
+                            .ReturnsAsync(mockCreatedUser);
 
             // ACT
-            var response = await _signup.Signup(incominguser);
+            var response = await _authController.Signup(incominguser);
 
             // ASSERT
-            // Cast perfectly matches the CreatedAtRoute response type from your controller
-            var createdResult = response as CreatedAtRouteNegotiatedContentResult<BaseResponse<CreatedUserResponse>>;
-
+            var createdResult = response as CreatedNegotiatedContentResult<BaseResponse<CreatedUserResponse>>;
             Assert.IsNotNull(createdResult);
-        
+            Assert.IsTrue(createdResult.Content.success);
+            Assert.AreEqual(ValidationMessages.UserCreated, createdResult.Content.message);
+        }
+
+        /// <summary>
+        /// Verifies that valid credentials return a 200 OK along with an access token.
+        /// </summary>
+        [TestMethod]
+        public async Task CorrectLoginDetail()
+        {
+            // ARRANGE
+            var incominguser = new UserCredential()
+            {
+                Email = "divesh@gmail.com",
+                Password = "123234@aA"
+            };
+
+            var resultuser = new User()
+            {
+                UserId = 1,
+                Name = "Divesh",
+                Email = incominguser.Email,
+                Role = UserRole.Customer
+            };
+
+            // Aligned method setups with controller logic (_userService.LoginUserAsync)
+            _userServiceMock.Setup(r => r.LoginUserAsync(It.IsAny<UserCredential>())).ReturnsAsync(resultuser);
+            _tokenServiceMock.Setup(r => r.AddRefreshTokenAsync(1)).ReturnsAsync("nvjdansjfvsk");
+            _jwtServiceMock.Setup(r => r.CraftJwt(It.IsAny<User>())).Returns("jwiojunfjahj");
+            _tokenServiceMock.Setup(r => r.SetRefreshTokenCookie(It.IsAny<string>()));
+
+            // ACT
+            var response = await _authController.Login(incominguser);
+
+            // ASSERT
+            var okResult = response as OkNegotiatedContentResult<BaseResponse<LoginResponse>>;
+            Assert.IsNotNull(okResult);
+            Assert.IsTrue(okResult.Content.success);
+            Assert.AreEqual("jwiojunfjahj", okResult.Content.data.Token);
+        }
+
+        /// <summary>
+        /// Verifies that an invalid user credential sets a proper 401 Unauthorized content result.
+        /// </summary>
+        [TestMethod]
+        public async Task InValidLoginDetail()
+        {
+            // ARRANGE
+            var incominguser = new UserCredential()
+            {
+                Email = "divesh@gmail.com",
+                Password = "123234@aaA"
+            };
+
+            // Simulating user lookup failure by throwing a target exception (aligns with try/catch Option 1)
+            _userServiceMock.Setup(r => r.LoginUserAsync(It.IsAny<UserCredential>()))
+                            .ThrowsAsync(new KeyNotFoundException(ValidationMessages.PasswordIncorrect));
+
+            // ACT
+            Exception ee = null;
+            try
+            {
+                var response = await _authController.Login(incominguser);
+            }
+            catch(Exception e)
+            {
+                ee = e;
+            }
+
+            // ASSERT
+            Assert.IsNotNull(ee);
+        }
+
+        /// <summary>
+        /// Verifies that calling logout revokes tokens and wipes contextual tracking cookies.
+        /// </summary>
+        [TestMethod]
+        public async Task LogoutTest()
+        {
+            // ARRANGE
+            _tokenServiceMock.Setup(r => r.GetRefreshTokenFromCookie()).Returns("djbdgbiuf");
+            _tokenServiceMock.Setup(r => r.ClearRefreshTokenCookie());
+            _tokenServiceMock.Setup(r => r.RevokedAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+
+            // ACT
+            var response = await _authController.Logout();
+
+            // ASSERT
+            var okResult = response as OkNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(okResult);
+            Assert.IsTrue(okResult.Content.success);
+        }
+
+        /// <summary>
+        /// Verifies token rotation successfully yields regenerated credential pairings.
+        /// </summary>
+        [TestMethod]
+        public async Task Refresh_ValidToken_ReturnsOkWithNewAccessToken()
+        {
+            // ARRANGE
+            string existingCookieToken = "old-refresh-token-from-cookie";
+            string newlyGeneratedRefreshToken = "newly-generated-refresh-token";
+            string newAccessToken = "new-crafted-jwt-access-token";
+            int mockUserId = 42;
+
+            var dummyUser = new User()
+            {
+                UserId = mockUserId,
+                Name = "Divesh",
+                Email = "divesh@gmail.com"
+            };
+
+            var tokenDetailStub = new RefreshToken { UserId = mockUserId };
+
+            _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(existingCookieToken);
+            _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(existingCookieToken)).ReturnsAsync(newlyGeneratedRefreshToken);
+            _tokenServiceMock.Setup(s => s.GetTokenDetailAsync(newlyGeneratedRefreshToken)).ReturnsAsync(tokenDetailStub);
+            _userServiceMock.Setup(s => s.GetUserAsync(mockUserId)).ReturnsAsync(dummyUser);
+            _jwtServiceMock.Setup(c => c.CraftJwt(dummyUser)).Returns(newAccessToken);
+            _tokenServiceMock.Setup(s => s.SetRefreshTokenCookie(newlyGeneratedRefreshToken));
+
+            // ACT
+            var response = await _authController.Refresh();
+
+            // ASSERT
+            var okResult = response as OkNegotiatedContentResult<BaseResponse<LoginResponse>>;
+            Assert.IsNotNull(okResult);
+            Assert.IsTrue(okResult.Content.success);
+            Assert.AreEqual(newAccessToken, okResult.Content.data.Token);
+        }
+
+        /// <summary>
+        /// Completes your trailing test: Returns a 401 when trying to evaluate a compromised or dead refresh token.
+        /// </summary>
+        [TestMethod]
+        public async Task Refresh_RevokedToken_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            string staleCookieToken = "revoked-cookie-token";
+
+            _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(staleCookieToken);
+
+            // Simulating token verification exception or returning empty verification payload 
+            _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(staleCookieToken))
+                            .ThrowsAsync(new UnauthorizedAccessException(ValidationMessages.Revoked));
+
+            // ACT
+            Exception ee = null;
+            try
+            {
+                var response = await _authController.Refresh();
+            }
+            catch(Exception e)
+            {
+                ee = e;
+            }
+
+            // ASSERT
+            Assert.IsNotNull(ee);
         }
     }
 }

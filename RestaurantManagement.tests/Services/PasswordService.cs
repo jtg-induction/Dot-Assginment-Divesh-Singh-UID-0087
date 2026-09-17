@@ -27,8 +27,8 @@ namespace RestaurantManagement.Tests
             string hashedPassword = _passwordService.HashPassword(plainTextPassword);
 
             // ASSERT
-            Assert.IsFalse(string.IsNullOrWhiteSpace(hashedPassword), "The password hash should not be empty.");
-            Assert.AreNotEqual(plainTextPassword, hashedPassword, "The hashed password must not match the plain text password.");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(hashedPassword));
+            Assert.AreNotEqual(plainTextPassword, hashedPassword);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace RestaurantManagement.Tests
             bool isValid = _passwordService.VerifyPassword(plainTextPassword, hashedPassword);
 
             // ASSERT
-            Assert.IsTrue(isValid, "VerifyPassword should return true when the plain text matches the hash.");
+            Assert.IsTrue(isValid);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace RestaurantManagement.Tests
             bool isValid = _passwordService.VerifyPassword(wrongPassword, hashedPassword);
 
             // ASSERT
-            Assert.IsFalse(isValid, "VerifyPassword should return false when given an incorrect password.");
+            Assert.IsFalse(isValid);
         }
     }
 }

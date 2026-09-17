@@ -10,7 +10,7 @@ namespace RestaurantManagement.Data
     /// </summary>
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(): base("name=DefaultConnection")
+        public ApplicationDbContext() : base("name=DefaultConnection")
         {
         }
 
@@ -45,6 +45,8 @@ namespace RestaurantManagement.Data
 
         /// <summary>Gets or sets the user-address relationships.</summary>
         public DbSet<UserAddress> UserAddresses { get; set; }
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         /// <summary>
         /// Configures the database model used by this context.
