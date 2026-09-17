@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Models.Entity;
+﻿using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 using System;
 using System.Threading.Tasks;
 
@@ -15,16 +16,12 @@ namespace RestaurantManagement.repository
                 /// <param name="email">The email address to check.</param>
                 /// <returns><see langword="true"/> if the email exists; otherwise, <see langword="false"/>.</returns>
                 Task<bool> EmailExistsAsync(string email);
-                Task<bool> EmailExistsOtherThanThisIdAsync(string email, int id);
-
                 /// <summary>
                 /// Determines whether a phone number is already registered.
                 /// </summary>
                 /// <param name="phoneNumber">The phone number to check.</param>
                 /// <returns><see langword="true"/> if the phone number exists; otherwise, <see langword="false"/>.</returns>
                 Task<bool> PhoneNumberExistsAsync(string phoneNumber);
-                Task<bool> PhoneNumberExistsOtherThanThisIdAsync(string phoneNumber, int id);
-
                 /// <summary>
                 /// Adds a user to the data store.
                 /// </summary>
@@ -41,7 +38,7 @@ namespace RestaurantManagement.repository
 
                 Task<User> GetUserAsync(int id);
                 Task<bool> IsActiveAsync(int id);
-                Task UpdateAccount(User user);
+        Task UpdateAccount(User user, UpdateAccountDto updateaccount);
                 Task Deactivate(User user);
                 Task Activate(User user);
 

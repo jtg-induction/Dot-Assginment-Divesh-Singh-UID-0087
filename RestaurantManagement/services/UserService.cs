@@ -7,10 +7,12 @@ using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.CodeDom;
 using System.Threading.Tasks;
+using System.Web.WebPages;
 
 namespace RestaurantManagement.Services
 {
@@ -58,44 +60,45 @@ namespace RestaurantManagement.Services
 				Role = UserRole.Customer
 			};
 			await _userrepository.AddUserAsync(userentity);
+			
 
 		}
 		public async Task<User> LoginUserAsync(UserCredential userCredential)
 		{
 			User user = await _userrepository.GetUserAsync(userCredential.Email);
-			if (!await _userrepository.IsActiveAsync(user.UserId) || user == null)
+			if (user == null || !await _userrepository.IsActiveAsync(user.UserId))
 			{
-				throw new ResourceException(ValidationMessages.NotFound);
+				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 
 			}
 
-			if (!BCrypt.Net.BCrypt.Verify(userCredential.Password, user.Password))
+			if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
 			{
-				throw new ResourceException(ValidationMessages.NotFound);
+				throw new UnauthenticatedException(ValidationMessages.PasswordIncorrect);
 			}
 			return user;
 		}
-
-		public async Task DeactivateAccount(UserCredential user)
+		public async Task<User> DeactivateAccount(int id)
 		{
-			User userdetail = await _userrepository.GetUserAsync(user.Email);
+			User userdetail = await _userrepository.GetUserAsync(id);
 
 			if (userdetail == null)
 			{
-				throw new ResourceException(ValidationMessages.NotFound);
+				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 			}
 			await _userrepository.Deactivate(userdetail);
+			return userdetail;
 		}
-		public async Task ActivateAccount(UserCredential user)
+		public async Task<User> ActivateAccount(UserCredential user)
 		{
 			User userdetail = await _userrepository.GetUserAsync(user.Email);
 			if (userdetail == null)
 			{
-				throw new ResourceException(ValidationMessages.NotFound);
+				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 			}
 			await _userrepository.Activate(userdetail);
+			return userdetail;
 		}
-
 		public async Task<User> GetUserAsync(int id)
 		{
 			return await _userrepository.GetUserAsync(id);
@@ -105,7 +108,7 @@ namespace RestaurantManagement.Services
 		{
 			if (!await _userrepository.IsActiveAsync(id))
 			{
-				throw new ResourceException(ValidationMessages.NotFound);
+				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 			}
 			return await _userrepository.GetUserAsync(id);
 
@@ -113,25 +116,35 @@ namespace RestaurantManagement.Services
 
 		public async Task UpdateAccount(User user, UpdateAccountDto updateaccount)
 		{
-			if (user.Email != updateaccount.Email && await _userrepository.EmailExistsOtherThanThisIdAsync(updateaccount.Email, user.UserId))
+			if (await _userrepository.EmailExistsAsync(updateaccount.Email))
 			{
 				throw new ResourceException(ValidationMessages.DuplicateEmail);
 
 			}
 
-			if (user.PhoneNumber != updateaccount.PhoneNumber && await _userrepository.PhoneNumberExistsOtherThanThisIdAsync(updateaccount.PhoneNumber, user.UserId))
+			if (await _userrepository.PhoneNumberExistsAsync(updateaccount.PhoneNumber))
 			{
 				throw new ResourceException(ValidationMessages.DuplicatePhone);
 
 			}
+			if (updateaccount.Name.IsEmpty())
+			{
+				updateaccount.Name = user.Name;
+			}
+			if (updateaccount.Email.IsEmpty())
+			{
+				updateaccount.Email = user.Email;
+			}
+			if (updateaccount.PhoneNumber.IsEmpty())
+			{
+				updateaccount.PhoneNumber = user.PhoneNumber;
+			}
+			if (updateaccount.BirthDate.Equals(DateTime.MinValue))
+			{
+				updateaccount.BirthDate = user.BirthDate;
+			}
 
-			user.Name = updateaccount.Name;
-			user.Email = updateaccount.Email;
-			user.PhoneNumber = updateaccount.PhoneNumber;
-			user.BirthDate = updateaccount.BirthDate.Date;
-			user.UpdatedAt = DateTime.UtcNow;
-
-			await _userrepository.UpdateAccount(user);
+			await _userrepository.UpdateAccount(user,updateaccount);
 
 		}
 	}

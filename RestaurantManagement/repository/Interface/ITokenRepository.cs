@@ -16,6 +16,5 @@ namespace RestaurantManagement.Repository.Interface
         Task<bool> IsRevokedAsync(int id);
         Task UpdateTokenAsync(int id, string token);
         Task<bool> IsExpiryed(int id);
-
     }
 }
