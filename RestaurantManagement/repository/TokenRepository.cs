@@ -24,7 +24,7 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
-       public async Task<RefreshToken> GetTokenAsync(string token)
+        public async Task<RefreshToken> GetTokenAsync(string token)
         {
             return await _db.RefreshTokens.FirstOrDefaultAsync(e => e.Token == token);
         }
@@ -33,20 +33,20 @@ namespace RestaurantManagement.Repository
             _db.RefreshTokens.Add(token);
             await _db.SaveChangesAsync();
         }
-       public async Task RevokedTokenAsync(int id)
+        public async Task RevokedTokenAsync(int id)
         {
-           var refreshToken = await _db.RefreshTokens.FindAsync(id);
+            var refreshToken = await _db.RefreshTokens.FindAsync(id);
             refreshToken.IsRevoked = true;
             await _db.SaveChangesAsync();
 
         }
-      public async Task<bool> IsRevokedAsync(int id)
+        public async Task<bool> IsRevokedAsync(int id)
         {
             var refreshToken = await _db.RefreshTokens.FindAsync(id);
             return refreshToken.IsRevoked;
 
         }
-       public async Task UpdateTokenAsync(int id, string token)
+        public async Task UpdateTokenAsync(int id, string token)
         {
             var refreshtoken = await _db.RefreshTokens.FindAsync(id);
             refreshtoken.Token = token;

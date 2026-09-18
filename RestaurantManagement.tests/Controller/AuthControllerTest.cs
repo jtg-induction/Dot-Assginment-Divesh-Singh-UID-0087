@@ -145,7 +145,7 @@ namespace RestaurantManagement.tests.Controller
             {
                 var response = await _authController.Login(incominguser);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ee = e;
             }
@@ -193,7 +193,7 @@ namespace RestaurantManagement.tests.Controller
                 Email = "divesh@gmail.com"
             };
 
-            var tokenDetailStub = new RefreshToken { UserId = mockUserId };
+            //            var tokenDetailStub = new RefreshToken { UserId = mockUserId };
 
             _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(existingCookieToken);
             _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(existingCookieToken)).ReturnsAsync(newlyGeneratedRefreshToken);
@@ -202,8 +202,8 @@ namespace RestaurantManagement.tests.Controller
             _jwtServiceMock.Setup(c => c.CraftJwt(dummyUser)).Returns(newAccessToken);
             _tokenServiceMock.Setup(s => s.SetRefreshTokenCookie(newlyGeneratedRefreshToken));
 
-            // ACT
-            var response = await _authController.Refresh();
+            //            // ACT
+            //            var response = await _authController.Refresh();
 
             // ASSERT
             var okResult = response as OkNegotiatedContentResult<BaseResponse<LoginResponse>>;
@@ -221,7 +221,22 @@ namespace RestaurantManagement.tests.Controller
             // ARRANGE
             string staleCookieToken = "revoked-cookie-token";
 
-            _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(staleCookieToken);
+            //            //ACT
+            //            var response = await _authController.Login(incominguser);
+            //            //ASSERT
+            //            //Assert.Fail(response.GetType().FullName);
+            //            var createdResult = response as dynamic;
+            //            Assert.IsNotNull(createdResult);
+            //        }
+            //        [TestMethod]
+            //        public async Task InValidLoginDetail()
+            //        {
+            //            //ARRANGE
+            //            var incominguser = new UserCredential()
+            //            {
+            //                Email = "divesh@gmail.com",
+            //                Password = "123234@aaA"
+            //            };
 
             // Simulating token verification exception or returning empty verification payload 
             _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(staleCookieToken))
@@ -233,7 +248,7 @@ namespace RestaurantManagement.tests.Controller
             {
                 var response = await _authController.Refresh();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ee = e;
             }

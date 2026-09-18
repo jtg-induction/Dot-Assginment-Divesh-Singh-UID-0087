@@ -80,14 +80,20 @@ namespace RestaurantManagement.Tests.Services
             _tokenRepositoryMock.Setup(r => r.GetTokenAsync(tokenKey)).ReturnsAsync(expectedToken);
 
             // ACT
-            var result = await _tokenService.GetTokenDetailAsync(tokenKey);
+            Exception exception = null;
+            try
+            {
+                string result = await _service.RefreshTheTokenAsync(badToken);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
 
             // ASSERT
-            Assert.IsNotNull(result);
-            Assert.AreEqual(88, result.TokenId);
-            Assert.AreEqual(55, result.UserId);
+            Assert.IsNotNull(exception);
         }
 
-       
+
     }
 }

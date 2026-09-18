@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
@@ -76,7 +76,7 @@ namespace RestaurantManagement.Tests.Services
             // ASSERT
             catch (ResourceException ex)
             {
-              
+
                 e = ex;
             }
             //asert
@@ -219,6 +219,6 @@ namespace RestaurantManagement.Tests.Services
             Assert.AreEqual("Divesh", result.Name);
         }
 
-     
+
     }
 }
