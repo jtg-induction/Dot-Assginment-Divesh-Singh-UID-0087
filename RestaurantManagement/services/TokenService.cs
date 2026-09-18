@@ -69,7 +69,7 @@ namespace RestaurantManagement.Services
         public async Task<string> AddRefreshTokenAsync(int id)
         {
             var refreshtoken = TokenGenerator();
-            var token = new Models.Entity.RefreshToken()
+            var token = new RefreshToken()
             {
                 UserId = id,
                 Token = refreshtoken,
@@ -84,13 +84,10 @@ namespace RestaurantManagement.Services
             if (refreshtoken == null)
             {
 
-                throw new ResourceException(ValidationMessages.Revoked);
+                throw new UnauthorizedAccessException(ValidationMessages.Revoked);
 
             }
             await _tokenRepository.RevokedTokenAsync(refreshtoken.TokenId);
-
-
-
         }
         public async Task<string> RefreshTheTokenAsync(string token)
         {
@@ -103,7 +100,7 @@ namespace RestaurantManagement.Services
             }
             else
             {
-                throw new ResourceException(ValidationMessages.Revoked);
+                throw new UnauthorizedAccessException(ValidationMessages.Revoked);
             }
 
         }

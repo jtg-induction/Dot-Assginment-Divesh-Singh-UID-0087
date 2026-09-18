@@ -38,8 +38,6 @@ namespace RestaurantManagement
                     // This links it perfectly to the HostAuthenticationFilter("Bearer") in WebApiConfig!
                     AuthenticationType = "Bearer",
 
-                    TokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler(),
-
                     IssuerSecurityKeyProviders = new IIssuerSecurityKeyProvider[]
                     {
                 new SymmetricKeyIssuerSecurityKeyProvider(issuerAndAudience, base64Secret)

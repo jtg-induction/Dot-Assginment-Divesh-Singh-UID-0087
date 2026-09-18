@@ -1,23 +1,19 @@
-using RestaurantManagement.Constants;
+﻿using RestaurantManagement.Constants;
 using RestaurantManagement.Helper;
-
-//using OWIN.WebApi.Controllers;
-//using RestaurantManagement.Common;
 using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Services;
-//using RestaurantManagement.services;
 using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-//using RestaurantManagement.services;
 using System.Threading.Tasks;
+using RestaurantManagement.Models.Response;
+using RestaurantManagement.Models.Entity;
 using System.Web.Http;
-using System.Web.Http;
-using System.Web.UI.WebControls;
+using Castle.DynamicProxy.Generators;
 
 namespace RestaurantManagement.Controllers
 {
@@ -30,9 +26,9 @@ namespace RestaurantManagement.Controllers
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly IObtainJwtService _jwtClaim;
-        public AuthController(IUserService userser, IObtainJwtService jwtclaim, ITokenService tokenService)
+        public AuthController(IUserService userservice, IObtainJwtService jwtclaim, ITokenService tokenService)
         {
-            _userService = userser;
+            _userService = userservice;
             _jwtClaim = jwtclaim;
             _tokenService = tokenService;
         }
@@ -42,24 +38,37 @@ namespace RestaurantManagement.Controllers
         /// </summary>
         /// <param name="adduser">The new user's registration details.</param>
         /// <returns>The result of the registration request.</returns>
-    [AllowAnonymous]
         [HttpPost]
         [Route("signup")]
         public async Task<IHttpActionResult> Signup(AddUserRequest adduser)
         {
             await _userService.AdduserAsync(adduser);
-            return Ok(ValidationMessages.Success);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.UserCreated
+            };
+            return Created(string.Empty, response);
         }
-    [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
         {
             var user = await _userService.LoginUserAsync(login);
             var refreshtoken = await _tokenService.AddRefreshTokenAsync(user.UserId);
-            var accesstoken = _jwtClaim.CraftJwt(user);
+            string accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
-            return Ok(new { AccessToken = accesstoken });
+            var responseData = new LoginResponse()
+            {
+                Token = accesstoken
+            };
+            var response = new BaseResponse<LoginResponse>
+            {
+                success = true,
+                message = ValidationMessages.LoginSuccess,
+                data = responseData
+            };
+            return Ok(response);
         }
         [Authorize]
         [HttpPost]
@@ -69,10 +78,14 @@ namespace RestaurantManagement.Controllers
             string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
             await _tokenService.RevokedAsync(currentRefreshToken);
             _tokenService.ClearRefreshTokenCookie();
-            return Ok(ValidationMessages.Success);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.LogoutSucess
+            };
+            return Ok(response);
         }
-
-    [Authorize]
+        [Authorize]
         [HttpPost]
         [Route("refresh")]
         public async Task<IHttpActionResult> Refresh()
@@ -80,10 +93,20 @@ namespace RestaurantManagement.Controllers
             string token = _tokenService.GetRefreshTokenFromCookie();
             var refreshtoken = await _tokenService.RefreshTheTokenAsync(token);
             var tokenDetail = await _tokenService.GetTokenDetailAsync(refreshtoken);
-            var user = await _userService.GetUserAsync(tokenDetail.UserId);
+            User user=await _userService.GetUserAsync(tokenDetail.UserId);
             var accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
-            return Ok(new { AccessToken = accesstoken });
+            var responseData = new LoginResponse()
+            {
+                Token = accesstoken
+            };
+            var response = new BaseResponse<LoginResponse>
+            {
+                success = true,
+                message = ValidationMessages.RefreshSuccess,
+                data = responseData
+            };
+            return Ok(response);
 
         }
         [Authorize]
@@ -92,21 +115,30 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> DeactivateAccount()
         {
             int currentUserId = await ClaimHelper.GetUserIdFromClaim(User.Identity);
-            await _userService.DeactivateAccount(currentUserId);
-            return Ok(ValidationMessages.Success);
+         var user=  await _userService.DeactivateAccount(currentUserId);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.DeactivateSuccess
+            };
+            return Ok(response);
 
 
         }
-    [AllowAnonymous]
         [HttpPut]
         [Route("activate")]
         public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
         {
 
-            await _userService.ActivateAccount(login);
-            return Ok(ValidationMessages.Success);
+           var user= await _userService.ActivateAccount(login);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.ActivateSuccess
+            };
+            return Ok( response);
 
-
+                
         }
 
 

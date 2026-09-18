@@ -25,5 +25,9 @@ namespace RestaurantManagement.Repository
         {
             return _db.MenuItems.Where(e => e.RestaurantId == id).ToList();
         }
+        public async Task UpdateTheQuantity(int id)
+        {
+
+        }
     }
 }

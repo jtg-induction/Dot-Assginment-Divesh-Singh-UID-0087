@@ -1,9 +1,11 @@
 ﻿using RestaurantManagement.Data;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
-using System.Linq;
-using System.Data.Entity;
-using System.Threading.Tasks;
 using RestaurantManagement.repository;
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestaurantManagement.Repository
 {
@@ -28,9 +30,19 @@ namespace RestaurantManagement.Repository
         /// </summary>
         /// <param name="email">The email to search for.</param>
         /// <returns>The matching user if found; otherwise, null.</returns>
+        public async Task<string> GetUserEmail(string email)
+        {
+        
+            User user = await _db.Users.FirstAsync(e => e.Email == email);
+          
+            return user.Email;
+        }
         public async Task<User> GetUserAsync(string email)
         {
+
+          
             return await _db.Users.FirstOrDefaultAsync(e => e.Email == email);
+
         }
 
         /// <summary>
@@ -82,9 +94,13 @@ namespace RestaurantManagement.Repository
             return await _db.Users.AnyAsync(u => u.PhoneNumber == phoneNumber && u.UserId != id);
         }
 
-        public async Task UpdateAccount(User user)
+        public async Task UpdateAccount(User user,UpdateAccountDto updateaccount)
         {
-            _db.Entry(user).State = EntityState.Modified;
+            user.Name = updateaccount.Name;
+            user.Email = updateaccount.Email;
+            user.PhoneNumber = updateaccount.PhoneNumber;
+            user.BirthDate = updateaccount.BirthDate;
+            user.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
 

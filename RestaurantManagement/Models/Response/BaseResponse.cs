@@ -6,9 +6,10 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
-    public class BaseResponse
+    public class BaseResponse<T>
     {
-     [Required]   public DateTime CreatedAt { get; set; }
-       [Required] public DateTime UpdatedAt { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; }
+        public T data { get; set; }
     }
 }

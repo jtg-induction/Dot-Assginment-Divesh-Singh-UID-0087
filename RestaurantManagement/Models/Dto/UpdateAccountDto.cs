@@ -9,20 +9,22 @@ namespace RestaurantManagement.Models.Dto
 {
     public class UpdateAccountDto
     {
-        [Required]
-        [StringLength(EntityConstants.MaxNameLength)]
-        public string Name { get; set; }
 
-        [Required]
-        [StringLength(EntityConstants.MaxEmailLength)]
-        [EmailAddress]
+         public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the user's email address.
+        /// </summary>
+        [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         public string Email { get; set; }
-
-        [Required]
+        /// <summary>
+        /// Gets or sets the user's birth date.
+        /// </summary>
         public DateTime BirthDate { get; set; }
 
-        [Required]
-        [StringLength(EntityConstants.MaxPhoneNumberLength)]
+        /// <summary>
+        /// Gets or sets the user's phone number.
+        /// </summary>
+        [RegularExpression(ValidationRules.PhoneRegexPattern, ErrorMessage = ValidationMessages.InvalidPhoneFormat)]
         public string PhoneNumber { get; set; }
     }
 }

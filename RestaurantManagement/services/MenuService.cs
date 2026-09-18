@@ -19,22 +19,23 @@ namespace RestaurantManagement.Services
         }
         public async Task<List<GetMenuItemResponse>> GetMenuItemsAsync(int id)
         {
-            List<MenuItem> menu= await _menuRepository.GetMenuItem(id);
-            List<GetMenuItemResponse> menuitem =new List<GetMenuItemResponse> ();
+            _menuRepository.UpdateTheQuantity(id);
+            List<MenuItem> menu = await _menuRepository.GetMenuItem(id);
+            List<GetMenuItemResponse> menuitem = new List<GetMenuItemResponse>();
             foreach (MenuItem i in menu)
             {
                 var item = new GetMenuItemResponse()
                 {
-                   ItemId=i.ItemId,
-                   DishName=i.DishName,
-                   Price=i.Price,
-                   AvailableQuantity=i.AvailableQuantity,
-                   CreatedAt=i.CreatedAt,
-                   UpdatedAt=i.UpdatedAt
+                    ItemId = i.ItemId,
+                    DishName = i.DishName,
+                    Price = i.Price,
+                    AvailableQuantity = i.AvailableQuantity,
+                    CreatedAt = i.CreatedAt,
+                    UpdatedAt = i.UpdatedAt
 
                 };
                 menuitem.Add(item);
-               
+
             }
             return menuitem;
         }

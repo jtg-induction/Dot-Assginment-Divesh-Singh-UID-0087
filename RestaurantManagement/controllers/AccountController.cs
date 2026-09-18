@@ -1,6 +1,7 @@
 ﻿using RestaurantManagement.Constants;
 using RestaurantManagement.Helper;
 using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services;
 using System;
 using System.Collections.Generic;
@@ -24,11 +25,16 @@ namespace RestaurantManagement.Controllers
         [HttpPut]
         [Route("update")]
         public async Task<IHttpActionResult> UpdateAccount(UpdateAccountDto model)
-        {
+        { 
             int currentUserId =await ClaimHelper.GetUserIdFromClaim(User.Identity);
             var user = await _userservice.GetUserIfActive(currentUserId);
           await  _userservice.UpdateAccount(user, model);
-            return Ok(ValidationMessages.Success);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.UpdateSuccess
+            };
+            return Ok(response);
 
         }
        

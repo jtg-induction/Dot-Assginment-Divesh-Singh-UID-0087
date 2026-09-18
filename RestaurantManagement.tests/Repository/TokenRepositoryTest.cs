@@ -1,175 +1,228 @@
-﻿using Effort;
+﻿using System;
+using System.Data.Common;
+using System.Data.Entity;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Effort;
 using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
-using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Repository;
-using System;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RestaurantManagement.tests.Repository
 {
     [TestClass]
-    /// <summary>
-    /// Contains integration tests for <see cref="TokenRepository"/> using a transient database.
-    /// </summary>
     public class TokenRepositoryTest
     {
         private ApplicationDbContext _context;
-        private TokenRepository _tokenrepo;
-        private int _defaultUserId;
+        private TokenRepository _tokenRepo;
 
         [TestInitialize]
         public void Setup()
         {
             DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
             _context = new ApplicationDbContext(connection);
-            _tokenrepo = new TokenRepository(_context);
-
-            // Seed a common default user to fulfill foreign key constraints automatically across tests
-            var seedUser = new User
-            {
-                Email = "defaultowner@gmail.com",
-                Name = "Default Token Owner",
-                Password = "securepassword",
-                PhoneNumber = "987654321",
-                BirthDate = DateTime.Parse("2000-01-01"),
-                Balance = 0,
-                Role = UserRole.Customer
-            };
-            _context.Users.Add(seedUser);
-            _context.SaveChanges();
-
-            // Capture the generated identity primary key
-            _defaultUserId = seedUser.UserId;
+            _tokenRepo = new TokenRepository(_context);
         }
 
-        /// <summary>Verifies that an existing token string can be retrieved.</summary>
-        [TestMethod]
-        public async Task CheckTokenIsRetrieved()
+        /// <summary>Helper method to ensure a valid User exists in the transient database before token actions.</summary>
+        private async Task SeedUserAsync(int userId)
         {
-            var testToken = new RefreshToken
+            var user = new User
             {
-                Token = "token-abc-123",
-                IsRevoked = false,
-                UpdatedAt = DateTime.UtcNow,
-                UserId = _defaultUserId
+                UserId = userId,
+                Name = $"Test User {userId}",
+                Password = "SecurePassword123!",
+                Email = $"user{userId}@example.com",
+                BirthDate = new DateTime(1990, 1, 1),
+                PhoneNumber = $"555-000-{userId:D4}", // Generates unique phone numbers like 555-000-0002
+                Balance = 1000,
+                Role = RestaurantManagement.Models.Enum.UserRole.Customer // Use a valid enum value from your project
             };
 
-            _context.RefreshTokens.Add(testToken);
-            _context.SaveChanges();
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
 
-            var result = await _tokenrepo.GetTokenAsync("token-abc-123");
+        [TestMethod]
+        public async Task GetTokenAsync_ExistingToken_ReturnsRefreshToken()
+        {
+            // ARRANGE
+            await SeedUserAsync(1); // Seed User 1
 
+            var tokenEntity = new RefreshToken
+            {
+                Token = "valid-refresh-token-string",
+                UserId = 1,
+                IsRevoked = false,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.RefreshTokens.Add(tokenEntity);
+            await _context.SaveChangesAsync();
+
+            // ACT
+            var result = await _tokenRepo.GetTokenAsync("valid-refresh-token-string");
+
+            // ASSERT
             Assert.IsNotNull(result);
-            Assert.AreEqual("token-abc-123", result.Token);
+            Assert.AreEqual("valid-refresh-token-string", result.Token);
+            Assert.AreEqual(1, result.UserId);
         }
 
-        /// <summary>Verifies that a new refresh token can be added to the database.</summary>
         [TestMethod]
-        public async Task AddToken()
+        public async Task AddTokenAsync_SavesTokenCorrectly()
         {
-            // Optional: Arrange a custom distinct user if needed for this specific test
-            var linkedUser = new User
+            // ARRANGE
+            var user = new User
             {
-                Email = "tokenowner@gmail.com",
-                Name = "Token Owner",
-                Password = "securepassword",
-                PhoneNumber = "12345678",
-                BirthDate = DateTime.Parse("2000-01-01"),
-                Balance = 0,
-                Role = UserRole.Customer
+                Name = "Test User Two",
+                Password = "SecurePassword123!",
+                Email = "user2@example.com",
+                BirthDate = new DateTime(1990, 1, 1),
+                PhoneNumber = "555-000-0002",
+                Balance = 1000,
+                Role = RestaurantManagement.Models.Enum.UserRole.Customer
             };
-            _context.Users.Add(linkedUser);
-            _context.SaveChanges();
 
-            var testToken = new RefreshToken
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(); 
+
+            // 2. Map the generated UserId straight to the token
+            var newToken = new RefreshToken
             {
-                Token = "token-new-456",
+                Token = "brand-new-token",
+                UserId = user.UserId, 
                 IsRevoked = false,
-                UpdatedAt = DateTime.UtcNow,
-                UserId = linkedUser.UserId
+                UpdatedAt = DateTime.UtcNow
             };
 
             // ACT
-            await _tokenrepo.AddTokenAsync(testToken);
+            await _tokenRepo.AddTokenAsync(newToken);
 
             // ASSERT
-            var result = _context.RefreshTokens.FirstOrDefault(t => t.Token == "token-new-456");
-            Assert.IsNotNull(result);
-            Assert.AreEqual(testToken.Token, result.Token);
-            Assert.AreEqual(linkedUser.UserId, result.UserId);
+            var savedToken = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == "brand-new-token");
+            Assert.IsNotNull(savedToken);
+            Assert.AreEqual(user.UserId, savedToken.UserId);
         }
 
-        /// <summary>Verifies that an existing token can be revoked successfully.</summary>
         [TestMethod]
-        public async Task RevokedToken()
+        public async Task RevokedTokenAsync_SetsIsRevokedToTrue()
         {
-            var testToken = new RefreshToken
+            // ARRANGE
+            await SeedUserAsync(1); // Seed User 1
+
+            var tokenEntity = new RefreshToken()
             {
                 Token = "token-to-revoke",
+                UserId = 1,
                 IsRevoked = false,
-                UpdatedAt =DateTime.UtcNow,
-                UserId = _defaultUserId
+                UpdatedAt = DateTime.UtcNow
             };
-
-            _context.RefreshTokens.Add(testToken);
-            _context.SaveChanges();
+            _context.RefreshTokens.Add(tokenEntity);
+            await _context.SaveChangesAsync();
 
             // ACT
-            await _tokenrepo.RevokedTokenAsync(testToken.TokenId);
+            await _tokenRepo.RevokedTokenAsync(tokenEntity.TokenId);
 
             // ASSERT
-            var result = _context.RefreshTokens.Find(testToken.TokenId);
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsRevoked);
+            var updatedToken = await _context.RefreshTokens.FindAsync(tokenEntity.TokenId);
+            Assert.IsNotNull(updatedToken);
+            Assert.IsTrue(updatedToken.IsRevoked);
         }
 
-        /// <summary>Verifies that the revocation status check reports the correct value.</summary>
         [TestMethod]
-        public async Task CheckIsRevokedStatus()
+        public async Task IsRevokedAsync_EvaluatesStateAccurately()
         {
-            var activeToken = new RefreshToken { Token = "active-token", IsRevoked = false, UpdatedAt = DateTime.UtcNow, UserId = _defaultUserId };
-            var revokedToken = new RefreshToken { Token = "revoked-token", IsRevoked = true, UpdatedAt = DateTime.UtcNow, UserId = _defaultUserId };
+            // ARRANGE
+            await SeedUserAsync(1); // Seed User 1
 
-            _context.RefreshTokens.Add(activeToken);
-            _context.RefreshTokens.Add(revokedToken);
-            _context.SaveChanges();
+            var clearToken = new RefreshToken { Token = "clear", UserId = 1, IsRevoked = false, UpdatedAt = DateTime.UtcNow };
+            var badToken = new RefreshToken { Token = "bad", UserId = 1, IsRevoked = true, UpdatedAt = DateTime.UtcNow };
 
-            // ACT & ASSERT
-            Assert.IsFalse(await _tokenrepo.IsRevokedAsync(activeToken.TokenId));
-            Assert.IsTrue(await _tokenrepo.IsRevokedAsync(revokedToken.TokenId));
+            _context.RefreshTokens.Add(clearToken);
+            _context.RefreshTokens.Add(badToken);
+            await _context.SaveChangesAsync();
+
+            // ACT
+            bool resultClear = await _tokenRepo.IsRevokedAsync(clearToken.TokenId);
+            bool resultBad = await _tokenRepo.IsRevokedAsync(badToken.TokenId);
+
+            // ASSERT
+            Assert.IsFalse(resultClear);
+            Assert.IsTrue(resultBad);
         }
 
-        /// <summary>Verifies that a token string and its modification timestamp can be updated.</summary>
         [TestMethod]
-        public async Task UpdateToken()
+        public async Task UpdateTokenAsync_AltersTokenStringAndTimestamp()
         {
+            // 1. Arrange: Seed a valid user and get their real ID
+            var testUser = new User
+            {
+                Name = "Token Update User",
+                Password = "SecurePassword123!",
+                Email = "updateuser@example.com",
+                BirthDate = new DateTime(1990, 1, 1),
+                PhoneNumber = "555-000-9999",
+                Balance = 1000,
+                Role = RestaurantManagement.Models.Enum.UserRole.Customer
+            };
+            _context.Users.Add(testUser);
+            await _context.SaveChangesAsync(); 
+
+            
+            var originalTime = DateTime.UtcNow.AddHours(-1);
             var testToken = new RefreshToken
             {
                 Token = "old-token-string",
+                UserId = testUser.UserId, 
                 IsRevoked = false,
-                UpdatedAt = DateTime.UtcNow.AddDays(-5),
-                UserId = _defaultUserId
+                UpdatedAt = originalTime
+            };
+            _context.RefreshTokens.Add(testToken);
+            await _context.SaveChangesAsync();
+
+            // 3. Act: Invoke your repository method to update the token
+            string newTokenString = "brand-new-token-string";
+            await _tokenRepo.UpdateTokenAsync(testToken.TokenId, newTokenString);
+
+            // 4. Assert: Pull a fresh copy from context to verify changes
+            var updatedToken = await _context.RefreshTokens.FindAsync(testToken.TokenId);
+
+            Assert.IsNotNull(updatedToken);
+            Assert.AreEqual(newTokenString, updatedToken.Token);
+            Assert.IsTrue(updatedToken.UpdatedAt > originalTime);
+        }
+
+        [TestMethod]
+        public async Task IsExpiryed_EvaluatesLifespanBoundaries()
+        {
+            // ARRANGE
+            await SeedUserAsync(1); // Seed User 1
+
+            var freshToken = new RefreshToken
+            {
+                Token = "fresh",
+                UserId = 1,
+                UpdatedAt = DateTime.UtcNow.AddDays(-2)
             };
 
-            _context.RefreshTokens.Add(testToken);
-            _context.SaveChanges();
+            var staleToken = new RefreshToken
+            {
+                Token = "stale",
+                UserId = 1,
+                UpdatedAt = DateTime.UtcNow.AddDays(-8)
+            };
 
-            string updatedString = "new-token-string-789";
+            _context.RefreshTokens.Add(freshToken);
+            _context.RefreshTokens.Add(staleToken);
+            await _context.SaveChangesAsync();
 
             // ACT
-            await _tokenrepo.UpdateTokenAsync(testToken.TokenId, updatedString);
+            bool isFreshExpired = await _tokenRepo.IsExpiryed(freshToken.TokenId);
+            bool isStaleExpired = await _tokenRepo.IsExpiryed(staleToken.TokenId);
 
             // ASSERT
-            var result = _context.RefreshTokens.Find(testToken.TokenId);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedString, result.Token);
-
-            // Verifies the modification timestamp was updated to roughly now (within 5 seconds)
-            Assert.IsTrue((DateTime.UtcNow - result.UpdatedAt).TotalSeconds < 5);
+            Assert.IsFalse(isFreshExpired);
+            Assert.IsTrue(isStaleExpired);
         }
     }
 }

@@ -10,5 +10,6 @@ namespace RestaurantManagement.Repository.Interface
     public interface IMenuRepository
     {
         Task<List<MenuItem>> GetMenuItem(int id);
+        Task UpdateTheQuantity(int id);
     }
 }
