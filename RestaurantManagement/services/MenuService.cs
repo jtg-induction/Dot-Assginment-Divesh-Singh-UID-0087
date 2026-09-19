@@ -19,7 +19,6 @@ namespace RestaurantManagement.Services
         }
         public async Task<List<GetMenuItemResponse>> GetMenuItemsAsync(int id)
         {
-            _menuRepository.UpdateTheQuantity(id);
             List<MenuItem> menu = await _menuRepository.GetMenuItem(id);
             List<GetMenuItemResponse> menuitem = new List<GetMenuItemResponse>();
             foreach (MenuItem i in menu)
@@ -30,9 +29,7 @@ namespace RestaurantManagement.Services
                     DishName = i.DishName,
                     Price = i.Price,
                     AvailableQuantity = i.AvailableQuantity,
-                    CreatedAt = i.CreatedAt,
-                    UpdatedAt = i.UpdatedAt
-
+                  
                 };
                 menuitem.Add(item);
 

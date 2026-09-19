@@ -1,8 +1,11 @@
-﻿using RestaurantManagement.Data;
+﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Data;
+using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -25,9 +28,32 @@ namespace RestaurantManagement.Repository
         {
             return _db.MenuItems.Where(e => e.RestaurantId == id).ToList();
         }
-        public async Task UpdateTheQuantity(int id)
+       
+        public async Task<List<MenuItem>> GetItemDetail(Dictionary<int,int> item)
         {
 
+            var ids = string.Join(",", item.Keys);
+            List<MenuItem> menu = await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
+
+            if (menu.Count != item.Count )
+            {
+                throw new ResourceException(ValidationMessages.MenuListInvalid);
+            }
+            int prev = 0;
+            foreach(MenuItem i in menu)
+            {
+                if(!(prev==0 || prev == i.RestaurantId))
+                {
+                    throw new ResourceException(ValidationMessages.OneRestaurant);
+                }
+                if (item[i.ItemId] > i.AvailableQuantity)
+                {
+                    throw new ResourceException($"{i.DishName} Are Not Available !!");
+                }
+                i.AvailableQuantity -= item[i.ItemId];
+            }
+            await   _db.SaveChangesAsync();
+            return menu;
         }
     }
 }

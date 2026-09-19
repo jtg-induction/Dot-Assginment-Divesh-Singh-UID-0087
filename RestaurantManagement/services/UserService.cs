@@ -90,7 +90,8 @@ namespace RestaurantManagement.Services
 				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 			}
 			await _userrepository.Deactivate(userdetail);
-			return userdetail;
+			
+			
 		}
 		public async Task<User> ActivateAccount(UserCredential user)
 		{

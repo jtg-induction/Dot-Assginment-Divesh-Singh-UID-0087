@@ -115,7 +115,7 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> DeactivateAccount()
         {
             int currentUserId = await ClaimHelper.GetUserIdFromClaim(User.Identity);
-         var user=  await _userService.DeactivateAccount(currentUserId);
+         await _userService.DeactivateAccount(currentUserId);
             var response = new BaseResponse<string>
             {
                 success = true,

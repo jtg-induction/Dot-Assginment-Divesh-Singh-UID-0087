@@ -1,6 +1,8 @@
-﻿using RestaurantManagement.Constants;
+﻿using Microsoft.Owin.BuilderProperties;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Helper;
 using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services;
 using System;
@@ -18,9 +20,12 @@ namespace RestaurantManagement.Controllers
     public class AccountController : ApiController
     {
         private readonly UserService _userservice;
+    
         public AccountController(UserService userservice)
         {
             _userservice = userservice;
+         
+
         }
         [HttpPut]
         [Route("update")]
@@ -37,7 +42,7 @@ namespace RestaurantManagement.Controllers
             return Ok(response);
 
         }
-       
+     
 
     }
 }

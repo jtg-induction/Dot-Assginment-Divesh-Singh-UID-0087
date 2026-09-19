@@ -54,6 +54,11 @@ namespace RestaurantManagement
             container.RegisterType<IRestaurantService, RestaurantService>();
             container.RegisterType<IMenuRepository, MenuRepository>();
             container.RegisterType<IMenuService, MenuService>();
+            container.RegisterType<IOrderService, OrderService>();
+            container.RegisterType<IOrderItemRepository, OrderItemRepository>();
+            container.RegisterType<IOrderRepository, OrderRepository>();
+            container.RegisterType<IAddressRepository, AddressRepository>();
+            container.RegisterType<IAddressService, AddressService>();
         }
     }
 }
