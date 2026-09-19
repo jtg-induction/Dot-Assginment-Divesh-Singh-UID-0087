@@ -68,13 +68,13 @@ namespace RestaurantManagement.Services
 			User user = await _userrepository.GetUserAsync(userCredential.Email);
 			if (user == null || !await _userrepository.IsActiveAsync(user.UserId))
 			{
-				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
+				throw new UnauthenticatedException(ValidationMessages.InvalidDetail);
 
 			}
 
 			if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
 			{
-				throw new UnauthenticatedException(ValidationMessages.PasswordIncorrect);
+				throw new UnauthenticatedException(ValidationMessages.InvalidDetail);
 			}
 			return user;
 		}
@@ -92,7 +92,7 @@ namespace RestaurantManagement.Services
 		public async Task<User> ActivateAccount(UserCredential user)
 		{
 			User userdetail = await _userrepository.GetUserAsync(user.Email);
-			if (userdetail == null)
+			if (userdetail == null || !_passwordService.VerifyPassword(user.Password, userdetail.Password))
 			{
 				throw new UnauthenticatedException(ValidationMessages.UserNotFound);
 			}
