@@ -1,6 +1,8 @@
 ﻿using NMemory.Transactions;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Services.Interface;
@@ -77,8 +79,31 @@ namespace RestaurantManagement.Services
                 transactionScope.Complete();
             }
             return data;
-
-
+        }
+        public async Task<List<Order>> GetOrder(int id)
+        {
+            return await _orderRepository.GetOrder(id);
+        }
+        public async Task<List<OrderItem>> GetOrderItem(int id)
+        {
+            return await _orderItemRepository.GetOrderItem(id);
+        }
+        public async Task OrderCancel(int id)
+        {
+            Order order =await _orderRepository.GetOrderDetail(id);
+            if (order.Status == OrderStatus.Rejected)
+            {
+                throw new ResourceException(ValidationMessages.OrderRejected);
+            }
+            if (order.Status == OrderStatus.Dispatched)
+            {
+                throw new ResourceException(ValidationMessages.OrderDispatched);
+            }
+            if (order.Status == OrderStatus.Delivery)
+            {
+                throw new Exception(ValidationMessages.OrderDelivered);
+            }
+           await  _orderRepository.CancelOrder(order);
         }
     }
 }

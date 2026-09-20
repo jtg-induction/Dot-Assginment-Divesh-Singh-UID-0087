@@ -10,5 +10,6 @@ namespace RestaurantManagement.Services.Interface
     public interface IRestaurantService
     {
         Task<List<Restaurant>> GetRestaurantsAsync();
+        Task<string> GetRestaurantName(int id);
     }
 }

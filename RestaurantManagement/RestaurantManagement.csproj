@@ -347,6 +347,7 @@
     <Compile Include="Models\Dto\AddAddressRequest.cs" />
     <Compile Include="Models\Dto\AddOrderRequest.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
+    <Compile Include="Models\Dto\GetOrderRequest.cs" />
     <Compile Include="Models\Dto\RestaurantMenuRequest.cs" />
     <Compile Include="Models\Dto\UpdateAccountDto.cs" />
     <Compile Include="Models\Dto\UserCredential.cs" />
@@ -367,6 +368,8 @@
     <Compile Include="Models\Response\AddressResponse.cs" />
     <Compile Include="Models\Response\BaseResponse.cs" />
     <Compile Include="Models\Response\GetMenuItemResponse.cs" />
+    <Compile Include="Models\Response\GetOrderItemResponse.cs" />
+    <Compile Include="Models\Response\GetOrderResponse.cs" />
     <Compile Include="Models\Response\LoginResponse.cs" />
     <Compile Include="Models\Response\OrderResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

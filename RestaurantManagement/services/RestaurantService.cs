@@ -20,5 +20,9 @@ namespace RestaurantManagement.Services
         {
             return await _restaurantRepository.GetRestaurantsAsync();
         }
+        public async Task<string> GetRestaurantName(int id)
+        {
+            return await _restaurantRepository.GetRestaurantName(id);
+        }
     }
 }

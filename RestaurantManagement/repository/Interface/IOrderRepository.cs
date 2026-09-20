@@ -10,5 +10,8 @@ namespace RestaurantManagement.Repository.Interface
     public interface IOrderRepository
     {
         Task PlacedOrder(Order order);
+        Task<List<Order>> GetOrder(int id);
+        Task CancelOrder(Order order);
+        Task<Order> GetOrderDetail(int id);
     }
 }

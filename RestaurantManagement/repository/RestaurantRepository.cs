@@ -25,5 +25,10 @@ namespace RestaurantManagement.Repository
         {
             return _db.Restaurants.Where(e => e.IsActive).ToList();
         }
+        public async Task<string> GetRestaurantName(int id)
+        {
+            return _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.Name).FirstOrDefault();
+        }
     }
+
 }

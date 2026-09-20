@@ -45,6 +45,8 @@
         public const string ActivateSuccess = "Activate successfully.";
         public const string OrderPlaced = "Order Placed!!";
         public const string AddressFetchSuccess = "Address data fetch successfully.";
+        public const string OrderFetchSuccess = "Order data fetch successfully.";
+        public const string OrderCancelSuccess = "Order Cancel successfully.";
         public const string ItemRequired = "Required One Item to Select";
         public const string AddressIdRequired = "Plz Select One Address";
         public const string ListOfRestaurant = "List Of Active Restaurant!!";
@@ -52,6 +54,9 @@
         public const string MenuListInvalid = "Menu items are not valid!!";
         public const string OneRestaurant = "Add All The Item from one Restaurant!!";
         public const string InsufficientBalance= "Insufficient Balance!!!!";
-       
+        public const string OrderRejected= "Order is Already Rejected By Restaurant!!";
+        public const string OrderDispatched= "Order is Already Out For Delivery You Cant Cancel!!";
+        public const string OrderDelivered= "Order is Already Delivered!!";
+        
     }
 }
