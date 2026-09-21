@@ -5,6 +5,7 @@ using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.repository;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,6 +46,10 @@ namespace RestaurantManagement.Repository
 
             return await _db.Users.FirstOrDefaultAsync(e => e.Email == email);
 
+        }
+        public async Task<bool> UserExists(List<int> id)
+        {
+            return (await _db.Users.Where(e=>id.Contains(e.UserId)).ToListAsync()).Count()==id.Count;
         }
 
         /// <summary>
@@ -116,6 +121,10 @@ namespace RestaurantManagement.Repository
             user.Balance -= totalamount;
            await _db.SaveChangesAsync();
         }
-      
+      public async Task ChangeRoleToOwner(List<int> id)
+        {
+            var ids = String.Join(",", id);
+            await _db.Database.ExecuteSqlCommandAsync($"UPDATE  USERS SET ROLE=2 WHERE USERID IN ({ids})");
+        }
     }
 }

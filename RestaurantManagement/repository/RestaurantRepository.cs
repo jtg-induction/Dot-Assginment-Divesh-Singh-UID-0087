@@ -4,6 +4,7 @@ using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -22,9 +23,28 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
+        public async Task<bool> EmailExixts(string email)
+        {
+            return await _db.Restaurants.AnyAsync(e => e.Email == email);
+        }
+        public async Task<bool> PhoneNumberExixts(string ph)
+        {
+            return await _db.Restaurants.AnyAsync(e => e.PhoneNumber==ph);
+        }
         public async Task<List<Restaurant>> GetRestaurantsAsync()
         {
             return _db.Restaurants.Where(e => e.IsActive).ToList();
         }
+        public async Task<string> GetRestaurantName(int id)
+        {
+            return _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.Name).FirstOrDefault();
+        }
+        public async Task AddRestaurant(Restaurant restaurant)
+        {
+
+            _db.Restaurants.Add(restaurant);
+            await _db.SaveChangesAsync();
+        }
     }
+
 }

@@ -68,5 +68,33 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-    }
+        [Authorize(Roles ="Admin")]
+        [HttpPost]
+        [Route("add")]
+        public async Task<IHttpActionResult> AddRestaurant(AddRestaurantRequest addRestaurant)
+        {
+            await _restaurantService.AddRestaurant(addRestaurant);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.RestaurantCreatedSuccess
+            };
+            return Created(string.Empty, response);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("addowner")]
+        public async Task<IHttpActionResult> AddRestaurantOwner(AddRestaurantOwnerRequest addRestaurantOwnerRequest)
+        {
+            await _restaurantService.AddRestaurantowner(addRestaurantOwnerRequest);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.RestaurantOwnerUpdateSuccess
+            };
+            return Created(string.Empty, response);
+        }
+
+
+    } 
 }

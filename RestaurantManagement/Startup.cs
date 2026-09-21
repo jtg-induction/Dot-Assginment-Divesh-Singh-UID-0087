@@ -5,6 +5,7 @@ using Microsoft.Owin.Security.Jwt;
 using Owin;
 using System;
 using System.Configuration;
+using System.Security.Claims;
 using System.Text;
 using System.Web.Http;
 
@@ -55,7 +56,9 @@ namespace RestaurantManagement
                         IssuerSigningKey = symmetricKey,
 
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.Zero,
+                        RoleClaimType = ClaimTypes.Role
+
                     }
                 });
         }

@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace RestaurantManagement.Repository.Interface
 {
-    public interface IOrderRepository
+    public interface IRestaurantOwnerRepository
     {
-        Task PlacedOrder(Order order);
-        Task<List<Order>> GetOrder(int id);
-        Task CancelOrder(Order order);
-        Task<Order> GetOrderDetail(int id);
+        Task AddRestaurantOwner(List<RestaurantOwner> restaurantOwners);
     }
 }

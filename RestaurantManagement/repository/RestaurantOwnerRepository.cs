@@ -3,14 +3,13 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace RestaurantManagement.Repository
 {
-    public class OrderItemRepository:IOrderItemRepository
+    public class RestaurantOwnerRepository:IRestaurantOwnerRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -18,18 +17,14 @@ namespace RestaurantManagement.Repository
         /// Initializes a new instance of the <see cref="UserRepository"/> class.
         /// </summary>
         /// <param name="context">The database context used to access user records.</param>
-        public OrderItemRepository(ApplicationDbContext context)
+        public RestaurantOwnerRepository(ApplicationDbContext context)
         {
             _db = context;
         }
-        public async Task AddOrderItem(List<OrderItem> orderItems)
+        public async Task AddRestaurantOwner(List<RestaurantOwner> restaurantOwners)
         {
-            _db.OrderItems.AddRange(orderItems);
-            await _db.SaveChangesAsync();
-        }
-        public async Task<List<OrderItem>> GetOrderItem(int id)
-        {
-            return await _db.OrderItems.Where(e => e.OrderId == id).ToListAsync();
+            _db.RestaurantOwners.AddRange(restaurantOwners);
+           await _db.SaveChangesAsync();
         }
     }
 }

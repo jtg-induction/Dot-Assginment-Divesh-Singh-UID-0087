@@ -14,7 +14,7 @@ using System.Web.Http;
 namespace RestaurantManagement.Controllers
 {
     [RoutePrefix("api/address")]
-    public class AddressController:ApiController
+    public class AddressController: ApiController
     {
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
