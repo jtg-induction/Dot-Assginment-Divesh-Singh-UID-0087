@@ -37,8 +37,8 @@
         public const string AddresSuccess = "Address Add successful.";
         public const string UpdateSuccess = "Updated successful.";
         public const string Revoked = "Invalid Token";
-        public const string UserNotFound = "User Not Found";
-        public const string PasswordIncorrect = "Password Incorrect,Plz try again!";
+        public const string UserNotFound = "User Not Found!!";
+        public const string InvalidDetail = "User Credential Invalid!!";
         public const string LogoutSucess = "Logged out successfully.";
         public const string RefreshSuccess = "Refresh successfully.";
         public const string DeactivateSuccess = "Deactivate successfully.";
@@ -51,7 +51,7 @@
         public const string ListOfMenuItem = "List Of Active Items!!";
         public const string MenuListInvalid = "Menu items are not valid!!";
         public const string OneRestaurant = "Add All The Item from one Restaurant!!";
-        public const string InsufficientBalance= "Insufficient Balance!!!!";
-       
+        public const string InsufficientBalance = "Insufficient Balance!!!!";
+
     }
 }

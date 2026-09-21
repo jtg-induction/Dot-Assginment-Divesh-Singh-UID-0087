@@ -1,6 +1,7 @@
 ﻿using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace RestaurantManagement.Services
 {
     public class MenuService : IMenuService
     {
-        private readonly MenuRepository _menuRepository;
-        public MenuService(MenuRepository menuRepository)
+        private readonly IMenuRepository _menuRepository;
+        public MenuService(IMenuRepository menuRepository)
         {
             _menuRepository = menuRepository;
         }
@@ -29,7 +30,7 @@ namespace RestaurantManagement.Services
                     DishName = i.DishName,
                     Price = i.Price,
                     AvailableQuantity = i.AvailableQuantity,
-                  
+
                 };
                 menuitem.Add(item);
 

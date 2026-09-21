@@ -3,6 +3,7 @@ using RestaurantManagement.Helper;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services;
+using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,14 @@ namespace RestaurantManagement.Controllers
     [RoutePrefix("api/address")]
     public class AddressController:ApiController
     {
-        private readonly AddressService _addressService;
-        private readonly UserAddressService _userAddressService;
-        public AddressController( AddressService addressService, UserAddressService userAddressService)
+        private readonly IAddressService _addressService;
+        private readonly IUserAddressService _userAddressService;
+        private readonly IClaimHelper _claimHelper;
+        public AddressController( IAddressService addressService, IUserAddressService userAddressService,IClaimHelper claimHelper)
         {
             _addressService = addressService;
             _userAddressService = userAddressService;
+            _claimHelper = claimHelper;
         }
 
 
@@ -29,7 +32,7 @@ namespace RestaurantManagement.Controllers
         [Route("add")]
         public async Task<IHttpActionResult> AddAdress(AddAddressRequest addAddress)
         {
-            int userid = await ClaimHelper.GetUserIdFromClaim(User.Identity);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             int id = await _addressService.AddUserAddress(addAddress);
             await _userAddressService.AddUserAdress(userid, id);
             var response = new BaseResponse<string>
@@ -44,7 +47,7 @@ namespace RestaurantManagement.Controllers
         [Route("get")]
         public async Task<IHttpActionResult> GetUserAddress()
         {
-            int userid = await ClaimHelper.GetUserIdFromClaim(User.Identity);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             var address = await _userAddressService.GetAddress(userid);
             List<AddressResponse> data = new List<AddressResponse>();
             foreach (Models.Entity.Address i in address)

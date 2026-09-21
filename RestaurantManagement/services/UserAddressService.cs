@@ -1,6 +1,7 @@
 ﻿using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace RestaurantManagement.Services
 {
     public class UserAddressService : IUserAddressService
     {
-        private readonly UserAddressRepository _userAddressRepository;
-        public UserAddressService(UserAddressRepository userAddressRepository)
+        private readonly IUserAddressRepository _userAddressRepository;
+        public UserAddressService(IUserAddressRepository userAddressRepository)
         {
             _userAddressRepository = userAddressRepository;
         }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Constants;
@@ -15,11 +17,19 @@ namespace RestaurantManagement.Tests.Services
         private Mock<ITokenRepository> _tokenRepositoryMock;
         private TokenService _tokenService;
 
+        private HttpContext _httpContext;
+        private StringWriter _sw;
         [TestInitialize]
         public void Setup()
         {
             _tokenRepositoryMock = new Mock<ITokenRepository>();
             _tokenService = new TokenService(_tokenRepositoryMock.Object);
+            _httpContext = HttpContext.Current;
+            _sw = new StringWriter();
+            _tokenService = new TokenService(_tokenRepositoryMock.Object);
+            var Request = new HttpRequest("", "http://localhost/", "");
+            var response = new HttpResponse(_sw);
+            HttpContext.Current = new HttpContext(Request, response);
         }
         [TestMethod]
         public async Task AddRefreshTokenAsync_SavesNewTokenEntityAndReturnsString()
@@ -34,6 +44,28 @@ namespace RestaurantManagement.Tests.Services
 
             // ASSERT
             Assert.IsNotEmpty(generatedToken);
+        }
+        private void SetRequestCookie(string name, string value)
+        {
+            var request = HttpContext.Current.Request;
+            var collection = new HttpCookieCollection();
+            collection.Add(new HttpCookie(name, value));
+            var field = typeof(HttpRequest).GetField("_cookies",
+        BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(request, collection);
+
+        }
+        [TestMethod]
+        public void SetToken()
+        {
+            string token = "ngdjvd";
+            _tokenService.SetRefreshTokenCookie(token);
+            SetRequestCookie("X-Refresh-Token", token);
+            var cookies = _tokenService.GetRefreshTokenFromCookie();
+            Assert.AreEqual(token, cookies);
+            _tokenService.ClearRefreshTokenCookie();
+            var cookie = _sw.ToString();
+            Assert.IsEmpty(cookie);
         }
 
         [TestMethod]
@@ -78,12 +110,12 @@ namespace RestaurantManagement.Tests.Services
             string tokenKey = "lookup-key";
             var expectedToken = new RefreshToken { TokenId = 88, Token = tokenKey, UserId = 55 };
             _tokenRepositoryMock.Setup(r => r.GetTokenAsync(tokenKey)).ReturnsAsync(expectedToken);
-
+            var badToken = "hng";
             // ACT
             Exception exception = null;
             try
             {
-                string result = await _service.RefreshTheTokenAsync(badToken);
+                string result = await _tokenService.RefreshTheTokenAsync(badToken);
             }
             catch (Exception e)
             {

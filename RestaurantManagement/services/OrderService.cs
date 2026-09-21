@@ -2,7 +2,9 @@
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
+using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -15,12 +17,12 @@ namespace RestaurantManagement.Services
 {
     public class OrderService :IOrderService
     {
-        private readonly MenuRepository _menuRepository;
-        private readonly AddressRepository _addressRepository;
-        private readonly UserRepository _userRepository;
-        private readonly OrderRepository _orderRepository;
-        private readonly OrderItemRepository _orderItemRepository;
-        public OrderService(MenuRepository menuRepository,AddressRepository addressRepository,UserRepository userRepository,OrderRepository orderRepository,OrderItemRepository orderItemRepository)
+        private readonly IMenuRepository _menuRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
+        public OrderService(IMenuRepository menuRepository,IAddressRepository addressRepository,IUserRepository userRepository,IOrderRepository orderRepository,IOrderItemRepository orderItemRepository)
         {
             _menuRepository = menuRepository;
             _addressRepository = addressRepository;
