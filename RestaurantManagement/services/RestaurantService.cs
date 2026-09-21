@@ -1,5 +1,7 @@
 ﻿using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,8 +13,8 @@ namespace RestaurantManagement.Services
 {
     public class RestaurantService : IRestaurantService
     {
-        private readonly RestaurantRepository _restaurantRepository;
-        public RestaurantService(RestaurantRepository restaurantRepository)
+        private readonly IRestaurantRepository _restaurantRepository;
+        public RestaurantService(IRestaurantRepository restaurantRepository)
         {
             _restaurantRepository = restaurantRepository;
         }

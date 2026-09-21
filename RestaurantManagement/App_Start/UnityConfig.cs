@@ -1,4 +1,5 @@
 using RestaurantManagement.Data;
+using RestaurantManagement.Helper;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
@@ -54,6 +55,7 @@ namespace RestaurantManagement
             container.RegisterType<IRestaurantService, RestaurantService>();
             container.RegisterType<IMenuRepository, MenuRepository>();
             container.RegisterType<IMenuService, MenuService>();
+            container.RegisterType<IClaimHelper, ClaimHelper>();
         }
     }
 }

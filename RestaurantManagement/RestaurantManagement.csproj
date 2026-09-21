@@ -336,13 +336,13 @@
     </Compile>
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="Helper\ClaimHelper.cs" />
+    <Compile Include="Helper\IClaimHelper.cs" />
     <Compile Include="Migrations\202609151738339_add.cs" />
     <Compile Include="Migrations\202609151738339_add.Designer.cs">
       <DependentUpon>202609151738339_add.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
-    <Compile Include="Models\Dto\RestaurantMenuRequest.cs" />
     <Compile Include="Models\Dto\UpdateAccountDto.cs" />
     <Compile Include="Models\Dto\UserCredential.cs" />
     <Compile Include="Models\Entity\Address.cs" />
@@ -358,6 +358,7 @@
     <Compile Include="Models\Enum\AddressType.cs" />
     <Compile Include="Models\Enum\OrderStatus.cs" />
     <Compile Include="Models\Enum\UserRole.cs" />
+    <Compile Include="Models\Response\ActiveRestaurantResponse.cs" />
     <Compile Include="Models\Response\BaseResponse.cs" />
     <Compile Include="Models\Response\GetMenuItemResponse.cs" />
     <Compile Include="Models\Response\LoginResponse.cs" />

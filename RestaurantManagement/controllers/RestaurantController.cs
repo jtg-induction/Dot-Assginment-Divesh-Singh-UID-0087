@@ -1,6 +1,11 @@
-﻿using RestaurantManagement.Models.Dto;
+﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+
+//using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services;
+using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +20,12 @@ namespace RestaurantManagement.Controllers
 {
     [Authorize]
     [RoutePrefix("api/restaurant")]
-    public class RestaurantController :ApiController
+    public class RestaurantController : ApiController
     {
-        private readonly RestaurantService _restaurantService;
-        private readonly MenuService _menuService;
+        private readonly IRestaurantService _restaurantService;
+        private readonly IMenuService _menuService;
 
-        public RestaurantController(RestaurantService restaurantService,MenuService menuService)
+        public RestaurantController(IRestaurantService restaurantService, IMenuService menuService)
         {
             _restaurantService = restaurantService;
             _menuService = menuService;
@@ -29,13 +34,41 @@ namespace RestaurantManagement.Controllers
         [Route("activerestaurant")]
         public async Task<IHttpActionResult> ActiveRestaurant()
         {
-            return Ok(await _restaurantService.GetRestaurantsAsync());
+            var activerestaurant = await _restaurantService.GetRestaurantsAsync();
+            var data = new List<ActiveRestaurantResponse>();
+            foreach (Restaurant i in activerestaurant)
+            {
+                data.Add(new ActiveRestaurantResponse
+                {
+                    RestaurantId = i.RestaurantId,
+                    Name = i.Name,
+                    AddressId = i.AddressId,
+                    Email = i.Email,
+                    PhoneNumber = i.PhoneNumber
+
+                });
+            }
+            var response = new BaseResponse<List<ActiveRestaurantResponse>>()
+            {
+                success = true,
+                message = ValidationMessages.ListOfRestaurant,
+                data = data
+            };
+            return Ok(response);
         }
         [HttpGet]
-        [Route("menu")]
-        public async Task<IHttpActionResult> MenuOfRestaurant(RestaurantMenuRequest restaurant)
+        [Route("menu/{id}")]
+        public async Task<IHttpActionResult> MenuOfRestaurant(int id)
         {
-            return Ok(await _menuService.GetMenuItemsAsync(restaurant.RestaurantId));
+            var data = await _menuService.GetMenuItemsAsync(id);
+
+            var response = new BaseResponse<List<GetMenuItemResponse>>()
+            {
+                success = true,
+                message = ValidationMessages.ListOfMenuItem,
+                data = data
+            };
+            return Ok(response);
         }
     }
 }

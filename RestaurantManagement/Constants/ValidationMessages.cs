@@ -24,11 +24,13 @@
         public const string LoginSuccess = "Login successful.";
         public const string UpdateSuccess = "Updated successful.";
         public const string Revoked = "Invalid Token";
-        public const string UserNotFound = "User Not Found";
-        public const string PasswordIncorrect = "Password Incorrect,Plz try again!";
+        public const string UserNotFound = "User Not Found!!";
+        public const string InvalidDetail = "User Credential Invalid!!";
         public const string LogoutSucess = "Logged out successfully.";
         public const string RefreshSuccess = "Refresh successfully.";
         public const string DeactivateSuccess = "Deactivate successfully.";
         public const string ActivateSuccess = "Activate successfully.";
+        public const string ListOfRestaurant = "List Of Active Restaurant!!";
+        public const string ListOfMenuItem = "List Of Active Items!!";
     }
 }
