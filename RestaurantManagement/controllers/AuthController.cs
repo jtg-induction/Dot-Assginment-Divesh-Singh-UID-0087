@@ -26,11 +26,14 @@ namespace RestaurantManagement.Controllers
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly IObtainJwtService _jwtClaim;
-        public AuthController(IUserService userservice, IObtainJwtService jwtclaim, ITokenService tokenService)
+        private readonly IClaimHelper _claimHelper;
+
+        public AuthController(IUserService userservice, IObtainJwtService jwtclaim, ITokenService tokenService, IClaimHelper claimHelper)
         {
             _userService = userservice;
             _jwtClaim = jwtclaim;
             _tokenService = tokenService;
+            _claimHelper = claimHelper;
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace RestaurantManagement.Controllers
             string token = _tokenService.GetRefreshTokenFromCookie();
             var refreshtoken = await _tokenService.RefreshTheTokenAsync(token);
             var tokenDetail = await _tokenService.GetTokenDetailAsync(refreshtoken);
-            User user=await _userService.GetUserAsync(tokenDetail.UserId);
+            User user = await _userService.GetUserAsync(tokenDetail.UserId);
             var accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             var responseData = new LoginResponse()
@@ -114,8 +117,8 @@ namespace RestaurantManagement.Controllers
         [Route("deactivate")]
         public async Task<IHttpActionResult> DeactivateAccount()
         {
-            int currentUserId = await ClaimHelper.GetUserIdFromClaim(User.Identity);
-         var user=  await _userService.DeactivateAccount(currentUserId);
+            int currentUserId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var user = await _userService.DeactivateAccount(currentUserId);
             var response = new BaseResponse<string>
             {
                 success = true,
@@ -130,18 +133,17 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
         {
 
-           var user= await _userService.ActivateAccount(login);
+            var user = await _userService.ActivateAccount(login);
             var response = new BaseResponse<string>
             {
                 success = true,
                 message = ValidationMessages.ActivateSuccess
             };
-            return Ok( response);
+            return Ok(response);
 
-                
+
         }
 
 
     }
 }
-

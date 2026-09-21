@@ -8,9 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Helper
 {
-    public class ClaimHelper
+    public class ClaimHelper :IClaimHelper
     {
-        public static async Task<int> GetUserIdFromClaim(System.Security.Principal.IIdentity User)
+        public  async Task<int> GetUserIdFromClaim(System.Security.Principal.IIdentity User)
         {
             var claimsIdentity = User as ClaimsIdentity;
             var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);

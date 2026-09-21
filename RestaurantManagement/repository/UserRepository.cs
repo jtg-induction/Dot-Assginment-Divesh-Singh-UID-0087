@@ -30,13 +30,13 @@ namespace RestaurantManagement.Repository
         /// </summary>
         /// <param name="email">The email to search for.</param>
         /// <returns>The matching user if found; otherwise, null.</returns>
-        public async Task<string> GetUserEmail(string email)
-        {
+        //public async Task<string> GetUserEmail(string email)
+        //{
         
-            User user = await _db.Users.FirstAsync(e => e.Email == email);
+        //    User user = await _db.Users.FirstAsync(e => e.Email == email);
           
-            return user.Email;
-        }
+        //    return user.Email;
+        //}
         public async Task<User> GetUserAsync(string email)
         {
 
@@ -84,15 +84,9 @@ namespace RestaurantManagement.Repository
             var user = await _db.Users.FindAsync(id);
             return user != null && user.IsActive;
         }
-        public async Task<bool> EmailExistsOtherThanThisIdAsync(string email, int id)
-        {
-           return await  _db.Users.AnyAsync(u => u.Email == email && u.UserId != id);
-        }
+      
 
-        public async Task<bool> PhoneNumberExistsOtherThanThisIdAsync(string phoneNumber,int id)
-        {
-            return await _db.Users.AnyAsync(u => u.PhoneNumber == phoneNumber && u.UserId != id);
-        }
+    
 
         public async Task UpdateAccount(User user,UpdateAccountDto updateaccount)
         {

@@ -335,6 +335,7 @@
     </Compile>
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="Helper\ClaimHelper.cs" />
+    <Compile Include="Helper\IClaimHelper.cs" />
     <Compile Include="Migrations\202609151738339_add.cs" />
     <Compile Include="Migrations\202609151738339_add.Designer.cs">
       <DependentUpon>202609151738339_add.cs</DependentUpon>
