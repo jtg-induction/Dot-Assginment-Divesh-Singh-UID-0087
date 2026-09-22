@@ -10,6 +10,6 @@ namespace RestaurantManagement.Services.Interface
 {
     public interface IRestaurantService
     {
-        Task<List<Restaurant>> GetRestaurantsAsync();
+        Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync();
     }
 }

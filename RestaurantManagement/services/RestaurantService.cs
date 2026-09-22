@@ -18,9 +18,23 @@ namespace RestaurantManagement.Services
         {
             _restaurantRepository = restaurantRepository;
         }
-        public async Task<List<Restaurant>> GetRestaurantsAsync()
+        public async Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync()
         {
-            return await _restaurantRepository.GetRestaurantsAsync();
+            var activeRestaurants = await _restaurantRepository.GetRestaurantsAsync();
+            var data = new List<ActiveRestaurantResponse>();
+            foreach (Restaurant restaurant in activeRestaurants)
+            {
+                data.Add(new ActiveRestaurantResponse
+                {
+                    RestaurantId = restaurant.RestaurantId,
+                    Name = restaurant.Name,
+                    AddressId = restaurant.AddressId,
+                    Email = restaurant.Email,
+                    PhoneNumber = restaurant.PhoneNumber
+
+                });
+            }
+            return data;
         }
     }
 }

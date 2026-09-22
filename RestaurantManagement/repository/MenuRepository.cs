@@ -3,6 +3,7 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,11 +24,8 @@ namespace RestaurantManagement.Repository
         }
         public async Task<List<MenuItem>> GetMenuItem(int id)
         {
-            return _db.MenuItems.Where(e => e.RestaurantId == id).ToList();
+            return await _db.MenuItems.Where(e => e.RestaurantId == id).ToListAsync();
         }
-        public async Task UpdateTheQuantity(int id)
-        {
-
-        }
+     
     }
 }

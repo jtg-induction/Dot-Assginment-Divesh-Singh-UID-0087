@@ -28,8 +28,8 @@ namespace RestaurantManagement.tests.Controller
         [TestMethod]
         public async Task activerestaurant()
         {
-            _restaurantService.Setup(e => e.GetRestaurantsAsync()).ReturnsAsync(new List<Restaurant> { new Restaurant { RestaurantId = 1, Name = "Test" } });
-            var response= await _restaurantController.ActiveRestaurant();
+            _restaurantService.Setup(e => e.GetRestaurantsAsync()).ReturnsAsync(new List<ActiveRestaurantResponse> { new ActiveRestaurantResponse { RestaurantId = 1, Name = "Test" } });
+            var response= await _restaurantController.GetRestaurants();
             //Assert.Fail(response.GetType().FullName);
             var okk = response as OkNegotiatedContentResult<BaseResponse<List<ActiveRestaurantResponse>>>;
             Assert.IsNotNull(okk);
@@ -38,7 +38,7 @@ namespace RestaurantManagement.tests.Controller
         public  async Task menuitem()
         {
             _menuService.Setup(e => e.GetMenuItemsAsync(1)).ReturnsAsync(It.IsAny<List<GetMenuItemResponse>>());
-            var response = await _restaurantController.MenuOfRestaurant(1);
+            var response = await _restaurantController.GetMenuByRestaurantId(1);
             var okk = response as OkNegotiatedContentResult<BaseResponse<List<GetMenuItemResponse>>>;
             Assert.IsNotNull(okk);
         }
