@@ -13,7 +13,6 @@ namespace RestaurantManagement.Tests
         [TestInitialize]
         public void SetUp()
         {
-            // Initialize the actual service implementation (do not mock this)
             _passwordService = new PasswordService();
         }
 

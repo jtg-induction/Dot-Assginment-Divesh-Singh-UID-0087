@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
@@ -19,6 +19,8 @@ using System.Web.WebPages;
 
 namespace RestaurantManagement.Services
 {
+
+
     public class RestaurantService : IRestaurantService
     {
         private readonly IRestaurantRepository _restaurantRepository;
@@ -32,17 +34,30 @@ namespace RestaurantManagement.Services
             _addressRepository = addressRepository;
             _restaurantOwnerRepository = restaurantOwnerRepository;
         }
-        public async Task<List<Restaurant>> GetRestaurantsAsync()
+        public async Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync()
         {
-            return await _restaurantRepository.GetRestaurantsAsync();
-        }
-        public async Task<string> GetRestaurantName(int id)
-        {
-            return await _restaurantRepository.GetRestaurantName(id);
+            var activeRestaurants = await _restaurantRepository.GetRestaurantsAsync();
+            var data1 = new List<ActiveRestaurantResponse>();
+            foreach (Restaurant restaurant in activeRestaurants)
+            {
+                var data = await _addressRepository.GetAddress(restaurant.AddressId);
+                string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
+                data1.Add(new ActiveRestaurantResponse
+                {
+                    RestaurantId = restaurant.RestaurantId,
+                    Name = restaurant.Name,
+                    Address = address,
+                    Email = restaurant.Email,
+                    PhoneNumber = restaurant.PhoneNumber
+
+                });
+            }
+            return data1;
         }
         public async Task AddRestaurant(AddRestaurantRequest addRestaurant)
         {
-            using (TransactionScope transaction =new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)){
+            using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
                 if (await _restaurantRepository.EmailExixts(addRestaurant.Email))
                 {
                     throw new ResourceException(ValidationMessages.DuplicateEmail);
@@ -51,61 +66,73 @@ namespace RestaurantManagement.Services
                 {
                     throw new ResourceException(ValidationMessages.DuplicatePhone);
                 }
-                if (!await _userRepository.UserExists(addRestaurant.UserId))
+                foreach (string email in addRestaurant.UserEmail)
                 {
-                    throw new ResourceException(ValidationMessages.UserNotFound);
+                    if (!await _userRepository.EmailExistsAsync(email))
+                    {
+                        throw new ResourceException($"{email} Not Found!!");
+                    }
                 }
-                if ((await _addressRepository.GetAddress(addRestaurant.AddressId)).IsEmpty())
+                var address = new Address
                 {
-                    throw new ResourceException(ValidationMessages.AddressNotFound);
-                }
-
+                    Street=addRestaurant.Street,
+                    City=addRestaurant.City,
+                    State=addRestaurant.State,
+                    PinCode=addRestaurant.Pincode,
+                    Country=addRestaurant.Pincode,
+                    AddressType=addRestaurant.AddressType
+                };
+               await  _addressRepository.AddAddressAysnc(address);
                 var restaurant = new Restaurant
                 {
                     Name = addRestaurant.Name,
-                    AddressId = addRestaurant.AddressId,
+                    AddressId = address.AddressId,
                     Email = addRestaurant.Email,
                     PhoneNumber = addRestaurant.PhoneNumber
                 };
                 await _restaurantRepository.AddRestaurant(restaurant);
 
                 List<RestaurantOwner> restaurantOwners = new List<RestaurantOwner>();
-                foreach (int i in addRestaurant.UserId)
+                foreach (string email in addRestaurant.UserEmail)
                 {
                     restaurantOwners.Add(new RestaurantOwner
                     {
                         RestaurantId = restaurant.RestaurantId,
-                        UserId = i
+                        UserId = (await _userRepository.GetUserAsync(email)).UserId
 
                     });
                 }
                 await _restaurantOwnerRepository.AddRestaurantOwner(restaurantOwners);
-                await _userRepository.ChangeRoleToOwner(addRestaurant.UserId);
+                await _userRepository.ChangeRoleToOwner(addRestaurant.UserEmail);
                 transaction.Complete();
             }
         }
         public async Task AddRestaurantowner(AddRestaurantOwnerRequest addRestaurantOwnerRequest)
         {
-            if((await _restaurantRepository.GetRestaurantName(addRestaurantOwnerRequest.RestaurantId)).IsEmpty())
+            var restaurant = await _restaurantRepository.RestaurantIsActive(addRestaurantOwnerRequest.RestaurantEmail);
+            if (restaurant==null)
             {
                 throw new ResourceException(ValidationMessages.RestaurantNotFound);
             }
-            if (!await _userRepository.UserExists(addRestaurantOwnerRequest.UserId))
+            foreach (string email in addRestaurantOwnerRequest.UserEmail)
             {
-                throw new ResourceException(ValidationMessages.UserNotFound);
+                if (!await _userRepository.EmailExistsAsync(email))
+                {
+                    throw new ResourceException($"{email} Not Found!!");
+                }
             }
             List<RestaurantOwner> restaurantOwners = new List<RestaurantOwner>();
-            foreach (int i in addRestaurantOwnerRequest.UserId)
+            foreach (string email in addRestaurantOwnerRequest.UserEmail)
             {
                 restaurantOwners.Add(new RestaurantOwner
                 {
-                    RestaurantId = addRestaurantOwnerRequest.RestaurantId,
-                    UserId = i
+                    RestaurantId = restaurant.RestaurantId,
+                    UserId = (await _userRepository.GetUserAsync(email)).UserId
 
                 });
             }
             await _restaurantOwnerRepository.AddRestaurantOwner(restaurantOwners);
-            await _userRepository.ChangeRoleToOwner(addRestaurantOwnerRequest.UserId);
+            await _userRepository.ChangeRoleToOwner(addRestaurantOwnerRequest.UserEmail);
 
         }
     }

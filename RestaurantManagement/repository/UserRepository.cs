@@ -49,7 +49,7 @@ namespace RestaurantManagement.Repository
         }
         public async Task<bool> UserExists(List<int> id)
         {
-            return (await _db.Users.Where(e=>id.Contains(e.UserId)).ToListAsync()).Count()==id.Count;
+            return (await _db.Users.Where(e => id.Contains(e.UserId)).ToListAsync()).Count() == id.Count;
         }
 
         /// <summary>
@@ -111,20 +111,30 @@ namespace RestaurantManagement.Repository
             user.IsActive = true;
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateBalance(int id,decimal totalamount)
+        public async Task UpdateBalance(int id, decimal totalamount)
         {
             var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+
             if (user.Balance < totalamount)
             {
                 throw new ResourceException(ValidationMessages.InsufficientBalance);
             }
             user.Balance -= totalamount;
-           await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
-      public async Task ChangeRoleToOwner(List<int> id)
+        public async Task ChangeRoleToOwner(List<string> id)
         {
-            var ids = String.Join(",", id);
-            await _db.Database.ExecuteSqlCommandAsync($"UPDATE  USERS SET ROLE=2 WHERE USERID IN ({ids})");
+            // 1. Transform each email to be wrapped in single quotes: 'email'
+            var quotedEmails = id.Select(e => $"'{e}'");
+            var ids = String.Join(",", quotedEmails);
+            await _db.Database.ExecuteSqlCommandAsync($"UPDATE  USERS SET ROLE=2 WHERE EMAIL IN ({ids})");
         }
+        public async Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount)
+        {
+            var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+            user.Balance += totalamount;
+            await _db.SaveChangesAsync();
+        }
+
     }
 }

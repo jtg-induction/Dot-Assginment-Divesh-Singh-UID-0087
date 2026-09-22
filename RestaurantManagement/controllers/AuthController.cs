@@ -118,6 +118,9 @@ namespace RestaurantManagement.Controllers
         {
             int currentUserId = await _claimHelper.GetUserIdFromClaim(User.Identity);
             await _userService.DeactivateAccount(currentUserId);
+            string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
+            await _tokenService.RevokedAsync(currentRefreshToken);
+            _tokenService.ClearRefreshTokenCookie();
             var response = new BaseResponse<string>
             {
                 success = true,

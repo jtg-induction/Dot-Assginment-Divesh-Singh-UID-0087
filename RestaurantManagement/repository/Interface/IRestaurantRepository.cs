@@ -13,8 +13,10 @@ namespace RestaurantManagement.Repository.Interface
                 Task<List<Restaurant>> GetRestaurantsAsync();
                 Task<string> GetRestaurantName(int id);
                 Task AddRestaurant(Restaurant restaurant);
-        Task<bool> EmailExixts(string email);
-        Task<bool> PhoneNumberExixts(string ph);
+                Task<bool> EmailExixts(string email);
+                Task<bool> PhoneNumberExixts(string ph);
+                Task<bool> RestaurantIsActive(int id);
+        Task<Restaurant> RestaurantIsActive(string email);
 
 
         }

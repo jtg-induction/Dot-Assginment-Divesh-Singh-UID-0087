@@ -52,16 +52,19 @@
                 public const string ItemRequired = "Required One Item to Select";
                 public const string AddressIdRequired = "Plz Select One Address";
                 public const string ListOfRestaurant = "List Of Active Restaurant!!";
-                public const string ListOfMenuItem = "List Of Active Items!!";
                 public const string MenuListInvalid = "Menu items are not valid!!";
                 public const string OneRestaurant = "Add All The Item from one Restaurant!!";
                 public const string InsufficientBalance = "Insufficient Balance!!!!";
                 public const string OrderRejected = "Order is Already Rejected By Restaurant!!";
                 public const string OrderDispatched = "Order is Already Out For Delivery You Cant Cancel!!";
                 public const string OrderDelivered = "Order is Already Delivered!!";
-                public const string UserIdRequired = "User Id Required!!";
-        public const string RestaurantNotFound = "Restaurant Not Found!!!";
-        public const string AddressNotFound = "Addrees not Exists First Add the Address!!";
+                public const string UserEmailRequired = "User Email Required!!";
+                public const string RestaurantNotFound = "Restaurant Not Found!!!";
+                public const string AddressNotFound = "Addrees not Exists First Add the Address!!";
+                public const string ListOfMenuItem = "List Of  Items!!";
+                public const string InvalidRestaurantId = "Invalid restaurant ID. Identifier must be greater than zero.";
+                public const string OrderCancelled = "Order is Already cancel!!";
+                public const string OrderMismatch = "Order Not Realated to customer!!";
 
         }
 }

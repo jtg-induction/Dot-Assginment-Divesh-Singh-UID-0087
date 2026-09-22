@@ -30,7 +30,7 @@ namespace RestaurantManagement.Controllers
         [Authorize]
         [HttpPost]
         [Route("add")]
-        public async Task<IHttpActionResult> AddAdress(AddAddressRequest addAddress)
+        public async Task<IHttpActionResult> AddAddress(AddAddressRequest addAddress)
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             int id = await _addressService.AddUserAddress(addAddress);
@@ -48,21 +48,8 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> GetUserAddress()
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            var address = await _userAddressService.GetAddress(userid);
-            List<AddressResponse> data = new List<AddressResponse>();
-            foreach (Models.Entity.Address i in address)
-            {
-                data.Add(new AddressResponse
-                {
-                    AddressId = i.AddressId,
-                    Street = i.Street,
-                    City = i.City,
-                    State=i.State,
-                    PinCode = i.PinCode,
-                    Country = i.Country,
-                    AddressType = i.AddressType.ToString()
-                });
-            }
+            var data = await _userAddressService.GetAddress(userid);
+          
             var response = new BaseResponse<List<AddressResponse>>
             {
                 success = true,

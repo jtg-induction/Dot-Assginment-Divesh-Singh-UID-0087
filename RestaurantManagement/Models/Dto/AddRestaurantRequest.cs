@@ -8,12 +8,10 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
-    public class AddRestaurantRequest
+    public class AddRestaurantRequest :AddAddressRequest
     {
         [Required(ErrorMessage =ValidationMessages.NameRequired)]
         public string Name { get; set; }
-        [Required(ErrorMessage =ValidationMessages.AddressIdRequired)]
-        public int AddressId { get; set; }
         [Required(ErrorMessage = ValidationMessages.EmailRequired)]
         [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         public string Email { get; set; }
@@ -21,7 +19,7 @@ namespace RestaurantManagement.Models.Dto
         [Required(ErrorMessage = ValidationMessages.PhoneRequired)]
         [RegularExpression(ValidationRules.PhoneRegexPattern, ErrorMessage = ValidationMessages.InvalidPhoneFormat)]
         public string PhoneNumber { get; set; }
-        [Required(ErrorMessage =ValidationMessages.UserIdRequired)]
-        public List<int> UserId { get; set; }
+        [Required(ErrorMessage =ValidationMessages.UserEmailRequired)]
+        public List<string> UserEmail { get; set; }
     }
 }

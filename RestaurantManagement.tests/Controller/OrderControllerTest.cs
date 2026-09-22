@@ -65,7 +65,77 @@ namespace RestaurantManagement.Tests.Controllers
             // 3. ASSERT
             var createdResult = actionResult as CreatedNegotiatedContentResult<BaseResponse<OrderResponse>>;
 
-            Assert.IsNotNull(createdResult, "The controller action should return an HTTP 201 Created result.");
+            Assert.IsNotNull(createdResult);
+        }
+        [TestMethod]
+        public async Task GetOrderDetail_WhenOrdersExist_ReturnsOkWithOrdersList()
+        {
+            // Arrange
+            int targetUserId = 1;
+            var mockOrders = new List<GetOrderResponse>
+        {
+            new GetOrderResponse { OrderId = 101, TotalAmount = 45.00m },
+            new GetOrderResponse { OrderId = 102, TotalAmount = 20.50m }
+        };
+
+            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+
+            _mockOrderService
+                .Setup(s => s.GetOrder(targetUserId))
+                .ReturnsAsync(mockOrders);
+
+            // Act
+            var result = await _controller.GetOrderDetail();
+
+            // Assert
+            var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderResponse>>>;
+            Assert.IsNotNull(okResult);
+         
+        }
+        [TestMethod]
+        public async Task GetOrderItemDetail_WhenItemsExist_ReturnsOkWithItemsList()
+        {
+            // Arrange
+            int orderId = 101;
+            var mockItems = new List<GetOrderItemResponse>
+        {
+            new GetOrderItemResponse { ItemId = 5001, ItemName = "Burger" },
+            new GetOrderItemResponse { ItemId = 5002, ItemName = "Fries" }
+        };
+
+            _mockOrderService
+                .Setup(s => s.GetOrderItem(orderId))
+                .ReturnsAsync(mockItems);
+
+            // Act
+            var result = await _controller.GetOrderItemDetail(orderId);
+
+            // Assert
+            var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderItemResponse>>>;
+            Assert.IsNotNull(okResult);
+           
+        }
+        [TestMethod]
+        public async Task CancelOrder_WhenCalled_ExecutesSuccessfullyAndReturnsOk()
+        {
+            // Arrange
+            int orderId = 101;
+            int targetUserId = 1;
+
+            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+
+
+            _mockOrderService
+                .Setup(s => s.OrderCancel(orderId, targetUserId))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.CancelOrder(orderId);
+
+            // Assert
+            var okResult = result as OkNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(okResult);
+          
         }
     }
 }

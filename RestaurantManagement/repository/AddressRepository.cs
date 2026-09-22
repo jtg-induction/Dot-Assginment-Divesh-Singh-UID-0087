@@ -9,7 +9,7 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
-    public class AddressRepository :IAddressRepository
+    public class AddressRepository : IAddressRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -30,15 +30,10 @@ namespace RestaurantManagement.Repository
             _db.Addresses.Add(address);
             await _db.SaveChangesAsync();
         }
-        public async Task<string> GetAddress(int id)
+        public async Task<Address> GetAddress(int id)
         {
-            var data =await  _db.Addresses.FindAsync(id);
-            if (data == null)
-            {
-                return string.Empty;
-            }
-            string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
-            return address;
+            var data = await _db.Addresses.FindAsync(id);
+            return data;
         }
 
     }

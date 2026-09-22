@@ -69,15 +69,43 @@ namespace RestaurantManagement.Tests.Controllers
                 .Returns(Task.CompletedTask);
 
             // 2. ACT
-            IHttpActionResult actionResult = await _controller.AddAdress(requestPayload);
+            IHttpActionResult actionResult = await _controller.AddAddress(requestPayload);
 
             // 3. ASSERT
             var okResult = actionResult as OkNegotiatedContentResult<BaseResponse<string>>;
 
             Assert.IsNotNull(okResult);
         }
+        [TestMethod]
+        public async Task GetUserAddress_WhenUserHasAddresses_ReturnsOkWithData()
+        {
+            // Arrange
+            int targetUserId = 123;
+            var mockAddresses = new List<AddressResponse>
+        {
+            new AddressResponse { AddressId = 1, Street = "123 Main Road", City = "Mumbai" },
+            new AddressResponse { AddressId = 2, Street = "456 Park Lane", City = "Delhi" }
+        };
 
-      
+            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+
+            _mockUserAddressService
+                .Setup(s => s.GetAddress(targetUserId))
+                .ReturnsAsync(mockAddresses);
+
+            // Act
+            var result = await _controller.GetUserAddress();
+
+            // Assert
+            Assert.IsNotNull(result);
+
+            var okResult = result as OkNegotiatedContentResult<BaseResponse<List<AddressResponse>>>;
+
+            Assert.IsNotNull(okResult);
+           
+        }
+
+
 
 
     }

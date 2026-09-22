@@ -16,17 +16,15 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
-    [RoutePrefix("api/order")]
+    [RoutePrefix("api/orders")]
     public class OrderController : ApiController
     {
         private readonly IOrderService _orderService;
-        private readonly IRestaurantService _restaurantService;
         private readonly IClaimHelper _claimHelper;
-        public OrderController(IOrderService orderService, IClaimHelper claimHelper,RestaurantService restaurantService)
+        public OrderController(IOrderService orderService, IClaimHelper claimHelper)
         {
             _orderService = orderService;
             _claimHelper = claimHelper;
-            _restaurantService = restaurantService;
         }
         [Authorize]
         [HttpPost]
@@ -35,8 +33,6 @@ namespace RestaurantManagement.Controllers
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             var data = await _orderService.AddOrder(addorder.ItemAndQuantity, addorder.AddressId, userid);
-
-
             var response = new BaseResponse<OrderResponse>()
             {
                 success = true,
@@ -53,20 +49,7 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> GetOrderDetail()
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            var order = await _orderService.GetOrder(userid);
-            var data = new List<GetOrderResponse>();
-            foreach (Order i in order)
-            {
-                data.Add(new GetOrderResponse
-                {
-                    OrderId = i.OrderId,
-                    RestaurantName = await _restaurantService.GetRestaurantName(i.RestaurantId),
-                    TotalAmount = i.TotalAmount,
-                    Address = i.Address,
-                    Status = i.Status.ToString()
-
-                });
-            }
+            var data = await _orderService.GetOrder(userid);
             var response = new BaseResponse<List<GetOrderResponse>>
             {
                 success = true,
@@ -77,23 +60,11 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("get/{id}")]
+        [Route("{id}/get")]
         public async Task<IHttpActionResult> GetOrderItemDetail(int id)
         {
-            var order = await _orderService.GetOrderItem(id);
-            var data = new List<GetOrderItemResponse>();
-            foreach (OrderItem i in order)
-            {
-                data.Add(new GetOrderItemResponse
-                {
-                    OrderItemId = i.OrderItemId,
-                    ItemId = i.ItemId,
-                    ItemName = i.ItemName,
-                    Price = i.Price,
-                    Quantity = i.Quantity
+            var data = await _orderService.GetOrderItem(id);
 
-                });
-            }
             var response = new BaseResponse<List<GetOrderItemResponse>>
             {
                 success = true,
@@ -104,11 +75,11 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize(Roles = "Customer")]
         [HttpPut]
-        [Route("cancel/{id}")]
+        [Route("{id}/cancel")]
         public async Task<IHttpActionResult> CancelOrder(int id)
         {
-
-            await _orderService.OrderCancel(id);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            await _orderService.OrderCancel(id, userid);
             var response = new BaseResponse<string>
             {
                 success = true,

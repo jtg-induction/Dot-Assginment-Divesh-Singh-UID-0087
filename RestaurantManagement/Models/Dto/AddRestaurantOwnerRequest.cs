@@ -9,10 +9,10 @@ namespace RestaurantManagement.Models.Dto
 {
     public class AddRestaurantOwnerRequest
     {
-        [Required(ErrorMessage ="RestaurantId Required!!")]
-        public int RestaurantId { get; set; }
+        [Required(ErrorMessage ="RestaurantEmail Required!!")]
+        public string RestaurantEmail { get; set; }
 
-        [Required(ErrorMessage = ValidationMessages.UserIdRequired)]
-        public List<int> UserId { get; set; }
+        [Required(ErrorMessage = ValidationMessages.UserEmailRequired)]
+        public List<string> UserEmail { get; set; }
     }
 }

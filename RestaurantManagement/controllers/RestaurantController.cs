@@ -12,12 +12,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
-//using System.Web.Http.Results;
-
 namespace RestaurantManagement.Controllers
 {
     [Authorize]
-    [RoutePrefix("api/restaurant")]
+    [RoutePrefix("api/restaurants")]
     public class RestaurantController : ApiController
     {
         private readonly IRestaurantService _restaurantService;
@@ -29,42 +27,34 @@ namespace RestaurantManagement.Controllers
             _menuService = menuService;
         }
         [HttpGet]
-        [Route("activerestaurant")]
-        public async Task<IHttpActionResult> ActiveRestaurant()
+        [Route("")]
+        public async Task<IHttpActionResult> GetRestaurants()
         {
-            var activerestaurant = await _restaurantService.GetRestaurantsAsync();
-            var data = new List<ActiveRestaurantResponse>();
-            foreach (Restaurant i in activerestaurant)
-            {
-                data.Add(new ActiveRestaurantResponse
-                {
-                    RestaurantId = i.RestaurantId,
-                    Name = i.Name,
-                    AddressId = i.AddressId,
-                    Email = i.Email,
-                    PhoneNumber = i.PhoneNumber
-
-                });
-            }
+           var Data = await _restaurantService.GetRestaurantsAsync();
+           
             var response = new BaseResponse<List<ActiveRestaurantResponse>>()
             {
                 success = true,
                 message = ValidationMessages.ListOfRestaurant,
-                data = data
+                data = Data
             };
             return Ok(response);
         }
         [HttpGet]
-        [Route("menu/{id}")]
-        public async Task<IHttpActionResult> MenuOfRestaurant(int id)
+        [Route("{id}/menu-items")]
+        public async Task<IHttpActionResult> GetMenuByRestaurantId(int id)
         {
-            var data = await _menuService.GetMenuItemsAsync(id);
+            if (id <= 0)
+            {
+                throw new InvalidOperationException(ValidationMessages.InvalidRestaurantId);
+            }
+            var Data = await _menuService.GetMenuItemsAsync(id);
 
             var response = new BaseResponse<List<GetMenuItemResponse>>()
             {
                 success = true,
                 message = ValidationMessages.ListOfMenuItem,
-                data = data
+                data = Data
             };
             return Ok(response);
         }
@@ -83,7 +73,7 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("addowner")]
+        [Route("add-owner")]
         public async Task<IHttpActionResult> AddRestaurantOwner(AddRestaurantOwnerRequest addRestaurantOwnerRequest)
         {
             await _restaurantService.AddRestaurantowner(addRestaurantOwnerRequest);
