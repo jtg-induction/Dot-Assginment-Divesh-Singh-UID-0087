@@ -44,40 +44,39 @@ namespace RestaurantManagement.Tests.Services
         [TestMethod]
         public async Task AddOrder_ValidInput_SuccessfullyPlacesOrderAndDeductsBalance()
         {
-            // 1. ARRANGEMENT
             int userId = 1;
             int addressId = 10;
-            string mockAddressText = "123 Main St, New York, NY";
 
             var userOrder = new Dictionary<int, int>
-            {
-                { 101, 2 }, // 2 Burgers
-                { 102, 1 }  // 1 Fry
-            };
+    {
+        { 101, 2 },
+        { 102, 1 }
+    };
 
             var mockMenuItems = new List<MenuItem>
-            {
-                new MenuItem { ItemId = 101, DishName = "Burger", Price = 10.00m, RestaurantId = 5, AvailableQuantity = 10 },
-                new MenuItem { ItemId = 102, DishName = "Fries", Price = 5.00m, RestaurantId = 5, AvailableQuantity = 5 }
-            };
-            // Expected total calculation: (10.00 * 2) + (5.00 * 1) = 25.00m
+    {
+        new MenuItem { ItemId = 101, DishName = "Burger", Price = 10.00m, RestaurantId = 5, AvailableQuantity = 10 },
+        new MenuItem { ItemId = 102, DishName = "Fries", Price = 5.00m, RestaurantId = 5, AvailableQuantity = 5 }
+    };
 
-            // Mock Address Fetching
             _mockAddressRepository
                 .Setup(repo => repo.GetAddress(addressId))
-                .ReturnsAsync(mockAddressText);
+                .ReturnsAsync(new Address
+                {
+                    AddressId = addressId,
+                    Street = "123 Main St",
+                    City = "New York",
+                    State = "NY"
+                });
 
-            // Mock Item Details Validation
             _mockMenuRepository
                 .Setup(repo => repo.GetItemDetail(userOrder))
                 .ReturnsAsync(mockMenuItems);
 
-            // Mock User Balance Update
             _mockUserRepository
                 .Setup(repo => repo.UpdateBalance(userId, 25.00m))
                 .Returns(Task.CompletedTask);
 
-            // Mock Order Insertion (Simulate SQL Auto-incrementing the identity OrderId to 777)
             _mockOrderRepository
                 .Setup(repo => repo.PlacedOrder(It.IsAny<Order>()))
                 .Callback<Order>(o => {
@@ -87,19 +86,17 @@ namespace RestaurantManagement.Tests.Services
                 })
                 .Returns(Task.CompletedTask);
 
-            // Mock OrderItems Insertion
             _mockOrderItemRepository
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            // 2. ACT
             OrderResponse response = await _orderService.AddOrder(userOrder, addressId, userId);
 
-            // 3. ASSERT
             Assert.IsNotNull(response);
+           
         }
 
-   
-    
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
 using System;
@@ -54,7 +55,7 @@ namespace RestaurantManagement.Tests.Services
                 .ReturnsAsync(expectedAddresses);
 
             // 2. ACT
-            List<Address> result = await _userAddressService.GetAddress(targetUserId);
+            List<AddressResponse> result = await _userAddressService.GetAddress(targetUserId);
 
             // 3. ASSERT
             Assert.IsNotNull(result);
@@ -70,7 +71,7 @@ namespace RestaurantManagement.Tests.Services
                 .ReturnsAsync(new List<Address>()); 
 
             // 2. ACT
-            List<Address> result = await _userAddressService.GetAddress(targetUserId);
+            List<AddressResponse> result = await _userAddressService.GetAddress(targetUserId);
 
             // 3. ASSERT
             Assert.IsNotNull(result);
