@@ -30,11 +30,10 @@ namespace RestaurantManagement.Repository
             _db.Addresses.Add(address);
             await _db.SaveChangesAsync();
         }
-        public async Task<string> GetAddress(int id)
+        public async Task<Address> GetAddress(int id)
         {
             var data =await  _db.Addresses.FindAsync(id);
-            string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
-            return address;
+            return data;
         }
 
     }

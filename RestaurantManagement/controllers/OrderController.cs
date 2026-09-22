@@ -15,7 +15,7 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
-    [RoutePrefix("api/order")]
+    [RoutePrefix("api/orders")]
     public class OrderController :ApiController
     {
         private readonly IOrderService _orderService;

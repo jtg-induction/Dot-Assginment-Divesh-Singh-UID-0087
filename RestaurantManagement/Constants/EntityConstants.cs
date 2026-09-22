@@ -11,6 +11,7 @@ namespace RestaurantManagement.Constants
     public static class EntityConstants
     {
         public const int MaxNameLength = 255;
+        public const int MinNameLength = 3;
         public const int MaxEmailLength = 254; //mailbox name length limit as per RFC 5321
         public const int MaxPhoneNumberLength = 15;
         public const int MaxDishNameLength = 183;

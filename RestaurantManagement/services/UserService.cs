@@ -85,7 +85,7 @@ namespace RestaurantManagement.Services
         {
             User userdetail = await _userrepository.GetUserAsync(id);
 
-            if (userdetail == null)
+            if (userdetail == null ||! await _userrepository.IsActiveAsync(id)) 
             {
                 throw new UnauthenticatedException(ValidationMessages.UserNotFound);
             }

@@ -10,7 +10,8 @@ namespace RestaurantManagement.Models.Dto
         public class AddUserRequest
         {
                 [Required(ErrorMessage = ValidationMessages.NameRequired)]
-                public string Name { get; set; }
+                [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
+                  public string Name { get; set; }
 
                 /// <summary>
                 /// Gets or sets the user's password.

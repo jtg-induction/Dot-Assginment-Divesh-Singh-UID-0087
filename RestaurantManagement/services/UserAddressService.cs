@@ -1,5 +1,6 @@
 ﻿using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
@@ -28,11 +29,25 @@ namespace RestaurantManagement.Services
             };
             await _userAddressRepository.AddUserAddressAysnc(adduseraddress);
         }
-        public async Task<List<Address>> GetAddress(int id)
+        public async Task<List<AddressResponse>> GetAddress(int id)
           {
           var address=await  _userAddressRepository.GetUserAddress(id);
 
-            return address;
+            List<AddressResponse> data = new List<AddressResponse>();
+            foreach (Address useraddress in address)
+            {
+                data.Add(new AddressResponse
+                {
+                    AddressId = useraddress.AddressId,
+                    Street = useraddress.Street,
+                    City = useraddress.City,
+                    State = useraddress.State,
+                    PinCode = useraddress.PinCode,
+                    Country = useraddress.Country,
+                    AddressType = useraddress.AddressType.ToString()
+                });
+            }
+            return data;
         }
     }
 }

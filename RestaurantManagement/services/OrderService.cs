@@ -1,4 +1,5 @@
 ﻿using NMemory.Transactions;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
@@ -32,11 +33,17 @@ namespace RestaurantManagement.Services
         }
         public async Task<OrderResponse> AddOrder(Dictionary<int,int> item,int addressid,int userid)
         {
+            if (item.Count < 0)
+            {
+                throw new InvalidOperationException(ValidationMessages.ItemRequired);
+            }
            
-            var data=new OrderResponse();
+            var data1=new OrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-            string address = await _addressRepository.GetAddress(addressid);
+            var data = await _addressRepository.GetAddress(addressid);
+                string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
+
                 var menu = await _menuRepository.GetItemDetail(item);
                 decimal totalamount = 0;
                 foreach (MenuItem i in menu)
@@ -68,7 +75,7 @@ namespace RestaurantManagement.Services
                    
                 }
                 await _orderItemRepository.AddOrderItem(orderitems);
-                data = new OrderResponse()
+                data1 = new OrderResponse()
                 {
                     OrderId = order.OrderId,
                     RestaurantId = order.RestaurantId,
@@ -78,7 +85,7 @@ namespace RestaurantManagement.Services
                 };
                 transactionScope.Complete();
             }
-            return data;
+            return data1;
 
 
         }

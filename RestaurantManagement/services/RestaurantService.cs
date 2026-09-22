@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Models.Entity;
+﻿using Microsoft.Owin.BuilderProperties;
+using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
@@ -14,13 +15,31 @@ namespace RestaurantManagement.Services
     public class RestaurantService : IRestaurantService
     {
         private readonly IRestaurantRepository _restaurantRepository;
-        public RestaurantService(IRestaurantRepository restaurantRepository)
+        private readonly IAddressRepository _addressRepository;
+        public RestaurantService(IRestaurantRepository restaurantRepository,IAddressRepository addressRepository)
         {
             _restaurantRepository = restaurantRepository;
+            _addressRepository = addressRepository;
         }
-        public async Task<List<Restaurant>> GetRestaurantsAsync()
+        public async Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync()
         {
-            return await _restaurantRepository.GetRestaurantsAsync();
+            var activeRestaurants = await _restaurantRepository.GetRestaurantsAsync();
+           var data1 = new List<ActiveRestaurantResponse>();
+            foreach (Restaurant restaurant in activeRestaurants)
+            {
+               var data= await _addressRepository.GetAddress(restaurant.AddressId);
+                string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
+                data1.Add(new ActiveRestaurantResponse
+                {
+                    RestaurantId = restaurant.RestaurantId,
+                    Name = restaurant.Name,
+                    Address=address,
+                    Email = restaurant.Email,
+                    PhoneNumber = restaurant.PhoneNumber
+
+                });
+            }
+            return data1;
         }
     }
 }

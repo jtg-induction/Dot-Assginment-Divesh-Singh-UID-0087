@@ -26,23 +26,22 @@ namespace RestaurantManagement.Repository
         }
         public async Task<List<MenuItem>> GetMenuItem(int id)
         {
-            return _db.MenuItems.Where(e => e.RestaurantId == id).ToList();
+            return await _db.MenuItems.Where(e => e.RestaurantId == id).ToListAsync();
         }
-       
-        public async Task<List<MenuItem>> GetItemDetail(Dictionary<int,int> item)
+        public async Task<List<MenuItem>> GetItemDetail(Dictionary<int, int> item)
         {
 
             var ids = string.Join(",", item.Keys);
             List<MenuItem> menu = await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
 
-            if (menu.Count != item.Count )
+            if (menu.Count != item.Count)
             {
                 throw new ResourceException(ValidationMessages.MenuListInvalid);
             }
             int prev = 0;
-            foreach(MenuItem i in menu)
+            foreach (MenuItem i in menu)
             {
-                if(!(prev==0 || prev == i.RestaurantId))
+                if (!(prev == 0 || prev == i.RestaurantId))
                 {
                     throw new ResourceException(ValidationMessages.OneRestaurant);
                 }
@@ -52,8 +51,9 @@ namespace RestaurantManagement.Repository
                 }
                 i.AvailableQuantity -= item[i.ItemId];
             }
-            await   _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             return menu;
         }
+
     }
 }

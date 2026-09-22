@@ -14,13 +14,15 @@ namespace RestaurantManagement.tests.Services
     public class MenuServiceTest
     {
         private Mock<IMenuRepository> _menuRepository;
+        private Mock<IRestaurantRepository> _restaurantRepository;
         private MenuService _menuService;
 
         [TestInitialize]
         public void Setup()
         {
             _menuRepository = new Mock<IMenuRepository>();
-            _menuService = new MenuService(_menuRepository.Object);
+            _restaurantRepository = new Mock<IRestaurantRepository>();
+            _menuService = new MenuService(_menuRepository.Object,_restaurantRepository.Object);
         }
 
         [TestMethod]
@@ -32,6 +34,7 @@ namespace RestaurantManagement.tests.Services
                 new MenuItem { ItemId = 1, RestaurantId = 1, DishName = "Pizza", Price = 100m, AvailableQuantity = 10 },
                 new MenuItem { ItemId = 2, RestaurantId = 1, DishName = "Burger", Price = 80m, AvailableQuantity = 5 }
             };
+            _restaurantRepository.Setup(e => e.RestaurantIsActive(1)).ReturnsAsync(true);
 
             _menuRepository.Setup(r => r.GetMenuItem(1)).ReturnsAsync(menuItems);
 
@@ -49,10 +52,16 @@ namespace RestaurantManagement.tests.Services
             _menuRepository
                 .Setup(r => r.GetMenuItem(99))
                 .ReturnsAsync(new List<MenuItem>());
+            Exception e = null;
+            try
+            {
+                var result = await _menuService.GetMenuItemsAsync(99);
+            }catch(Exception ex)
+            {
+                e = ex;
+            }
 
-            var result = await _menuService.GetMenuItemsAsync(99);
-
-            Assert.AreEqual(0, result.Count);
+            Assert.IsNotNull(e);
         }
 
       
