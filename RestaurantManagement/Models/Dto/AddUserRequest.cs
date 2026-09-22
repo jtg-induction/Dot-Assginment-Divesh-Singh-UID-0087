@@ -10,6 +10,7 @@ namespace RestaurantManagement.Models.Dto
         public class AddUserRequest
         {
                 [Required(ErrorMessage = ValidationMessages.NameRequired)]
+        [StringLength(EntityConstants.MaxNameLength,MinimumLength =EntityConstants.MinNameLength)]
                 public string Name { get; set; }
 
                 /// <summary>

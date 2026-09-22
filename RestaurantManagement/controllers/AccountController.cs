@@ -14,7 +14,7 @@ using System.Web.Http;
 namespace RestaurantManagement.Controllers
 {
     [Authorize]
-    [RoutePrefix("api/account")]
+    [RoutePrefix("api/accounts")]
     public class AccountController : ApiController
     {
         private readonly IUserService _userservice;
