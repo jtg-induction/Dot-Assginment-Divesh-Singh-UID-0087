@@ -32,17 +32,17 @@ namespace RestaurantManagement.Repository
         /// </summary>
         /// <param name="email">The email to search for.</param>
         /// <returns>The matching user if found; otherwise, null.</returns>
-        public async Task<string> GetUserEmail(string email)
-        {
-        
-            User user = await _db.Users.FirstAsync(e => e.Email == email);
-          
-            return user.Email;
-        }
+        //public async Task<string> GetUserEmail(string email)
+        //{
+
+        //    User user = await _db.Users.FirstAsync(e => e.Email == email);
+
+        //    return user.Email;
+        //}
         public async Task<User> GetUserAsync(string email)
         {
 
-          
+
             return await _db.Users.FirstOrDefaultAsync(e => e.Email == email);
 
         }
@@ -86,17 +86,7 @@ namespace RestaurantManagement.Repository
             var user = await _db.Users.FindAsync(id);
             return user != null && user.IsActive;
         }
-        public async Task<bool> EmailExistsOtherThanThisIdAsync(string email, int id)
-        {
-           return await  _db.Users.AnyAsync(u => u.Email == email && u.UserId != id);
-        }
-
-        public async Task<bool> PhoneNumberExistsOtherThanThisIdAsync(string phoneNumber,int id)
-        {
-            return await _db.Users.AnyAsync(u => u.PhoneNumber == phoneNumber && u.UserId != id);
-        }
-
-        public async Task UpdateAccount(User user,UpdateAccountDto updateaccount)
+        public async Task UpdateAccount(User user, UpdateAccountDto updateaccount)
         {
             user.Name = updateaccount.Name;
             user.Email = updateaccount.Email;
@@ -109,22 +99,29 @@ namespace RestaurantManagement.Repository
         public async Task Deactivate(User user)
         {
             user.IsActive = false;
-           await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
         public async Task Activate(User user)
         {
             user.IsActive = true;
-          await  _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
         public async Task UpdateBalance(int id,decimal totalamount)
         {
             var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+
             if (user.Balance < totalamount)
             {
                 throw new ResourceException(ValidationMessages.InsufficientBalance);
             }
             user.Balance -= totalamount;
            await _db.SaveChangesAsync();
+        }
+        public async Task UpdateBalanceWhileCancelOrder(int id,decimal totalamount)
+        {
+            var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+            user.Balance += totalamount;
+            await _db.SaveChangesAsync();
         }
       
     }

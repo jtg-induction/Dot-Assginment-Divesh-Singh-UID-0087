@@ -5,42 +5,42 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services;
+using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
-    [RoutePrefix("api/order")]
-    public class OrderController :ApiController
+    [RoutePrefix("api/orders")]
+    public class OrderController : ApiController
     {
-        private readonly OrderService _orderService;
-        private readonly RestaurantService _restaurantService;
-        public OrderController(OrderService orderService,RestaurantService restaurantService)
+        private readonly IOrderService _orderService;
+        private readonly IClaimHelper _claimHelper;
+        public OrderController(IOrderService orderService, IClaimHelper claimHelper)
         {
             _orderService = orderService;
-            _restaurantService = restaurantService;
+            _claimHelper = claimHelper;
         }
         [Authorize]
         [HttpPost]
         [Route("add")]
         public async Task<IHttpActionResult> AddOrder(AddOrderRequest addorder)
         {
-            int userid =await  ClaimHelper.GetUserIdFromClaim(User.Identity);
-           var data= await _orderService.AddOrder(addorder.ItemAndQuantity,addorder.AddressId,userid);
-        
-
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var data = await _orderService.AddOrder(addorder.ItemAndQuantity, addorder.AddressId, userid);
             var response = new BaseResponse<OrderResponse>()
             {
                 success = true,
-                message =ValidationMessages.OrderPlaced,
+                message = ValidationMessages.OrderPlaced,
                 data = data
 
             };
-         
+
             return Created("", response);
         }
         [Authorize]
@@ -48,21 +48,8 @@ namespace RestaurantManagement.Controllers
         [Route("get")]
         public async Task<IHttpActionResult> GetOrderDetail()
         {
-            int userid =await  ClaimHelper.GetUserIdFromClaim(User.Identity);
-            var order = await _orderService.GetOrder(userid);
-            var data = new List<GetOrderResponse>();
-            foreach(Order i in order)
-            {
-                data.Add(new GetOrderResponse
-                {
-                    OrderId=i.OrderId,
-                    RestaurantName= await _restaurantService.GetRestaurantName(i.RestaurantId),
-                    TotalAmount=i.TotalAmount,
-                    Address=i.Address,
-                    Status=i.Status.ToString()
-
-                });
-            }
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var data = await _orderService.GetOrder(userid);
             var response = new BaseResponse<List<GetOrderResponse>>
             {
                 success = true,
@@ -73,23 +60,11 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("get/{id}")]
+        [Route("{id}/get")]
         public async Task<IHttpActionResult> GetOrderItemDetail(int id)
         {
-            var order = await _orderService.GetOrderItem(id);
-            var data = new List<GetOrderItemResponse>();
-            foreach (OrderItem i in order)
-            {
-                data.Add(new GetOrderItemResponse
-                {
-                    OrderItemId=i.OrderItemId,
-                    ItemId = i.ItemId,
-                    ItemName = i.ItemName,
-                    Price = i.Price,
-                    Quantity = i.Quantity
-
-                });
-            }
+            var data = await _orderService.GetOrderItem(id);
+          
             var response = new BaseResponse<List<GetOrderItemResponse>>
             {
                 success = true,
@@ -98,17 +73,17 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [Authorize (Roles ="Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPut]
-        [Route("cancel/{id}")]
+        [Route("{id}/cancel")]
         public async Task<IHttpActionResult> CancelOrder(int id)
         {
-          
-           await _orderService.OrderCancel(id);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            await _orderService.OrderCancel(id,userid);
             var response = new BaseResponse<string>
             {
                 success = true,
-                message=ValidationMessages.OrderCancelSuccess
+                message = ValidationMessages.OrderCancelSuccess
             };
             return Ok(response);
 

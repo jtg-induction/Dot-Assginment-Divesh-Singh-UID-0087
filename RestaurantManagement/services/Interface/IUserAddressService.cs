@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace RestaurantManagement.Services.Interface
     public interface IUserAddressService
     {
         Task AddUserAdress(int userid, int addressid);
-        Task<List<Address>> GetAddress(int id);
+        Task<List<AddressResponse>> GetAddress(int id);
     }
 }

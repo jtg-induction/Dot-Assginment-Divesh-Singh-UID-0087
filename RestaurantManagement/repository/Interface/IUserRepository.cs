@@ -42,6 +42,7 @@ namespace RestaurantManagement.repository
                 Task Deactivate(User user);
                 Task Activate(User user);
         Task UpdateBalance(int id, decimal totalamount);
+        Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount);
 
 
         }

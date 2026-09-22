@@ -10,6 +10,6 @@ namespace RestaurantManagement.Repository.Interface
     public interface IAddressRepository
     {
         Task AddAddressAysnc(Address address);
-        Task<string> GetAddress(int id);
+        Task<Address> GetAddress(int id);
     }
 }

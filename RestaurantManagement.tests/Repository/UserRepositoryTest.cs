@@ -9,6 +9,7 @@ using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Models.Dto;
 
 namespace RestaurantManagement.tests.Repository
 {
@@ -24,7 +25,6 @@ namespace RestaurantManagement.tests.Repository
         [TestInitialize]
         public void setup()
         {
-            // Effort creates a lightweight, schema-compliant in-memory relational instance for EF6
             DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
             _context = new ApplicationDbContext(connection);
             _userrepo = new UserRepository(_context);
@@ -161,6 +161,102 @@ namespace RestaurantManagement.tests.Repository
 
             Assert.IsNotNull(result);
             Assert.AreEqual(testUser.UserId, result.UserId);
+        }
+        [TestMethod]
+        public async Task activeuser()
+        {
+            var testUser = new User
+            {
+                Email = "findbyid@gmail.com",
+                Name = "FindMe",
+                Password = "securePassword",
+                PhoneNumber = "9999999",
+                IsActive=false,
+                BirthDate = DateTime.Parse("1995-05-05"),
+                Balance = 500,
+                Role = UserRole.Customer
+            };
+
+            _context.Users.Add(testUser);
+            await _context.SaveChangesAsync();
+
+             await _userrepo.Activate(testUser);
+
+            Assert.AreEqual(testUser.IsActive, true);
+        }
+        [TestMethod]
+        public async Task deactiveuser()
+        {
+            var testUser = new User
+            {
+                Email = "findbyid@gmail.com",
+                Name = "FindMe",
+                Password = "securePassword",
+                PhoneNumber = "9999999",
+                IsActive = true,
+                BirthDate = DateTime.Parse("1995-05-05"),
+                Balance = 500,
+                Role = UserRole.Customer
+            };
+
+            _context.Users.Add(testUser);
+            await _context.SaveChangesAsync();
+
+            await _userrepo.Deactivate(testUser);
+
+            Assert.AreEqual(testUser.IsActive, false);
+        }
+        [TestMethod]
+        public async Task isactive()
+        {
+            var testUser = new User
+            {
+                Email = "findbyid@gmail.com",
+                Name = "FindMe",
+                Password = "securePassword",
+                PhoneNumber = "9999999",
+                IsActive = true,
+                BirthDate = DateTime.Parse("1995-05-05"),
+                Balance = 500,
+                Role = UserRole.Customer
+            };
+
+            _context.Users.Add(testUser);
+            await _context.SaveChangesAsync();
+
+           var response= await _userrepo.IsActiveAsync(testUser.UserId);
+
+            Assert.AreEqual(response, true);
+        }
+        [TestMethod]
+        public async Task updateaccount()
+        {
+            var testUser = new User
+            {
+                Email = "findbyid@gmail.com",
+                Name = "FindMe",
+                Password = "securePassword",
+                PhoneNumber = "9999999",
+                IsActive = true,
+                BirthDate = DateTime.Parse("1995-05-05"),
+                Balance = 500,
+                Role = UserRole.Customer
+            };
+
+            _context.Users.Add(testUser);
+            await _context.SaveChangesAsync();
+            var User = new UpdateAccountDto
+            {
+                Email = "abc@gmail.com",
+                Name = "FindMe",
+                PhoneNumber = "9999999",
+                BirthDate = DateTime.Parse("1995-05-05")
+               
+            };
+
+            await _userrepo.UpdateAccount(testUser,User);
+
+            Assert.AreEqual(testUser.Email, User.Email);
         }
     }
 }

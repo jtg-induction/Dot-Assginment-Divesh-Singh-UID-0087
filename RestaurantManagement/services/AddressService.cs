@@ -13,8 +13,8 @@ namespace RestaurantManagement.Services
 {
     public class AddressService: IAddressService
     {
-        private readonly AddressRepository _addressRepository;
-        public AddressService(AddressRepository addressRepository)
+        private readonly IAddressRepository _addressRepository;
+        public AddressService(IAddressRepository addressRepository)
         {
             _addressRepository = addressRepository;
         }

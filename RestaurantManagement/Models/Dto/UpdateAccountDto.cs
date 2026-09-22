@@ -9,8 +9,8 @@ namespace RestaurantManagement.Models.Dto
 {
     public class UpdateAccountDto
     {
-
-         public string Name { get; set; }
+        [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
+        public string Name { get; set; }
         /// <summary>
         /// Gets or sets the user's email address.
         /// </summary>

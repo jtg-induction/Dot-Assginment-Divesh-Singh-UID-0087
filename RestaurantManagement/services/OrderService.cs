@@ -4,7 +4,9 @@ using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
+using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -15,28 +17,36 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
-    public class OrderService :IOrderService
+    public class OrderService : IOrderService
     {
-        private readonly MenuRepository _menuRepository;
-        private readonly AddressRepository _addressRepository;
-        private readonly UserRepository _userRepository;
-        private readonly OrderRepository _orderRepository;
-        private readonly OrderItemRepository _orderItemRepository;
-        public OrderService(MenuRepository menuRepository,AddressRepository addressRepository,UserRepository userRepository,OrderRepository orderRepository,OrderItemRepository orderItemRepository)
+        private readonly IMenuRepository _menuRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IRestaurantRepository _restaurantRepository;
+        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository,IRestaurantRepository restaurantRepository)
         {
             _menuRepository = menuRepository;
             _addressRepository = addressRepository;
             _userRepository = userRepository;
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
+            _restaurantRepository = restaurantRepository;
         }
-        public async Task<OrderResponse> AddOrder(Dictionary<int,int> item,int addressid,int userid)
+        public async Task<OrderResponse> AddOrder(Dictionary<int, int> item, int addressid, int userid)
         {
-           
-            var data=new OrderResponse();
+            if (item.Count < 0)
+            {
+                throw new InvalidOperationException(ValidationMessages.ItemRequired);
+            }
+
+            var data1 = new OrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-            string address = await _addressRepository.GetAddress(addressid);
+                var data = await _addressRepository.GetAddress(addressid);
+                string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
+
                 var menu = await _menuRepository.GetItemDetail(item);
                 decimal totalamount = 0;
                 foreach (MenuItem i in menu)
@@ -65,10 +75,10 @@ namespace RestaurantManagement.Services
                         Quantity = item[i.ItemId],
                         Price = i.Price
                     });
-                   
+
                 }
                 await _orderItemRepository.AddOrderItem(orderitems);
-                data = new OrderResponse()
+                data1 = new OrderResponse()
                 {
                     OrderId = order.OrderId,
                     RestaurantId = order.RestaurantId,
@@ -78,19 +88,56 @@ namespace RestaurantManagement.Services
                 };
                 transactionScope.Complete();
             }
+
+            return data1;
+        }
+        public async Task<List<GetOrderResponse>> GetOrder(int id)
+        {
+            var order= await _orderRepository.GetOrder(id);
+            var data = new List<GetOrderResponse>();
+            foreach (Order i in order)
+            {
+                data.Add(new GetOrderResponse
+                {
+                    OrderId = i.OrderId,
+                    RestaurantName = await _restaurantRepository.GetRestaurantName(i.RestaurantId),
+                    TotalAmount = i.TotalAmount,
+                    Address = i.Address,
+                    Status = i.Status.ToString()
+
+                });
+            }
             return data;
         }
-        public async Task<List<Order>> GetOrder(int id)
+        public async Task<List<GetOrderItemResponse>> GetOrderItem(int id)
         {
-            return await _orderRepository.GetOrder(id);
+            var order = await _orderItemRepository.GetOrderItem(id);
+            var data = new List<GetOrderItemResponse>();
+            foreach (OrderItem i in order)
+            {
+                data.Add(new GetOrderItemResponse
+                {
+                    OrderItemId = i.OrderItemId,
+                    ItemId = i.ItemId,
+                    ItemName = i.ItemName,
+                    Price = i.Price,
+                    Quantity = i.Quantity
+
+                });
+            }
+            return data;
         }
-        public async Task<List<OrderItem>> GetOrderItem(int id)
+        public async Task OrderCancel(int id,int userid)
         {
-            return await _orderItemRepository.GetOrderItem(id);
-        }
-        public async Task OrderCancel(int id)
-        {
-            Order order =await _orderRepository.GetOrderDetail(id);
+            Order order = await _orderRepository.GetOrderDetail(id);
+            if (userid != order.UserId)
+            {
+                throw new ResourceException(ValidationMessages.OrderMismatch);
+            }
+            if (order.Status == OrderStatus.Cancelled)
+            {
+                throw new ResourceException(ValidationMessages.OrderCancelled);
+            }
             if (order.Status == OrderStatus.Rejected)
             {
                 throw new ResourceException(ValidationMessages.OrderRejected);
@@ -103,7 +150,9 @@ namespace RestaurantManagement.Services
             {
                 throw new Exception(ValidationMessages.OrderDelivered);
             }
-           await  _orderRepository.CancelOrder(order);
+            await _orderRepository.CancelOrder(order);
+            await _userRepository.UpdateBalanceWhileCancelOrder(userid,order.TotalAmount);
+
         }
     }
 }
