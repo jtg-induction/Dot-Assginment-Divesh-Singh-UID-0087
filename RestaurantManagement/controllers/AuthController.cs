@@ -88,7 +88,6 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [Authorize]
         [HttpPost]
         [Route("refresh")]
         public async Task<IHttpActionResult> Refresh()
@@ -113,7 +112,7 @@ namespace RestaurantManagement.Controllers
 
         }
         [Authorize]
-        [HttpPut]
+        [HttpDelete]
         [Route("deactivate")]
         public async Task<IHttpActionResult> DeactivateAccount()
         {

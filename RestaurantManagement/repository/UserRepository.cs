@@ -32,15 +32,15 @@ namespace RestaurantManagement.Repository
         /// <returns>The matching user if found; otherwise, null.</returns>
         //public async Task<string> GetUserEmail(string email)
         //{
-        
+
         //    User user = await _db.Users.FirstAsync(e => e.Email == email);
-          
+
         //    return user.Email;
         //}
         public async Task<User> GetUserAsync(string email)
         {
 
-          
+
             return await _db.Users.FirstOrDefaultAsync(e => e.Email == email);
 
         }
@@ -84,11 +84,7 @@ namespace RestaurantManagement.Repository
             var user = await _db.Users.FindAsync(id);
             return user != null && user.IsActive;
         }
-      
-
-    
-
-        public async Task UpdateAccount(User user,UpdateAccountDto updateaccount)
+        public async Task UpdateAccount(User user, UpdateAccountDto updateaccount)
         {
             user.Name = updateaccount.Name;
             user.Email = updateaccount.Email;
@@ -101,12 +97,12 @@ namespace RestaurantManagement.Repository
         public async Task Deactivate(User user)
         {
             user.IsActive = false;
-           await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
         public async Task Activate(User user)
         {
             user.IsActive = true;
-          await  _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
     }
 }
