@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-
 namespace RestaurantManagement
 {
     public class WebApiApplication : System.Web.HttpApplication
@@ -8,8 +7,10 @@ namespace RestaurantManagement
         {
             //AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-          
-           
+    
+
+
+
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using RestaurantManagement.Handlers;
+using System.Linq;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 
 namespace RestaurantManagement
 {
@@ -16,7 +18,8 @@ namespace RestaurantManagement
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+            config.Filters.Add(new Filters.ValidateModelAttribute());
             // Web API routes
             config.MapHttpAttributeRoutes();
 
