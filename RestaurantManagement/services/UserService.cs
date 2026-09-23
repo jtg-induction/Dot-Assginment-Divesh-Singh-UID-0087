@@ -118,6 +118,11 @@ namespace RestaurantManagement.Services
 
         public async Task UpdateAccount(User user, UpdateAccountDto updateaccount)
         {
+            if (!await _userrepository.IsActiveAsync(user.UserId))
+            {
+                throw new UnauthenticatedException(ValidationMessages.UserNotFound);
+
+            }
             if (await _userrepository.EmailExistsAsync(updateaccount.Email))
             {
                 throw new ResourceException(ValidationMessages.DuplicateEmail);
