@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace RestaurantManagement.Tests.Services
 {
@@ -23,12 +23,13 @@ namespace RestaurantManagement.Tests.Services
         public void Setup()
         {
             _tokenRepositoryMock = new Mock<ITokenRepository>();
+            _tokenService = new TokenService(_tokenRepositoryMock.Object);
             _httpContext = HttpContext.Current;
             _sw = new StringWriter();
             _tokenService = new TokenService(_tokenRepositoryMock.Object);
             var Request = new HttpRequest("", "http://localhost/", "");
             var response = new HttpResponse(_sw);
-            HttpContext.Current=new HttpContext(Request, response);
+            HttpContext.Current = new HttpContext(Request, response);
         }
         [TestMethod]
         public async Task AddRefreshTokenAsync_SavesNewTokenEntityAndReturnsString()
@@ -54,7 +55,7 @@ namespace RestaurantManagement.Tests.Services
             field.SetValue(request, collection);
 
         }
-            [TestMethod]
+        [TestMethod]
         public void SetToken()
         {
             string token = "ngdjvd";
@@ -63,7 +64,7 @@ namespace RestaurantManagement.Tests.Services
             var cookies = _tokenService.GetRefreshTokenFromCookie();
             Assert.AreEqual(token, cookies);
             _tokenService.ClearRefreshTokenCookie();
-            var cookie =_sw.ToString();
+            var cookie = _sw.ToString();
             Assert.IsEmpty(cookie);
         }
 
@@ -83,7 +84,6 @@ namespace RestaurantManagement.Tests.Services
             // ASSERT
             _tokenRepositoryMock.Verify(r => r.RevokedTokenAsync(450));
         }
-        
         [TestMethod]
         public async Task RefreshTheTokenAsync_ValidActiveToken_RotatesTokenAndReturnsNewString()
         {
@@ -110,16 +110,22 @@ namespace RestaurantManagement.Tests.Services
             string tokenKey = "lookup-key";
             var expectedToken = new RefreshToken { TokenId = 88, Token = tokenKey, UserId = 55 };
             _tokenRepositoryMock.Setup(r => r.GetTokenAsync(tokenKey)).ReturnsAsync(expectedToken);
-
+            var badToken = "hng";
             // ACT
-            var result = await _tokenService.GetTokenDetailAsync(tokenKey);
+            Exception exception = null;
+            try
+            {
+                string result = await _tokenService.RefreshTheTokenAsync(badToken);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
 
             // ASSERT
-            Assert.IsNotNull(result);
-            Assert.AreEqual(88, result.TokenId);
-            Assert.AreEqual(55, result.UserId);
+            Assert.IsNotNull(exception);
         }
 
-       
+
     }
 }

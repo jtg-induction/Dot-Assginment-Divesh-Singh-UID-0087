@@ -50,14 +50,10 @@ namespace RestaurantManagement.Tests.Services
             _userRepositoryMock.Setup(r => r.AddUserAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
 
             // ACT
-            var result = await _userService.AdduserAsync(request);
+            await _userService.AdduserAsync(request);
 
             // ASSERT
-            Assert.IsNotNull(result);
-            Assert.AreEqual(request.Name, result.Name);
-            Assert.AreEqual(request.Email, result.Email);
-            Assert.AreEqual("HashedPasswordXYZ", result.Password);
-            Assert.AreEqual(UserRole.Customer, result.Role);
+           
         }
 
         [TestMethod]
@@ -76,7 +72,6 @@ namespace RestaurantManagement.Tests.Services
             // ASSERT
             catch (ResourceException ex)
             {
-              
                 e = ex;
             }
             //asert
@@ -218,7 +213,85 @@ namespace RestaurantManagement.Tests.Services
             Assert.AreEqual(targetId, result.UserId);
             Assert.AreEqual("Divesh", result.Name);
         }
+        [TestMethod]
+        public void activateacount()
+        {
+            UserCredential user = new UserCredential
+            {
+                Email = "ndkjbvid@abc.com",
+                Password = "nfjdvbid"
+            };
+            var incoming = new User
+            {
+                IsActive = false
+            };
+            _userRepositoryMock.Setup(e => e.GetUserAsync(user.Email)).ReturnsAsync(incoming);
+            _userRepositoryMock.Setup(e => e.Activate(incoming));
+           var response=_userService.ActivateAccount(user);
+            Assert.IsNotNull(response);
 
-     
+        }
+        [TestMethod]
+        public void deactivateacount()
+        {
+            UserCredential user = new UserCredential
+            {
+                Email = "ndkjbvid@abc.com",
+                Password = "nfjdvbid"
+            };
+            var incoming = new User
+            {
+                UserId=1,
+                IsActive = false
+            };
+            _userRepositoryMock.Setup(e => e.GetUserAsync(incoming.UserId)).ReturnsAsync(incoming);
+            _userRepositoryMock.Setup(e => e.Deactivate(incoming));
+            var response = _userService.DeactivateAccount(incoming.UserId);
+            Assert.IsNotNull(response);
+            _userRepositoryMock.Setup(e => e.GetUserAsync(incoming.UserId)).ReturnsAsync((User)null);
+            response = _userService.DeactivateAccount(incoming.UserId);
+            Assert.IsNotNull(response);
+
+        }
+        [TestMethod]
+        public void updateacount()
+        {
+            User user = new User
+            {
+                Email = "ndkjbvid@abc.com",
+                PhoneNumber = "8786765544"
+            };
+            UpdateAccountDto update = new UpdateAccountDto
+            {
+                Email = "abc@abc.com"
+            };
+            _userRepositoryMock.Setup(e => e.EmailExistsAsync(user.Email)).ReturnsAsync(false);
+            _userRepositoryMock.Setup(e => e.PhoneNumberExistsAsync(user.PhoneNumber)).ReturnsAsync(false);
+            _userRepositoryMock.Setup(e => e.UpdateAccount(user, update));
+            Exception e = null;
+            try
+            {
+                _userService.UpdateAccount(user, update);
+            } catch (Exception ex)
+            {
+                ex = e;
+            }
+            Assert.IsNull(e);
+        }
+        [TestMethod]
+        public async Task getuserifactiveAsync()
+        {
+            User user = new User
+            {
+                UserId=1,
+                Email = "ndkjbvid@abc.com",
+                PhoneNumber = "8786765544"
+            };
+            _userRepositoryMock.Setup(e => e.IsActiveAsync(user.UserId)).ReturnsAsync(true);
+            _userRepositoryMock.Setup(e => e.GetUserAsync(user.UserId)).ReturnsAsync(user);
+            var response= await _userService.GetUserIfActive(user.UserId);
+            Assert.IsNotNull(response);
+
+        }
     }
 }

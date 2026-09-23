@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using System.Web.WebPages;
 
 namespace RestaurantManagement.Filters
 {
@@ -14,17 +15,19 @@ namespace RestaurantManagement.Filters
             if (!actionContext.ModelState.IsValid)
             {
                 var errors = actionContext.ModelState
-                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .Where(ms => ms.Value.Errors.Count > 0 && (ms.Key.Split('.').Count()>=2))
                     .ToDictionary(
                         // CLEANUP: Splits "adduser.Name" at the dot, takes "Name", 
                         // and turns it into clean front-end camelCase "name"
                         kvp => {
+                            System.Diagnostics.Debug.WriteLine(kvp.Key.Split('.').Count());
                             var rawKey = kvp.Key.Split('.').LastOrDefault() ?? kvp.Key;
                             return string.IsNullOrEmpty(rawKey)
-                                ? rawKey
+                                ? ""
                                 : char.ToLowerInvariant(rawKey[0]) + rawKey.Substring(1);
                         },
                         kvp => {
+
                             var firstError = kvp.Value.Errors.FirstOrDefault();
                             if (firstError == null) return string.Empty;
 

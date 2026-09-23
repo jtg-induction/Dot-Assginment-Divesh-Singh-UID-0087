@@ -1,4 +1,4 @@
-﻿using DotNetEnv;
+using DotNetEnv;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Jwt;
@@ -37,8 +37,6 @@ namespace RestaurantManagement
                     AuthenticationMode = AuthenticationMode.Active,
                     // This links it perfectly to the HostAuthenticationFilter("Bearer") in WebApiConfig!
                     AuthenticationType = "Bearer",
-
-                    TokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler(),
 
                     IssuerSecurityKeyProviders = new IIssuerSecurityKeyProvider[]
                     {

@@ -14,8 +14,13 @@ namespace RestaurantManagement.Services
                 /// </summary>
                 /// <param name="adduser">The user details to add.</param>
                 /// <returns>A message describing the result of the operation.</returns>
-                Task<User> AdduserAsync(AddUserRequest adduser);
+                Task AdduserAsync(AddUserRequest adduser);
                 Task<User> LoginUserAsync(UserCredential userCredential);
                 Task<User> GetUserAsync(int id);
+                Task<User> GetUserIfActive(int id);
+
+                Task UpdateAccount(User user, UpdateAccountDto updateaccount);
+                Task<User> DeactivateAccount(int id);
+                Task<User> ActivateAccount(UserCredential user);
         }
 }

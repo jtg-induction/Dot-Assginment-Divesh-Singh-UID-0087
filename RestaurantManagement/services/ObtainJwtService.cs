@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using RestaurantManagement.Controllers;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Services.Interface;
@@ -14,7 +14,7 @@ using Claim = System.Security.Claims.Claim;
 
 namespace RestaurantManagement.Services
 {
-    public class ObtainJwtService:IObtainJwtService
+    public class ObtainJwtService : IObtainJwtService
     {
         public string CraftJwt(User user)
         {
@@ -25,6 +25,7 @@ namespace RestaurantManagement.Services
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            // FIX: Map using standard framework claim types so the security engine registers the identity
             var permClaims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -41,5 +42,5 @@ namespace RestaurantManagement.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        }
     }
+}

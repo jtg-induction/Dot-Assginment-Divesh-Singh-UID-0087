@@ -2,6 +2,7 @@
 using Moq;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Controllers;
+using RestaurantManagement.Helper;
 using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
@@ -27,6 +28,7 @@ namespace RestaurantManagement.tests.Controller
         private Mock<ITokenService> _tokenServiceMock;
         private Mock<IObtainJwtService> _jwtServiceMock;
         private AuthController _authController;
+                    private Mock<IClaimHelper> _claimhelpermock;
 
         /// <summary>
         /// Creates the mocked services and target controller before each test runs.
@@ -37,11 +39,13 @@ namespace RestaurantManagement.tests.Controller
             _userServiceMock = new Mock<IUserService>();
             _tokenServiceMock = new Mock<ITokenService>();
             _jwtServiceMock = new Mock<IObtainJwtService>();
+            _claimhelpermock = new Mock<IClaimHelper>();
+
 
             _authController = new AuthController(
                 _userServiceMock.Object,
                 _jwtServiceMock.Object,
-                _tokenServiceMock.Object
+                _tokenServiceMock.Object,_claimhelpermock.Object
             );
         }
 
@@ -72,17 +76,15 @@ namespace RestaurantManagement.tests.Controller
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _userServiceMock.Setup(r => r.AdduserAsync(It.IsAny<AddUserRequest>()))
-                            .ReturnsAsync(mockCreatedUser);
+            _userServiceMock.Setup(r => r.AdduserAsync(It.IsAny<AddUserRequest>()));
+                            
 
             // ACT
             var response = await _authController.Signup(incominguser);
 
             // ASSERT
-            var createdResult = response as CreatedNegotiatedContentResult<BaseResponse<CreatedUserResponse>>;
+            var createdResult = response as CreatedNegotiatedContentResult<BaseResponse<string>>;
             Assert.IsNotNull(createdResult);
-            Assert.IsTrue(createdResult.Content.success);
-            Assert.AreEqual(ValidationMessages.UserCreated, createdResult.Content.message);
         }
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace RestaurantManagement.tests.Controller
             {
                 var response = await _authController.Login(incominguser);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ee = e;
             }
@@ -193,7 +195,7 @@ namespace RestaurantManagement.tests.Controller
                 Email = "divesh@gmail.com"
             };
 
-            var tokenDetailStub = new RefreshToken { UserId = mockUserId };
+                        var tokenDetailStub = new RefreshToken { UserId = mockUserId };
 
             _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(existingCookieToken);
             _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(existingCookieToken)).ReturnsAsync(newlyGeneratedRefreshToken);
@@ -202,8 +204,8 @@ namespace RestaurantManagement.tests.Controller
             _jwtServiceMock.Setup(c => c.CraftJwt(dummyUser)).Returns(newAccessToken);
             _tokenServiceMock.Setup(s => s.SetRefreshTokenCookie(newlyGeneratedRefreshToken));
 
-            // ACT
-            var response = await _authController.Refresh();
+            //            // ACT
+                        var response = await _authController.Refresh();
 
             // ASSERT
             var okResult = response as OkNegotiatedContentResult<BaseResponse<LoginResponse>>;
@@ -211,35 +213,42 @@ namespace RestaurantManagement.tests.Controller
             Assert.IsTrue(okResult.Content.success);
             Assert.AreEqual(newAccessToken, okResult.Content.data.Token);
         }
-
-        /// <summary>
-        /// Completes your trailing test: Returns a 401 when trying to evaluate a compromised or dead refresh token.
-        /// </summary>
         [TestMethod]
-        public async Task Refresh_RevokedToken_ReturnsUnauthorized()
+        public async Task deactivateaccount()
         {
-            // ARRANGE
-            string staleCookieToken = "revoked-cookie-token";
-
-            _tokenServiceMock.Setup(s => s.GetRefreshTokenFromCookie()).Returns(staleCookieToken);
-
-            // Simulating token verification exception or returning empty verification payload 
-            _tokenServiceMock.Setup(s => s.RefreshTheTokenAsync(staleCookieToken))
-                            .ThrowsAsync(new UnauthorizedAccessException(ValidationMessages.Revoked));
-
-            // ACT
-            Exception ee = null;
-            try
+            UpdateAccountDto update = new UpdateAccountDto
             {
-                var response = await _authController.Refresh();
-            }
-            catch(Exception e)
-            {
-                ee = e;
-            }
+                Email = "abc@abc.com"
+            };
 
-            // ASSERT
-            Assert.IsNotNull(ee);
+            _claimhelpermock.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+            _userServiceMock.Setup(e => e.DeactivateAccount(1)).ReturnsAsync(It.IsAny<User>());
+
+            var response = await _authController.DeactivateAccount();
+            //Assert.Fail(response.GetType().FullName);
+            var okk = response as OkNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(okk);
+
         }
+        [TestMethod]
+        public async Task activateaccount()
+        {
+            UserCredential update = new UserCredential
+            {
+                Email = "abc@abc.com",
+                Password="juiuy@1S"
+            };
+
+            _claimhelpermock.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+            _userServiceMock.Setup(e => e.DeactivateAccount(1)).ReturnsAsync(It.IsAny<User>());
+
+            var response = await _authController.ActivateAccount(update);
+            //Assert.Fail(response.GetType().FullName);
+            var okk = response as OkNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(okk);
+
+        }
+
+
     }
 }

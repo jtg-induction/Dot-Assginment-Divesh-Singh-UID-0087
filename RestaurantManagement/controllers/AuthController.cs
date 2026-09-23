@@ -1,12 +1,19 @@
-﻿using RestaurantManagement.Models.Dto;
-using RestaurantManagement.Constants;
-using RestaurantManagement.Services;
+﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Helper;
 using RestaurantManagement.Models;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Services;
+using RestaurantManagement.Services;
 using RestaurantManagement.Services.Interface;
-using System.Web.Http;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Models.Entity;
+using System.Web.Http;
+using Castle.DynamicProxy.Generators;
 
 namespace RestaurantManagement.Controllers
 {
@@ -19,11 +26,14 @@ namespace RestaurantManagement.Controllers
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly IObtainJwtService _jwtClaim;
-        public AuthController(IUserService userservice, IObtainJwtService jwtclaim, ITokenService tokenService)
+        private readonly IClaimHelper _claimHelper;
+
+        public AuthController(IUserService userservice, IObtainJwtService jwtclaim, ITokenService tokenService, IClaimHelper claimHelper)
         {
             _userService = userservice;
             _jwtClaim = jwtclaim;
             _tokenService = tokenService;
+            _claimHelper = claimHelper;
         }
 
         /// <summary>
@@ -31,31 +41,18 @@ namespace RestaurantManagement.Controllers
         /// </summary>
         /// <param name="adduser">The new user's registration details.</param>
         /// <returns>The result of the registration request.</returns>
-        [AllowAnonymous]
         [HttpPost]
         [Route("signup")]
         public async Task<IHttpActionResult> Signup(AddUserRequest adduser)
         {
-            User user = await _userService.AdduserAsync(adduser);
-            var createdresponse = new CreatedUserResponse
-            {
-                UserId = user.UserId,
-                Name = user.Name,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt
-            };
-            var response = new BaseResponse<CreatedUserResponse>
+            await _userService.AdduserAsync(adduser);
+            var response = new BaseResponse<string>
             {
                 success = true,
-                message = ValidationMessages.UserCreated,
-                data = createdresponse
+                message = ValidationMessages.UserCreated
             };
             return Created(string.Empty, response);
         }
-        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<IHttpActionResult> Login(UserCredential login)
@@ -66,10 +63,7 @@ namespace RestaurantManagement.Controllers
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             var responseData = new LoginResponse()
             {
-                Token=accesstoken,
-                ExpiresInSeconds = 900,
-                Name =user.Name,
-                Email = user.Email
+                Token = accesstoken
             };
             var response = new BaseResponse<LoginResponse>
             {
@@ -102,15 +96,12 @@ namespace RestaurantManagement.Controllers
             string token = _tokenService.GetRefreshTokenFromCookie();
             var refreshtoken = await _tokenService.RefreshTheTokenAsync(token);
             var tokenDetail = await _tokenService.GetTokenDetailAsync(refreshtoken);
-            var user = await _userService.GetUserAsync(tokenDetail.UserId);
+            User user = await _userService.GetUserAsync(tokenDetail.UserId);
             var accesstoken = _jwtClaim.CraftJwt(user);
             _tokenService.SetRefreshTokenCookie(refreshtoken);
             var responseData = new LoginResponse()
             {
-                Token = accesstoken,
-                ExpiresInSeconds = 900,
-                Name = user.Name,
-                Email = user.Email
+                Token = accesstoken
             };
             var response = new BaseResponse<LoginResponse>
             {
@@ -121,8 +112,38 @@ namespace RestaurantManagement.Controllers
             return Ok(response);
 
         }
+        [Authorize]
+        [HttpPut]
+        [Route("deactivate")]
+        public async Task<IHttpActionResult> DeactivateAccount()
+        {
+            int currentUserId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var user = await _userService.DeactivateAccount(currentUserId);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.DeactivateSuccess
+            };
+            return Ok(response);
+
+
+        }
+        [HttpPut]
+        [Route("activate")]
+        public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
+        {
+
+            var user = await _userService.ActivateAccount(login);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.ActivateSuccess
+            };
+            return Ok(response);
+
+
+        }
 
 
     }
 }
-
