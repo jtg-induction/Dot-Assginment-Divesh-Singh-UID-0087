@@ -1,5 +1,6 @@
 ﻿using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,6 @@ namespace RestaurantManagement.Repository.Interface
         Task<Order> GetOrderDetail(int id);
         Task<int> GetAllOrderByOwner(int id);
         Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(PaginationParams paginationParams, int userid);
+        Task UpdateOrderStatus(Order order, OrderStatus orderStatus);
     }
 }

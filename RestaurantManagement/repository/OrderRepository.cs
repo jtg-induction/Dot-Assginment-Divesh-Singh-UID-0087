@@ -222,5 +222,10 @@ namespace RestaurantManagement.Repository
                 }
             ).ToListAsync();
         }
+        public async Task UpdateOrderStatus(Order order,OrderStatus orderStatus)
+        {
+            order.Status = orderStatus;
+            await _db.SaveChangesAsync();
+        }
     }
 }

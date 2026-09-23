@@ -134,7 +134,7 @@ namespace RestaurantManagement.Services
         public async Task OrderCancel(int id,int userid)
         {
             Order order = await _orderRepository.GetOrderDetail(id);
-            if (userid != order.UserId)
+            if (order==null || userid != order.UserId)
             {
                 throw new ResourceException(ValidationMessages.OrderMismatch);
             }
@@ -175,6 +175,63 @@ namespace RestaurantManagement.Services
                 order = data
             };
             return data1;
+        }
+        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus)
+        {
+            Order order = await _orderRepository.GetOrderDetail(updateOrderStatus.OrderId);
+            if (order == null)
+            {
+                throw new ResourceException(ValidationMessages.OrderMismatch);
+            }
+            switch (updateOrderStatus.OrderStatus) {
+                case OrderStatus.Accepted:
+                    {
+
+                        if (order.Status == OrderStatus.Placed)
+                        {
+                            await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
+
+                        }
+                    break;
+                    }
+                case OrderStatus.Rejected:
+                    {
+
+                        if (order.Status == OrderStatus.Placed)
+                        {
+                            await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
+
+                        }
+                    break;
+                    }
+                case OrderStatus.Dispatched:
+                    {
+
+                        if (order.Status == OrderStatus.Accepted)
+                        {
+                            await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
+
+                        }
+                    break;
+                    }
+                case OrderStatus.Delivery:
+                    {
+
+                        if (order.Status == OrderStatus.Dispatched)
+                        {
+                            await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
+
+                        }
+                        break;
+                    }
+
+                default:
+          
+                throw new ResourceException($"Can Not Change the  Status From {order.Status.ToString()} to {updateOrderStatus.OrderStatus.ToString()}");
+           
+        }
+            
+
         }
     }
 }

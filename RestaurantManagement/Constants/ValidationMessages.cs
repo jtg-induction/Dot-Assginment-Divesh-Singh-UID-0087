@@ -64,7 +64,9 @@
                 public const string ListOfMenuItem = "List Of  Items!!";
                 public const string InvalidRestaurantId = "Invalid restaurant ID. Identifier must be greater than zero.";
                 public const string OrderCancelled = "Order is Already cancel!!";
-                public const string OrderMismatch = "Order Not Realated to customer!!";
+                public const string OrderMismatch = "Order Not Found!!";
+                public const string OrderStatusUpdate = "Order Status Updated";
+
 
         }
 }
