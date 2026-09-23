@@ -1,0 +1,20 @@
+﻿  up()
+  {
+    Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_mi_Price_NotNegative CHECK (Price >= 0);");
+    Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_oi_Price_NotNegative CHECK (Price >= 0);");
+    Sql("ALTER TABLE dbo.MenuItems ADD CONSTRAINT CK_AvailableQuantity_NotNegative CHECK (AvailableQuantity >= 0);");
+    Sql("ALTER TABLE dbo.OrderItems ADD CONSTRAINT CK_Quantity_NotNegative CHECK (Quantity >= 0);");
+    Sql("ALTER TABLE dbo.Orders ADD CONSTRAINT CK_TotalAmount_NotNegative CHECK (TotalAmount >= 0);");
+    Sql("ALTER TABLE dbo.Users ADD CONSTRAINT CK_Balance_NotNegative CHECK (Balance >= 0);");
+  }
+
+  down()
+  {
+    Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_mi_Price_NotNegative;");
+    Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_oi_Price_NotNegative;");
+    Sql("ALTER TABLE dbo.MenuItems DROP CONSTRAINT CK_AvailableQuantity_NotNegative;");
+    Sql("ALTER TABLE dbo.OrderItems DROP CONSTRAINT CK_Quantity_NotNegative;");
+    Sql("ALTER TABLE dbo.Orders DROP CONSTRAINT CK_TotalAmount_NotNegative;");
+    Sql("ALTER TABLE dbo.Users DROP CONSTRAINT CK_Balance_NotNegative;");
+  }
+

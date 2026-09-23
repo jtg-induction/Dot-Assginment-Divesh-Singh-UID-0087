@@ -1,0 +1,26 @@
+# User-specific files & IDE configuration cache
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build compilation outputs (Binaries)
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+# Environment configurations (Secrets)
+.env
+appsettings.Development.json
+
+# Test data and system logs
+[Tt]est[Rr]esult*/
+*.log
+# Exclude NuGet Packages folder
+packages/
+
