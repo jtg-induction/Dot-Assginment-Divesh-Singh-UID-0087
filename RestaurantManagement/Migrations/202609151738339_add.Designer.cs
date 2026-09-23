@@ -5,26 +5,22 @@ namespace RestaurantManagement.Migrations
     using System.Data.Entity.Migrations;
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
-    
+
     [GeneratedCode("EntityFramework.Migrations", "6.5.2")]
     public sealed partial class add : IMigrationMetadata
     {
         private readonly ResourceManager Resources = new ResourceManager(typeof(add));
-        
+
         string IMigrationMetadata.Id
         {
-<<<<<<<< HEAD:RestaurantManagement/Migrations/202609151738339_add.Designer.cs
             get { return "202609151738339_add"; }
-========
-            get { return "202609161839382_add"; }
->>>>>>>> 69b79e8d2987e5e257ae4626c6f126b0c7669d1d:RestaurantManagement/Migrations/202609161839382_add.Designer.cs
         }
-        
+
         string IMigrationMetadata.Source
         {
             get { return null; }
         }
-        
+
         string IMigrationMetadata.Target
         {
             get { return Resources.GetString("Target"); }

@@ -1,5 +1,6 @@
-﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Services.Exceptions;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -19,16 +20,30 @@ namespace RestaurantManagement.Handlers
         public override void Handle(ExceptionHandlerContext context)
         {
             var exception = context.Exception;
+
+            // 1. Intercept service-level authentication exceptions
+            if (exception is UnauthenticatedException)
+            {
+                var unauthorizedResponse = context.Request.CreateResponse(
+                    HttpStatusCode.Unauthorized,
+                    new { Message = exception.Message }
+                );
+                context.Result = new ResponseMessageResult(unauthorizedResponse);
+                return;
+            }
+
+            // 2. Identify resource conflicts
             if (exception is ResourceException)
             {
                 var conflictResponse = context.Request.CreateResponse(
                     HttpStatusCode.Conflict,
-                    new { Message = exception.Message } // Automatically uses the exact text you threw
+                    new { Message = exception.Message }
                 );
                 context.Result = new ResponseMessageResult(conflictResponse);
                 return;
             }
-            // 2. Identify specific custom domain business logic exceptions
+
+            // 3. Identify specific custom domain business logic exceptions
             if (exception is InvalidOperationException)
             {
                 var badRequestResponse = context.Request.CreateResponse(
@@ -39,10 +54,10 @@ namespace RestaurantManagement.Handlers
                 return;
             }
 
-            // 3. Fallback for all unexpected database or system crashes (500 Internal Server Error)
+            // 4. Fallback for all unexpected database or system crashes (500 Internal Server Error)
             var genericResponse = context.Request.CreateResponse(
                 HttpStatusCode.InternalServerError,
-                new { Message =ValidationMessages.InternalServerError}
+                new { Message = ValidationMessages.InternalServerError }
             );
             context.Result = new ResponseMessageResult(genericResponse);
         }
