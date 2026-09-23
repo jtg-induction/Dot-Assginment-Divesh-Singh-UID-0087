@@ -1,9 +1,11 @@
 ﻿using NMemory.Transactions;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
+using RestaurantManagement.Models;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
@@ -25,7 +27,8 @@ namespace RestaurantManagement.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IRestaurantRepository _restaurantRepository;
-        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository,IRestaurantRepository restaurantRepository)
+        private readonly IRestaurantOwnerRepository _restaurantOwnerRepository;
+        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository,IRestaurantRepository restaurantRepository,IRestaurantOwnerRepository restaurantOwnerRepository)
         {
             _menuRepository = menuRepository;
             _addressRepository = addressRepository;
@@ -33,15 +36,16 @@ namespace RestaurantManagement.Services
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
             _restaurantRepository = restaurantRepository;
+            _restaurantOwnerRepository = restaurantOwnerRepository;
         }
-        public async Task<OrderResponse> AddOrder(Dictionary<int, int> item, int addressid, int userid)
+        public async Task<GetOrderResponse> AddOrder(Dictionary<int, int> item, int addressid, int userid)
         {
             if (item.Count < 0)
             {
                 throw new InvalidOperationException(ValidationMessages.ItemRequired);
             }
 
-            var data1 = new OrderResponse();
+            var data1 = new GetOrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 var data = await _addressRepository.GetAddress(addressid);
@@ -78,10 +82,10 @@ namespace RestaurantManagement.Services
 
                 }
                 await _orderItemRepository.AddOrderItem(orderitems);
-                data1 = new OrderResponse()
+                data1 = new GetOrderResponse()
                 {
                     OrderId = order.OrderId,
-                    RestaurantId = order.RestaurantId,
+                    RestaurantName = await _restaurantRepository.GetRestaurantName(menu[0].RestaurantId),
                     TotalAmount = order.TotalAmount,
                     Status = order.Status.ToString(),
                     Address = order.Address
@@ -153,6 +157,24 @@ namespace RestaurantManagement.Services
             await _orderRepository.CancelOrder(order);
             await _userRepository.UpdateBalanceWhileCancelOrder(userid,order.TotalAmount);
 
+        }
+        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(PaginationParams paginationParams,int id)
+        {
+            var data = await _orderRepository.GetPaginatedOrder(paginationParams,id);
+            var size = data.Count();
+            var metadata = new PaginationMetaData
+            {
+                TotalItems = size,
+                TotalPages = (int)Math.Ceiling((double)size / paginationParams.pageSize),
+                CurrentPage = paginationParams.pageNumber,
+                PageSize = paginationParams.pageSize
+            };
+            var data1 = new GetPaginatedResponse<GetOrderResponseForOwner>
+            {
+                pagination = metadata,
+                order = data
+            };
+            return data1;
         }
     }
 }

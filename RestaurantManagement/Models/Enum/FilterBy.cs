@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace RestaurantManagement.Models.Enum
+{
+    public enum FilterBy
+    {
+        TotalAmount=1,
+        CreatedAt=2,
+        UpdatedAt=3
+    }
+}

@@ -33,7 +33,7 @@ namespace RestaurantManagement.Controllers
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             var data = await _orderService.AddOrder(addorder.ItemAndQuantity, addorder.AddressId, userid);
-            var response = new BaseResponse<OrderResponse>()
+            var response = new BaseResponse<GetOrderResponse>()
             {
                 success = true,
                 message = ValidationMessages.OrderPlaced,
@@ -60,8 +60,8 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("{id}/get")]
-        public async Task<IHttpActionResult> GetOrderItemDetail(int id)
+        [Route("{id}/items")]
+        public async Task<IHttpActionResult> GetOrderItemDetail([FromUri] int id)
         {
             var data = await _orderService.GetOrderItem(id);
 
@@ -76,7 +76,7 @@ namespace RestaurantManagement.Controllers
         [Authorize(Roles = "Customer")]
         [HttpPut]
         [Route("{id}/cancel")]
-        public async Task<IHttpActionResult> CancelOrder(int id)
+        public async Task<IHttpActionResult> CancelOrder([FromUri] int id)
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             await _orderService.OrderCancel(id, userid);
@@ -86,8 +86,23 @@ namespace RestaurantManagement.Controllers
                 message = ValidationMessages.OrderCancelSuccess
             };
             return Ok(response);
-
-
+        }
+        [Authorize(Roles ="Owner")]
+        [HttpGet]
+        [Route]
+        public async Task<IHttpActionResult> GetAllOrder([FromUri]PaginationParams paginationParams)
+        {
+            if (paginationParams.pageNumber < 1) paginationParams.pageNumber = 1;
+            if (paginationParams.pageSize < 1 ) paginationParams.pageSize= 10;
+            var userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var data=await _orderService.GetAllOrder(paginationParams,userId);
+            var response = new BaseResponse<GetPaginatedResponse<GetOrderResponseForOwner>>
+            {
+                success = true,
+                message = ValidationMessages.OrderFetchSuccess,
+                data = data
+            };
+            return Ok(response);
         }
     }
 }

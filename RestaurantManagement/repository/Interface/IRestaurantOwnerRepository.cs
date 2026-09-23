@@ -10,5 +10,6 @@ namespace RestaurantManagement.Repository.Interface
     public interface IRestaurantOwnerRepository
     {
         Task AddRestaurantOwner(List<RestaurantOwner> restaurantOwners);
+        Task<List<int>> GetRestaurantId(int id);
     }
 }

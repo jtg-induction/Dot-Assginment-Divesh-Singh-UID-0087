@@ -350,6 +350,15 @@
     <Compile Include="Models\Dto\AddRestaurantOwnerRequest.cs" />
     <Compile Include="Models\Dto\AddRestaurantRequest.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
+    <Compile Include="Models\Enum\FilterBy.cs" />
+    <Compile Include="Models\Enum\FilterOrder.cs" />
+    <Compile Include="Models\Enum\OrderSortType.cs" />
+    <Compile Include="Models\Enum\SearchBY.cs" />
+    <Compile Include="Models\Enum\SortOrder.cs" />
+    <Compile Include="Models\Response\GetOrderResponseForOwner.cs" />
+    <Compile Include="Models\Response\GetPaginatedResponse.cs" />
+    <Compile Include="Models\Response\PaginationMetaData.cs" />
+    <Compile Include="Models\Dto\PaginationParams.cs" />
     <Compile Include="Models\Dto\UpdateAccountDto.cs" />
     <Compile Include="Models\Dto\UserCredential.cs" />
     <Compile Include="Models\Entity\Address.cs" />

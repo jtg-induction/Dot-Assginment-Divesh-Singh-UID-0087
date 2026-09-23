@@ -8,9 +8,9 @@
         // A restaurant customer.
         Customer = 1,
         // A system administrator.
-        Admin = 2,
+        Owner = 2,
+        Admin = 3,
         // A restaurant owner.
-        Owner = 3
     }
 }
 
