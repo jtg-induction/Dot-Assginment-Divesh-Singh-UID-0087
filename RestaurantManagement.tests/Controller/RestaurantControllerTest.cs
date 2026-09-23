@@ -1,5 +1,7 @@
 ﻿using Moq;
+using RestaurantManagement.Constants;
 using RestaurantManagement.Controllers;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Services.Interface;
@@ -41,6 +43,39 @@ namespace RestaurantManagement.tests.Controller
             var response = await _restaurantController.GetMenuByRestaurantId(1);
             var okk = response as OkNegotiatedContentResult<BaseResponse<List<GetMenuItemResponse>>>;
             Assert.IsNotNull(okk);
+        }
+        [TestMethod]
+        public async Task AddRestaurant_ValidRequest_ReturnsCreatedWithSuccessResponse()
+        {
+            // Arrange
+
+           _restaurantService
+                .Setup(s => s.AddRestaurant(It.IsAny<AddRestaurantRequest>()))
+                .Returns(Task.CompletedTask); // Simulates an async void (Task) return
+
+            // Act
+            var result = await _restaurantController.AddRestaurant(It.IsAny<AddRestaurantRequest>());
+
+            // Assert
+            var createdResult = result as CreatedNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(createdResult);
+
+           
+        }
+        [TestMethod]
+        public async Task AddRestaurantOwner_ValidRequest_ReturnsCreatedWithSuccessResponse()
+        {
+            // Arrange
+            _restaurantService
+                .Setup(s => s.AddRestaurantowner(It.IsAny<AddRestaurantOwnerRequest>()))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _restaurantController.AddRestaurantOwner(It.IsAny<AddRestaurantOwnerRequest>());
+
+            // Assert
+            var createdResult = result as CreatedNegotiatedContentResult<BaseResponse<string>>;
+            Assert.IsNotNull(createdResult);
         }
     }
 }

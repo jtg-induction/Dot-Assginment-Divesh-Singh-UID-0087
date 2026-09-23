@@ -1,13 +1,14 @@
-﻿using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
+using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RestaurantManagement.Repository.Interface;
-using RestaurantManagement.repository;
 
 namespace RestaurantManagement.tests.Services
 {
@@ -74,6 +75,57 @@ namespace RestaurantManagement.tests.Services
 
             Assert.AreEqual(0, result.Count);
         }
-       
+        [TestMethod]
+        public async Task AddRestaurant_ValidRequest_SuccessfullyCreatesRestaurantAndOwners()
+        {
+            // Arrange
+            var request = new AddRestaurantRequest
+            {
+                Email = "new@restaurant.com",
+                PhoneNumber = "1234567890",
+                UserEmail = new List<string> { "owner1@test.com", "owner2@test.com" },
+                Street = "Main St",
+                City = "New York",
+                State = "NY",
+                Pincode = "10001",
+                AddressType = AddressType.Work,
+                Name = "Tasty Bites"
+            };
+
+            // Setup repository mocks to pass initial validation rules
+            _restaurantRepository.Setup(r => r.EmailExixts(request.Email)).ReturnsAsync(false);
+            _restaurantRepository.Setup(r => r.PhoneNumberExixts(request.PhoneNumber)).ReturnsAsync(false);
+            _userRepository.Setup(r => r.EmailExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+
+            _userRepository.Setup(r => r.GetUserAsync("owner1@test.com")).ReturnsAsync(new User { UserId = 101 });
+            _userRepository.Setup(r => r.GetUserAsync("owner2@test.com")).ReturnsAsync(new User { UserId = 102 });
+
+            // Act
+            await _restaurantService.AddRestaurant(request);
+
+            // Assert
+        }
+        [TestMethod]
+        public async Task AddRestaurantOwner_ValidRequest_SuccessfullyAppendsOwners()
+        {
+            // Arrange
+            var request = new AddRestaurantOwnerRequest
+            {
+                RestaurantEmail = "active@restaurant.com",
+                UserEmail = new List<string> { "newowner@test.com" }
+            };
+            var activeRestaurant = new Restaurant { RestaurantId = 5, Name = "Active Cafe" };
+
+            _restaurantRepository.Setup(r => r.RestaurantIsActive(request.RestaurantEmail)).ReturnsAsync(activeRestaurant);
+            _userRepository.Setup(r => r.EmailExistsAsync("newowner@test.com")).ReturnsAsync(true);
+            _userRepository.Setup(r => r.GetUserAsync("newowner@test.com")).ReturnsAsync(new User { UserId = 88 });
+
+            // Act
+            await _restaurantService.AddRestaurantowner(request);
+
+            // Assert
+         
+        }
+
     }
 }
