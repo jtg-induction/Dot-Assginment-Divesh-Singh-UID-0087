@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.repository;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services;
 
@@ -15,6 +16,7 @@ namespace RestaurantManagement.Tests.Services
     public class TokenServiceTest
     {
         private Mock<ITokenRepository> _tokenRepositoryMock;
+        private Mock<IUserRepository> _userRepository;
         private TokenService _tokenService;
 
         private HttpContext _httpContext;
@@ -23,10 +25,10 @@ namespace RestaurantManagement.Tests.Services
         public void Setup()
         {
             _tokenRepositoryMock = new Mock<ITokenRepository>();
-            _tokenService = new TokenService(_tokenRepositoryMock.Object);
+            _userRepository = new Mock<IUserRepository>();
+            _tokenService = new TokenService(_tokenRepositoryMock.Object,_userRepository.Object);
             _httpContext = HttpContext.Current;
             _sw = new StringWriter();
-            _tokenService = new TokenService(_tokenRepositoryMock.Object);
             var Request = new HttpRequest("", "http://localhost/", "");
             var response = new HttpResponse(_sw);
             HttpContext.Current = new HttpContext(Request, response);
@@ -89,8 +91,8 @@ namespace RestaurantManagement.Tests.Services
         {
             // ARRANGE
             string oldTokenString = "valid-old-token";
-            var stubToken = new RefreshToken { TokenId = 12, Token = oldTokenString };
-
+            var stubToken = new RefreshToken { TokenId = 12,UserId=1, Token = oldTokenString };
+            _userRepository.Setup(r => r.IsActiveAsync(1)).ReturnsAsync(true);
             _tokenRepositoryMock.Setup(r => r.GetTokenAsync(oldTokenString)).ReturnsAsync(stubToken);
             _tokenRepositoryMock.Setup(r => r.IsRevokedAsync(stubToken.TokenId)).ReturnsAsync(false);
             _tokenRepositoryMock.Setup(r => r.IsExpiryed(stubToken.TokenId)).ReturnsAsync(false);

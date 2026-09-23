@@ -2,6 +2,7 @@
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.repository;
 using RestaurantManagement.Repository.Interface;
 using RestaurantManagement.Services.Interface;
 using System;
@@ -18,10 +19,12 @@ namespace RestaurantManagement.Services
     {
 
         private readonly ITokenRepository _tokenRepository;
-        public TokenService(ITokenRepository tokenrepo)
+        private readonly IUserRepository _userRepository;
+        public TokenService(ITokenRepository tokenrepo,IUserRepository userRepository)
         {
 
             _tokenRepository = tokenrepo;
+            _userRepository = userRepository;
         }
 
         public string TokenGenerator()
@@ -92,7 +95,7 @@ namespace RestaurantManagement.Services
         public async Task<string> RefreshTheTokenAsync(string token)
         {
             var refreshToken = await _tokenRepository.GetTokenAsync(token);
-            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId) && !await _tokenRepository.IsExpiryed(refreshToken.TokenId))
+            if (refreshToken != null && !await _tokenRepository.IsRevokedAsync(refreshToken.TokenId) && !await _tokenRepository.IsExpiryed(refreshToken.TokenId) && await _userRepository.IsActiveAsync(refreshToken.UserId))
             {
                 var Newrefreshtoken = TokenGenerator();
                 await _tokenRepository.UpdateTokenAsync(refreshToken.TokenId, Newrefreshtoken);
