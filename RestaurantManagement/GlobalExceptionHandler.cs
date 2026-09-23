@@ -24,7 +24,7 @@ namespace RestaurantManagement.Handlers
             var errorPayload = new
             {
                 Success = false,
-                Meassage = exception.Message
+                Message = exception.Message
             };
             // 1. Intercept service-level authentication exceptions
             if (exception is UnauthenticatedException)

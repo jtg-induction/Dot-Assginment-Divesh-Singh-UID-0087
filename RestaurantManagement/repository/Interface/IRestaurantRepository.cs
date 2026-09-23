@@ -11,7 +11,7 @@ namespace RestaurantManagement.Repository.Interface
     public interface IRestaurantRepository
     {
         Task<List<Restaurant>> GetRestaurantsAsync();
-        Task<bool> RestaurantIsActive(int id);
+        Task<bool> IsRestaurantActive(int id);
 
 
     }

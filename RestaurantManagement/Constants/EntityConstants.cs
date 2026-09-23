@@ -25,6 +25,7 @@ namespace RestaurantManagement.Constants
         public const int MinPasswordLength = 8;
         public const int MaxPasswordLength = 100;
         public const int MinStreetLength = 2;
+            public const int MinNameLength = 2;
         public const string MaxDecimalLength = "79228162514264337593543950335";
     }
 }

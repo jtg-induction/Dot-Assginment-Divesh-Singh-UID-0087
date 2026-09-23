@@ -9,12 +9,13 @@ namespace RestaurantManagement.Models.Dto
 {
     public class UpdateAccountDto
     {
-
-         public string Name { get; set; }
+        [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
+        public string Name { get; set; }
         /// <summary>
         /// Gets or sets the user's email address.
         /// </summary>
         [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [RegularExpression(ValidationRules.EmailRegexPattern, ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         public string Email { get; set; }
         /// <summary>
         /// Gets or sets the user's birth date.
