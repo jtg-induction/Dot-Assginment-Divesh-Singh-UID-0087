@@ -23,7 +23,7 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
-        public async Task<bool> RestaurantIsActive(int id)
+        public async Task<bool> IsRestaurantActive(int id)
         {
             return await  _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.IsActive).FirstOrDefaultAsync();
         }

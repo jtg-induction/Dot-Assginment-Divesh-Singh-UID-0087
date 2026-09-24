@@ -56,7 +56,7 @@ namespace RestaurantManagement.Tests.Controllers
 
             // Setup Order Service behavior
             _mockOrderService
-                .Setup(s => s.AddOrder(requestPayload.ItemAndQuantity, requestPayload.AddressId, mockUserId))
+                .Setup(s => s.AddOrder(requestPayload, mockUserId))
                 .ReturnsAsync(mockOrderResponse);
 
             // 2. ACT
@@ -85,7 +85,7 @@ namespace RestaurantManagement.Tests.Controllers
                 .ReturnsAsync(mockOrders);
 
             // Act
-            var result = await _controller.GetOrderDetail();
+            var result = await _controller.GetOrder();
 
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderResponse>>>;
@@ -108,7 +108,7 @@ namespace RestaurantManagement.Tests.Controllers
                 .ReturnsAsync(mockItems);
 
             // Act
-            var result = await _controller.GetOrderItemDetail(orderId);
+            var result = await _controller.GetOrderItem(orderId);
 
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderItemResponse>>>;

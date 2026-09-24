@@ -22,7 +22,7 @@ namespace RestaurantManagement.tests.Services
         {
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _addressRespository = new Mock<IAddressRepository>();
-            _restaurantService = new RestaurantService(_restaurantRepository.Object,_addressRespository.Object);
+            _restaurantService = new RestaurantService(_restaurantRepository.Object, _addressRespository.Object);
         }
 
         [TestMethod]
@@ -39,8 +39,9 @@ namespace RestaurantManagement.tests.Services
                 .Setup(r => r.GetRestaurantsAsync())
                 .ReturnsAsync(restaurants);
 
-=            _addressRespository
-                .Setup(e => e.GetAddress(It.IsAny<int>()))
+            // Properly mock GetAddress to respond correctly based on the incoming AddressId
+            _addressRespository
+                .Setup(e => e.GetAddressAsync(It.IsAny<int>()))
                 .ReturnsAsync((int addressId) => new Address
                 {
                     Street = "Street " + addressId,
@@ -69,6 +70,6 @@ namespace RestaurantManagement.tests.Services
 
             Assert.AreEqual(0, result.Count);
         }
-       
+
     }
 }

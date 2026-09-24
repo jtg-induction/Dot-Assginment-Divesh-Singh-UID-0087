@@ -24,7 +24,7 @@ namespace RestaurantManagement.Services
         }
         public async Task<List<GetMenuItemResponse>> GetMenuItemsAsync(int id)
         {
-            if (!(await _restaurantRepository.RestaurantIsActive(id)))
+            if (!(await _restaurantRepository.IsRestaurantActive(id)))
             {
                 throw new ResourceException(ValidationMessages.RestaurantNotFound);
             }

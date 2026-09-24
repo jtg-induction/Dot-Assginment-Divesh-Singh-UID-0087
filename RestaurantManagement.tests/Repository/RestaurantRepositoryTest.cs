@@ -126,7 +126,7 @@ namespace RestaurantManagement.tests.Repository
 
             _context.SaveChanges();
             // Act
-            var result = await _repository.RestaurantIsActive(1);
+            var result = await _repository.IsRestaurantActive(1);
 
             // Assert
             Assert.IsTrue(result);
@@ -136,7 +136,7 @@ namespace RestaurantManagement.tests.Repository
         public async Task RestaurantIsActive_WhenRestaurantDoesNotExist_ReturnsFalse()
         {
             // Act
-            var result = await _repository.RestaurantIsActive(999);
+            var result = await _repository.IsRestaurantActive(999);
 
             // Assert
             Assert.IsFalse(result); 

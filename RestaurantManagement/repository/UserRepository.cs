@@ -106,23 +106,17 @@ namespace RestaurantManagement.Repository
             user.IsActive = true;
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateBalance(int id,decimal totalamount)
+        public async Task<User> GetUserWithLock(int id)
         {
-            var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+            return await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
 
-            if (user.Balance < totalamount)
-            {
-                throw new ResourceException(ValidationMessages.InsufficientBalance);
-            }
-            user.Balance -= totalamount;
-           await _db.SaveChangesAsync();
         }
-        public async Task UpdateBalanceWhileCancelOrder(int id,decimal totalamount)
+        public async Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount)
         {
             var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
             user.Balance += totalamount;
             await _db.SaveChangesAsync();
         }
-      
+
     }
 }

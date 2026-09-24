@@ -1,6 +1,7 @@
 ﻿using NMemory.Transactions;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
@@ -25,7 +26,7 @@ namespace RestaurantManagement.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IRestaurantRepository _restaurantRepository;
-        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository,IRestaurantRepository restaurantRepository)
+        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IRestaurantRepository restaurantRepository)
         {
             _menuRepository = menuRepository;
             _addressRepository = addressRepository;
@@ -34,27 +35,63 @@ namespace RestaurantManagement.Services
             _orderItemRepository = orderItemRepository;
             _restaurantRepository = restaurantRepository;
         }
-        public async Task<OrderResponse> AddOrder(Dictionary<int, int> item, int addressid, int userid)
+        public async Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid)
         {
+            var item = addOrder.ItemAndQuantity;
+            int addressid = addOrder.AddressId;
             if (item.Count < 0)
             {
                 throw new InvalidOperationException(ValidationMessages.ItemRequired);
             }
+            foreach (int i in item.Keys)
+            {
+                if (item[i] <= 0)
+                {
+                    throw new InvalidOperationException(ValidationMessages.ItemIdZero);
 
-            var data1 = new OrderResponse();
+                }
+            }
+
+            var orderResponse = new OrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var data = await _addressRepository.GetAddress(addressid);
+                var data = await _addressRepository.GetAddressAsync(addressid, userid);
+                if (data == null)
+                {
+                    throw new ResourceException(ValidationMessages.InvalidAddress);
+                }
                 string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
 
                 var menu = await _menuRepository.GetItemDetail(item);
+                if (menu.Count != item.Count)
+                {
+                    throw new ResourceException(ValidationMessages.MenuListInvalid);
+                }
+                int prev = 0;
+                foreach (MenuItem i in menu)
+                {
+                    if (!(prev == 0 || prev == i.RestaurantId))
+                    {
+                        throw new ResourceException(ValidationMessages.OneRestaurant);
+                    }
+                    if (item[i.ItemId] > i.AvailableQuantity)
+                    {
+                        throw new ResourceException($"{i.DishName} Are Not Available !!");
+                    }
+                    i.AvailableQuantity -= item[i.ItemId];
+                }
                 decimal totalamount = 0;
                 foreach (MenuItem i in menu)
                 {
                     totalamount += (i.Price * item[i.ItemId]);
                 }
 
-                await _userRepository.UpdateBalance(userid, totalamount);
+                var user = await _userRepository.GetUserWithLock(userid);
+                if (user.Balance < totalamount)
+                {
+                    throw new ResourceException(ValidationMessages.InsufficientBalance);
+                }
+                user.Balance -= totalamount;
                 var order = new Order
                 {
                     UserId = userid,
@@ -78,7 +115,7 @@ namespace RestaurantManagement.Services
 
                 }
                 await _orderItemRepository.AddOrderItem(orderitems);
-                data1 = new OrderResponse()
+                orderResponse = new OrderResponse()
                 {
                     OrderId = order.OrderId,
                     RestaurantId = order.RestaurantId,
@@ -89,11 +126,11 @@ namespace RestaurantManagement.Services
                 transactionScope.Complete();
             }
 
-            return data1;
+            return orderResponse;
         }
         public async Task<List<GetOrderResponse>> GetOrder(int id)
         {
-            var order= await _orderRepository.GetOrder(id);
+            var order = await _orderRepository.GetOrder(id);
             var data = new List<GetOrderResponse>();
             foreach (Order i in order)
             {
@@ -127,31 +164,51 @@ namespace RestaurantManagement.Services
             }
             return data;
         }
-        public async Task OrderCancel(int id,int userid)
+        public async Task OrderCancel(int id, int userid)
         {
-            Order order = await _orderRepository.GetOrderDetail(id);
-            if (userid != order.UserId)
+            using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                throw new ResourceException(ValidationMessages.OrderMismatch);
+                Order order = await _orderRepository.GetOrderDetail(id);
+                if (order == null)
+                {
+                    throw new ResourceException(ValidationMessages.OrderNotFound);
+                }
+                if (userid != order.UserId)
+                {
+                    throw new ResourceException(ValidationMessages.OrderMismatch);
+                }
+                if (order.Status == OrderStatus.Cancelled)
+                {
+                    throw new ResourceException(ValidationMessages.OrderCancelled);
+                }
+                if (order.Status == OrderStatus.Rejected)
+                {
+                    throw new ResourceException(ValidationMessages.OrderRejected);
+                }
+                if (order.Status == OrderStatus.Dispatched)
+                {
+                    throw new ResourceException(ValidationMessages.OrderDispatched);
+                }
+                if (order.Status == OrderStatus.Delivery)
+                {
+                    throw new Exception(ValidationMessages.OrderDelivered);
+                }
+                List<OrderItem> orderItems = await _orderItemRepository.GetOrderItem(order.OrderId);
+                Dictionary<int, int> item = new Dictionary<int, int>();
+                foreach (OrderItem i in orderItems)
+                {
+                    item[i.ItemId] = i.Quantity;
+                }
+                await _orderRepository.CancelOrder(order);
+                await _userRepository.UpdateBalanceWhileCancelOrder(userid, order.TotalAmount);
+                List<MenuItem> menu = await _menuRepository.GetItemDetail(item);
+                foreach (MenuItem i in menu)
+                {
+                    i.AvailableQuantity += item[i.ItemId];
+                }
+                transaction.Complete();
+
             }
-            if (order.Status == OrderStatus.Cancelled)
-            {
-                throw new ResourceException(ValidationMessages.OrderCancelled);
-            }
-            if (order.Status == OrderStatus.Rejected)
-            {
-                throw new ResourceException(ValidationMessages.OrderRejected);
-            }
-            if (order.Status == OrderStatus.Dispatched)
-            {
-                throw new ResourceException(ValidationMessages.OrderDispatched);
-            }
-            if (order.Status == OrderStatus.Delivery)
-            {
-                throw new Exception(ValidationMessages.OrderDelivered);
-            }
-            await _orderRepository.CancelOrder(order);
-            await _userRepository.UpdateBalanceWhileCancelOrder(userid,order.TotalAmount);
 
         }
     }

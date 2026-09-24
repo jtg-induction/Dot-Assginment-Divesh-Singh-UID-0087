@@ -34,7 +34,7 @@ namespace RestaurantManagement.tests.Services
                 new MenuItem { ItemId = 1, RestaurantId = 1, DishName = "Pizza", Price = 100m, AvailableQuantity = 10 },
                 new MenuItem { ItemId = 2, RestaurantId = 1, DishName = "Burger", Price = 80m, AvailableQuantity = 5 }
             };
-            _restaurantRepository.Setup(e => e.RestaurantIsActive(1)).ReturnsAsync(true);
+            _restaurantRepository.Setup(e => e.IsRestaurantActive(1)).ReturnsAsync(true);
 
             _menuRepository.Setup(r => r.GetMenuItem(1)).ReturnsAsync(menuItems);
 

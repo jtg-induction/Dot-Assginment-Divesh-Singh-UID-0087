@@ -11,7 +11,7 @@ namespace RestaurantManagement.Models.Dto
         {
                 [Required(ErrorMessage = ValidationMessages.NameRequired)]
                 [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
-                  public string Name { get; set; }
+                public string Name { get; set; }
 
                 /// <summary>
                 /// Gets or sets the user's password.
@@ -26,6 +26,7 @@ namespace RestaurantManagement.Models.Dto
                 /// </summary>
                 [Required(ErrorMessage = ValidationMessages.EmailRequired)]
                 [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+                [RegularExpression(ValidationRules.EmailRegexPattern, ErrorMessage = ValidationMessages.InvalidEmailFormat)]
                 public string Email { get; set; }
 
                 /// <summary>

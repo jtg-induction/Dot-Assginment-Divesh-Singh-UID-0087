@@ -39,7 +39,7 @@ namespace RestaurantManagement.tests.Repository
                 Country = "India",
                 AddressType = AddressType.Home
             };
-          _addressRepository.AddAddressAysnc(address);
+         await _addressRepository.AddAddressAsync(address);
             Assert.AreEqual(1, _context.Addresses.Count());
 
         }
@@ -56,8 +56,8 @@ namespace RestaurantManagement.tests.Repository
                 Country = "India",
                 AddressType = AddressType.Home
             };
-          await   _addressRepository.AddAddressAysnc(address);
-          await _addressRepository.GetAddress(1);
+          await   _addressRepository.AddAddressAsync(address);
+          await _addressRepository.GetAddressAsync(1);
           
         }
     }

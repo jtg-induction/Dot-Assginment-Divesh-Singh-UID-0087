@@ -12,7 +12,7 @@ namespace RestaurantManagement.Repository.Interface
         {
                 Task<List<Restaurant>> GetRestaurantsAsync();
                 Task<string> GetRestaurantName(int id);
-                Task<bool> RestaurantIsActive(int id);
+                Task<bool> IsRestaurantActive(int id);
 
 
         }
