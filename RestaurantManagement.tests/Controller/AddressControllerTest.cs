@@ -61,15 +61,15 @@ namespace RestaurantManagement.Tests.Controllers
 
 
             _mockAddressService
-                .Setup(s => s.AddUserAddress(requestPayload))
-                .ReturnsAsync(mockGeneratedAddressId);
+                .Setup(s => s.AddUserAddress(requestPayload, 1));
+             
 
             _mockUserAddressService
                 .Setup(s => s.AddUserAdress(mockUserId, mockGeneratedAddressId))
                 .Returns(Task.CompletedTask);
 
             // 2. ACT
-            IHttpActionResult actionResult = await _controller.AddAdress(requestPayload);
+            IHttpActionResult actionResult = await _controller.AddAddress(requestPayload);
 
             // 3. ASSERT
             var okResult = actionResult as OkNegotiatedContentResult<BaseResponse<string>>;

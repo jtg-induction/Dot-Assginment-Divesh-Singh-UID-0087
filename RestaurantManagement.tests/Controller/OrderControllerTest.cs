@@ -56,7 +56,7 @@ namespace RestaurantManagement.Tests.Controllers
 
             // Setup Order Service behavior
             _mockOrderService
-                .Setup(s => s.AddOrder(requestPayload.ItemAndQuantity, requestPayload.AddressId, mockUserId))
+                .Setup(s => s.AddOrder(requestPayload, mockUserId))
                 .ReturnsAsync(mockOrderResponse);
 
             // 2. ACT

@@ -3,6 +3,7 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -21,19 +22,19 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
-        //public async Task<List<Address>> GetAddressAsync(int id)
-        //{
-        //    return await _db.
-        //}
-        public async Task AddAddressAysnc(Address address)
+        public async Task AddAddressAsync(Address address)
         {
             _db.Addresses.Add(address);
             await _db.SaveChangesAsync();
         }
-        public async Task<Address> GetAddress(int id)
+        public async Task<Address> GetAddressAsync(int id,int userid)
         {
-            var data =await  _db.Addresses.FindAsync(id);
-            return data;
+            var data = _db.UserAddresses.Where(e => e.UserId == userid && e.AddressId == id).Select(e => e.Address);
+            return await data.FirstOrDefaultAsync();
+        }
+      public async Task<Address> GetAddressAsync(int id)
+        {
+            return await _db.Addresses.FindAsync(id);
         }
 
     }

@@ -32,27 +32,8 @@ namespace RestaurantManagement.Repository
         {
 
             var ids = string.Join(",", item.Keys);
-            List<MenuItem> menu = await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
-
-            if (menu.Count != item.Count)
-            {
-                throw new ResourceException(ValidationMessages.MenuListInvalid);
-            }
-            int prev = 0;
-            foreach (MenuItem i in menu)
-            {
-                if (!(prev == 0 || prev == i.RestaurantId))
-                {
-                    throw new ResourceException(ValidationMessages.OneRestaurant);
-                }
-                if (item[i.ItemId] > i.AvailableQuantity)
-                {
-                    throw new ResourceException($"{i.DishName} Are Not Available !!");
-                }
-                i.AvailableQuantity -= item[i.ItemId];
-            }
-            await _db.SaveChangesAsync();
-            return menu;
+            return await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
+          
         }
 
     }

@@ -27,7 +27,7 @@ namespace RestaurantManagement.Services
            var data1 = new List<ActiveRestaurantResponse>();
             foreach (Restaurant restaurant in activeRestaurants)
             {
-               var data= await _addressRepository.GetAddress(restaurant.AddressId);
+               var data= await _addressRepository.GetAddressAsync(restaurant.AddressId);
                 string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
                 data1.Add(new ActiveRestaurantResponse
                 {

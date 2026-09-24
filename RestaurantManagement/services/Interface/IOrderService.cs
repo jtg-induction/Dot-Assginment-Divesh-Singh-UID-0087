@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Models.Entity;
+﻿using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace RestaurantManagement.Services.Interface
 {
   public interface IOrderService
     {
-        Task<OrderResponse> AddOrder(Dictionary<int, int> item, int addressid, int userid);
+        Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid);
     }
 }

@@ -55,5 +55,8 @@
         public const string ListOfMenuItem = "List Of  Items!!";
         public const string InvalidRestaurantId = "Invalid restaurant ID. Identifier must be greater than zero.";
         public const string RestaurantNotFound = "Restaurant Not Found!!";
+        public const string ItemIdZero = "Quantity can not be negative or zero!!";
+        public const string InvalidAddress = "Invalid Address";
+
     }
 }

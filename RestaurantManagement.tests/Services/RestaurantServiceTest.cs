@@ -41,7 +41,7 @@ namespace RestaurantManagement.tests.Services
 
             // Properly mock GetAddress to respond correctly based on the incoming AddressId
             _addressRespository
-                .Setup(e => e.GetAddress(It.IsAny<int>()))
+                .Setup(e => e.GetAddressAsync(It.IsAny<int>()))
                 .ReturnsAsync((int addressId) => new Address
                 {
                     Street = "Street " + addressId,

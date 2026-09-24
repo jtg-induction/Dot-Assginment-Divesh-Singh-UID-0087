@@ -41,7 +41,7 @@ namespace RestaurantManagement.repository
         Task UpdateAccount(User user, UpdateAccountDto updateaccount);
                 Task Deactivate(User user);
                 Task Activate(User user);
-        Task UpdateBalance(int id, decimal totalamount);
+        Task<User> GetUserWithLock(int id);
 
 
         }

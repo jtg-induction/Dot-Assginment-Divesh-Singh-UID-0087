@@ -27,11 +27,11 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize]
         [HttpPost]
-        [Route("add")]
+        [Route("")]
         public async Task<IHttpActionResult> AddOrder(AddOrderRequest addorder)
         {
             int userid =await  _claimHelper.GetUserIdFromClaim(User.Identity);
-           var data= await _orderService.AddOrder(addorder.ItemAndQuantity,addorder.AddressId,userid);
+           var data= await _orderService.AddOrder(addorder,userid);
         
 
             var response = new BaseResponse<OrderResponse>()
