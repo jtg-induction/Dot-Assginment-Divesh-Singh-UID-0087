@@ -66,8 +66,9 @@
         public const string OrderDispatched = "Order is Already Out For Delivery You Cant Cancel!!";
         public const string OrderDelivered = "Order is Already Delivered!!";
         public const string InvalidOrderId = "Order Id can not be negative and zero!!";
-        
-
+        public const string RestaurantCreatedSuccess = "Restaurant Created Successfully!!";
+        public const string RestaurantOwnerUpdateSuccess = "Restaurant Owner Updated SuccessFully!!";
+        public const string UserEmailRequired = "User Email Required!!";
 
 
     }

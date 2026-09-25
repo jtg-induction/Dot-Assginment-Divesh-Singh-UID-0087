@@ -10,7 +10,7 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
-    public class AddressRepository :IAddressRepository
+    public class AddressRepository : IAddressRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -27,12 +27,12 @@ namespace RestaurantManagement.Repository
             _db.Addresses.Add(address);
             await _db.SaveChangesAsync();
         }
-        public async Task<Address> GetAddressAsync(int id,int userid)
+        public async Task<Address> GetAddressAsync(int id, int userid)
         {
             var data = _db.UserAddresses.Where(e => e.UserId == userid && e.AddressId == id).Select(e => e.Address);
             return await data.FirstOrDefaultAsync();
         }
-      public async Task<Address> GetAddressAsync(int id)
+        public async Task<Address> GetAddressAsync(int id)
         {
             return await _db.Addresses.FindAsync(id);
         }

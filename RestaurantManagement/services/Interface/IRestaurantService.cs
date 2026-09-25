@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Models.Entity;
+﻿using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace RestaurantManagement.Services.Interface
     public interface IRestaurantService
     {
         Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync();
-       
+        Task AddRestaurant(AddRestaurantRequest addRestaurant);
+        Task AddRestaurantowner(AddRestaurantOwnerRequest addRestaurantOwnerRequest);
+
     }
 }

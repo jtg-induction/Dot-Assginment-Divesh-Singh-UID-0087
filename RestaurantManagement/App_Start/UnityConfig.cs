@@ -63,6 +63,8 @@ namespace RestaurantManagement
             container.RegisterType<IClaimHelper, ClaimHelper>();
             container.RegisterType<IUserAddressService, UserAddressService>();
             container.RegisterType<IUserAddressRepository, UserAddressRepository>();
+            container.RegisterType<IRestaurantOwnerRepository, RestaurantOwnerRepository>();
+
         }
     }
 }

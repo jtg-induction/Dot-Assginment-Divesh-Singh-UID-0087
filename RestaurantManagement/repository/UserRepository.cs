@@ -3,8 +3,10 @@ using RestaurantManagement.Data;
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,6 +47,10 @@ namespace RestaurantManagement.Repository
 
             return await _db.Users.FirstOrDefaultAsync(e => e.Email == email);
 
+        }
+        public async Task<bool> UserExists(List<int> id)
+        {
+            return (await _db.Users.Where(e => id.Contains(e.UserId)).ToListAsync()).Count() == id.Count;
         }
 
         /// <summary>
@@ -111,12 +117,25 @@ namespace RestaurantManagement.Repository
             return await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
 
         }
+        public async Task ChangeRoleToOwner(List<string> id)
+        {
+            foreach(string email in id)
+            {
+                var user = await _db.Users.Include(e => e.Role).FirstOrDefaultAsync();
+                user.Role = UserRole.Owner;
+
+            }
+           await _db.SaveChangesAsync();
+        }
         public async Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount)
         {
             var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
             user.Balance += totalamount;
             await _db.SaveChangesAsync();
         }
-
+        public async Task<Dictionary<string,int>> ListOfUserWIthEmailAndUserId(List<string>email)
+        {
+            return await _db.Users.Where(e => email.Contains(e.Email)).ToDictionaryAsync(e=>e.Email,e=>e.UserId);
+        }
     }
 }

@@ -347,6 +347,8 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dto\AddAddressRequest.cs" />
     <Compile Include="Models\Dto\AddOrderRequest.cs" />
+    <Compile Include="Models\Dto\AddRestaurantOwnerRequest.cs" />
+    <Compile Include="Models\Dto\AddRestaurantRequest.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
     <Compile Include="Models\Dto\UpdateAccountDto.cs" />
     <Compile Include="Models\Dto\UserCredential.cs" />
@@ -377,12 +379,14 @@
     <Compile Include="Repository\Interface\IMenuRepository.cs" />
     <Compile Include="Repository\Interface\IOrderItemRepository.cs" />
     <Compile Include="Repository\Interface\IOrderRepository.cs" />
+    <Compile Include="Repository\Interface\IRestaurantOwnerRepository.cs" />
     <Compile Include="Repository\Interface\IRestaurantRepository.cs" />
     <Compile Include="Repository\Interface\ITokenRepository.cs" />
     <Compile Include="Repository\Interface\IUserAddressRepository.cs" />
     <Compile Include="Repository\Interface\IUserRepository.cs" />
     <Compile Include="Repository\OrderItemRepository.cs" />
     <Compile Include="Repository\OrderRepository.cs" />
+    <Compile Include="Repository\RestaurantOwnerRepository.cs" />
     <Compile Include="Repository\UserAddressRepository.cs" />
     <Compile Include="Repository\MenuRepository.cs" />
     <Compile Include="Repository\RestaurantRepository.cs" />
