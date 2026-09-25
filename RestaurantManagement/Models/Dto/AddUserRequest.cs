@@ -10,7 +10,7 @@ namespace RestaurantManagement.Models.Dto
         public class AddUserRequest
         {
                 [Required(ErrorMessage = ValidationMessages.NameRequired)]
-        [StringLength(EntityConstants.MaxNameLength,MinimumLength =EntityConstants.MinNameLength)]
+                [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
                 public string Name { get; set; }
 
                 /// <summary>
@@ -26,6 +26,7 @@ namespace RestaurantManagement.Models.Dto
                 /// </summary>
                 [Required(ErrorMessage = ValidationMessages.EmailRequired)]
                 [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+                [RegularExpression(ValidationRules.EmailRegexPattern, ErrorMessage = ValidationMessages.InvalidEmailFormat)]
                 public string Email { get; set; }
 
                 /// <summary>

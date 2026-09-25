@@ -1,5 +1,6 @@
 ﻿using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
-    public class MenuRepository : IMenuRepository
+    public class RestaurantRepository : IRestaurantRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -18,14 +19,17 @@ namespace RestaurantManagement.Repository
         /// Initializes a new instance of the <see cref="UserRepository"/> class.
         /// </summary>
         /// <param name="context">The database context used to access user records.</param>
-        public MenuRepository(ApplicationDbContext context)
+        public RestaurantRepository(ApplicationDbContext context)
         {
             _db = context;
         }
-        public async Task<List<MenuItem>> GetMenuItem(int id)
+        public async Task<bool> IsRestaurantActive(int id)
         {
-            return await _db.MenuItems.Where(e => e.RestaurantId == id).ToListAsync();
+            return await  _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.IsActive).FirstOrDefaultAsync();
         }
-     
+        public async Task<List<Restaurant>> GetRestaurantsAsync()
+        {
+            return await  _db.Restaurants.Where(e => e.IsActive).ToListAsync();
+        }
     }
 }

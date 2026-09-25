@@ -30,5 +30,9 @@
         public const string RefreshSuccess = "Refresh successfully.";
         public const string DeactivateSuccess = "Deactivate successfully.";
         public const string ActivateSuccess = "Activate successfully.";
+        public const string ListOfRestaurant = "List Of Active Restaurant!!";
+        public const string ListOfMenuItem = "List Of  Items!!";
+        public const string InvalidRestaurantId = "Invalid restaurant ID. Identifier must be greater than zero.";
+        public const string RestaurantNotFound = "Restaurant Not Found!!";
     }
 }

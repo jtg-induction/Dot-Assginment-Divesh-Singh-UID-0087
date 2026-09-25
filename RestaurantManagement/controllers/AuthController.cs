@@ -117,6 +117,9 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> DeactivateAccount()
         {
             int currentUserId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
+            await _tokenService.RevokedAsync(currentRefreshToken);
+            _tokenService.ClearRefreshTokenCookie();
             var user = await _userService.DeactivateAccount(currentUserId);
             var response = new BaseResponse<string>
             {
@@ -127,7 +130,7 @@ namespace RestaurantManagement.Controllers
 
 
         }
-        [HttpPut]
+        [HttpPatch]
         [Route("activate")]
         public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
         {

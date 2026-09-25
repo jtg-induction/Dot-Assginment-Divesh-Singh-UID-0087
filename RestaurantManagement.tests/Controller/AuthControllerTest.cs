@@ -139,7 +139,7 @@ namespace RestaurantManagement.tests.Controller
 
             // Simulating user lookup failure by throwing a target exception (aligns with try/catch Option 1)
             _userServiceMock.Setup(r => r.LoginUserAsync(It.IsAny<UserCredential>()))
-                            .ThrowsAsync(new KeyNotFoundException(ValidationMessages.PasswordIncorrect));
+                            .ThrowsAsync(new KeyNotFoundException(ValidationMessages.UserNotFound));
 
             // ACT
             Exception ee = null;

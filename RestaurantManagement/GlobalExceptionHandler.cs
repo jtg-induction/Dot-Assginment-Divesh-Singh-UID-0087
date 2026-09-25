@@ -19,14 +19,30 @@ namespace RestaurantManagement.Handlers
     {
         public override void Handle(ExceptionHandlerContext context)
         {
+           
             var exception = context.Exception;
+            var errorPayload = new
+            {
+                Success = false,
+                Message = exception.Message
+            };
+            if (exception is NotFoundException)
+            {
 
+                var unauthorizedResponse = context.Request.CreateResponse(
+                    HttpStatusCode.NotFound,
+                   errorPayload
+                );
+                context.Result = new ResponseMessageResult(unauthorizedResponse);
+                return;
+            }
             // 1. Intercept service-level authentication exceptions
             if (exception is UnauthenticatedException)
             {
+              
                 var unauthorizedResponse = context.Request.CreateResponse(
                     HttpStatusCode.Unauthorized,
-                    new { Message = exception.Message }
+                   errorPayload
                 );
                 context.Result = new ResponseMessageResult(unauthorizedResponse);
                 return;
@@ -35,9 +51,10 @@ namespace RestaurantManagement.Handlers
             // 2. Identify resource conflicts
             if (exception is ResourceException)
             {
+               
                 var conflictResponse = context.Request.CreateResponse(
                     HttpStatusCode.Conflict,
-                    new { Message = exception.Message }
+                   errorPayload
                 );
                 context.Result = new ResponseMessageResult(conflictResponse);
                 return;
@@ -46,18 +63,20 @@ namespace RestaurantManagement.Handlers
             // 3. Identify specific custom domain business logic exceptions
             if (exception is InvalidOperationException)
             {
+               
                 var badRequestResponse = context.Request.CreateResponse(
                     HttpStatusCode.BadRequest,
-                    new { Message = exception.Message }
+                   errorPayload
                 );
                 context.Result = new ResponseMessageResult(badRequestResponse);
                 return;
             }
 
             // 4. Fallback for all unexpected database or system crashes (500 Internal Server Error)
+
             var genericResponse = context.Request.CreateResponse(
                 HttpStatusCode.InternalServerError,
-                new { Message = ValidationMessages.InternalServerError }
+                errorPayload
             );
             context.Result = new ResponseMessageResult(genericResponse);
         }

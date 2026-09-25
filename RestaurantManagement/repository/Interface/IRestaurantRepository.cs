@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace RestaurantManagement.Repository.Interface
 {
-    public interface IMenuRepository
+    public interface IRestaurantRepository
     {
-        Task<List<MenuItem>> GetMenuItem(int id);
-        
+        Task<List<Restaurant>> GetRestaurantsAsync();
+        Task<bool> IsRestaurantActive(int id);
+
+
     }
 }
