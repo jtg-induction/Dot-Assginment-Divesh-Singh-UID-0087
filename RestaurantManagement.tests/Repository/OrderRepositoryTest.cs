@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Data;
+﻿using Moq;
+using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Repository;
@@ -27,6 +28,7 @@ namespace RestaurantManagement.tests.Repository
 
             _orderRepository = new OrderRepository(_context);
         }
+
         [TestMethod]
         public void add()
         {
@@ -41,6 +43,7 @@ namespace RestaurantManagement.tests.Repository
                 Country = "India",
                 AddressType = AddressType.Home
             });
+
             var testUser = new User
             {
                 UserId = 1,
@@ -69,43 +72,162 @@ namespace RestaurantManagement.tests.Repository
             var testOrder = new Order
             {
                 OrderId = 1001,
-                UserId = 1,               
-                RestaurantId = 1,        
-                TotalAmount = 45.97m,     
+                UserId = 1,
+                RestaurantId = 1,
+                TotalAmount = 45.97m,
                 Status = OrderStatus.Placed,
-                Address = "123 Main Street, Suite 400, New York, NY 10001" // Satisfies Min/Max Address Length
+                Address = "123 Main Street, Suite 400, New York, NY 10001" 
             };
-
-            //// 3. Setup OrderItems for the order
-            //var orderItem1 = new OrderItem
-            //{
-            //    OrderItemId = 5001,
-            //    OrderId = 1001,          
-            //    ItemId = 101,             
-            //    ItemName = "Bacon Cheeseburger", 
-            //    Price = 15.99m,          
-            //    Quantity = 2              
-            //};
-
-            //var orderItem2 = new OrderItem
-            //{
-            //    OrderItemId = 5002,
-            //    OrderId = 1001,           
-            //    ItemId = 102,
-            //    ItemName = "Large Truffle Fries",
-            //    Price = 13.99m,
-            //    Quantity = 1
-            //};
-
-
-          
-            //_context.OrderItems.Add(orderItem1);
-            //_context.OrderItems.Add(orderItem2);
 
             _context.SaveChanges();
             _orderRepository.PlacedOrder(testOrder);
-           
+        }
 
+        [TestMethod]
+        public async Task GetOrder_WhenUserHasOrders_ReturnsMatchingOrdersList()
+        {
+            // Arrange
+            _context.Addresses.Add(new Address
+            {
+                AddressId = 1,
+                Street = "123 Main Road",
+                City = "Mumbai",
+                State = "Maharashtra",
+                PinCode = "400001",
+                Country = "India",
+                AddressType = AddressType.Home
+            });
+            var testUser = new Models.Entity.User
+            {
+                UserId = 1,
+                Name = "Jane Doe",
+                Password = "PasswordSecure123!",
+                Email = "janedoe@example.com",
+                BirthDate = new DateTime(1995, 8, 24),
+                PhoneNumber = "555-019-2834",
+                Role = UserRole.Customer,
+                Balance = 5000m,
+                IsActive = true
+            };
+            _context.Users.Add(testUser);
+
+            _context.Restaurants.Add(new Restaurant
+            {
+                RestaurantId = 1,
+                Name = "Active Rest",
+                AddressId = 1,
+                Email = "active@test.com",
+                PhoneNumber = "9999999999",
+                IsActive = true
+            });
+
+            _context.Orders.Add(new Order { OrderId = 1, UserId = 1, RestaurantId = 1, TotalAmount = 45.97m, Status = OrderStatus.Placed, Address = "Test Address" });
+            _context.Orders.Add(new Order { OrderId = 2, UserId = 1, RestaurantId = 1, TotalAmount = 45.97m, Status = OrderStatus.Placed, Address = "Test Address" });
+            _context.SaveChanges();
+
+            // Act
+            var result = await _orderRepository.GetOrder(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+           
+        }
+
+        [TestMethod]
+        public async Task GetOrderDetail_WhenOrderExists_ReturnsCorrectOrder()
+        {
+            // Arrange
+            _context.Addresses.Add(new Address
+            {
+                AddressId = 1,
+                Street = "123 Main Road",
+                City = "Mumbai",
+                State = "Maharashtra",
+                PinCode = "400001",
+                Country = "India",
+                AddressType = AddressType.Home
+            });
+            var testUser = new Models.Entity.User
+            {
+                UserId = 1,
+                Name = "Jane Doe",
+                Password = "PasswordSecure123!",
+                Email = "janedoe@example.com",
+                BirthDate = new DateTime(1995, 8, 24),
+                PhoneNumber = "555-019-2834",
+                Role = UserRole.Customer,
+                Balance = 5000m,
+                IsActive = true
+            };
+            _context.Users.Add(testUser);
+
+            _context.Restaurants.Add(new Restaurant
+            {
+                RestaurantId = 1,
+                Name = "Active Rest",
+                AddressId = 1,
+                Email = "active@test.com",
+                PhoneNumber = "9999999999",
+                IsActive = true
+            });
+
+            _context.Orders.Add(new Order { OrderId = 101, UserId = 1, RestaurantId = 1, TotalAmount = 45.97m, Status = OrderStatus.Placed, Address = "Test Address" });
+            _context.SaveChanges();
+
+            // Act
+            var result = await _orderRepository.GetOrderDetail(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task CancelOrder_WhenCalled_UpdatesStatusAndSavesChanges()
+        {
+            // Arrange
+              _context.Addresses.Add(new Address
+            {
+                AddressId = 1,
+                Street = "123 Main Road",
+                City = "Mumbai",
+                State = "Maharashtra",
+                PinCode = "400001",
+                Country = "India",
+                AddressType = AddressType.Home
+            });
+            var testUser = new Models.Entity.User
+            {
+                UserId = 1,
+                Name = "Jane Doe",
+                Password = "PasswordSecure123!",
+                Email = "janedoe@example.com",
+                BirthDate = new DateTime(1995, 8, 24),
+                PhoneNumber = "555-019-2834",
+                Role = UserRole.Customer,
+                Balance = 5000m,
+                IsActive = true
+            };
+            _context.Users.Add(testUser);
+
+            _context.Restaurants.Add(new Restaurant
+            {
+                RestaurantId = 1,
+                Name = "Active Rest",
+                AddressId = 1,
+                Email = "active@test.com",
+                PhoneNumber = "9999999999",
+                IsActive = true
+            });
+            
+            var testOrder = new Order { OrderId = 200, UserId = 1, RestaurantId = 1, TotalAmount = 45.97m, Status = OrderStatus.Placed, Address = "Test Address" };
+            _context.Orders.Add(testOrder);
+            _context.SaveChanges();
+
+            // Act
+            await _orderRepository.CancelOrder(testOrder);
+
+            // Assert
+            Assert.AreEqual(OrderStatus.Cancelled, testOrder.Status);
         }
     }
 }

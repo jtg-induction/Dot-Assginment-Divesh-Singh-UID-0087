@@ -3,6 +3,7 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,8 +27,9 @@ namespace RestaurantManagement.Repository
             _db.OrderItems.AddRange(orderItems);
             await _db.SaveChangesAsync();
         }
-
-
-
+        public async Task<List<OrderItem>> GetOrderItem(int id)
+        {
+            return await _db.OrderItems.Where(e => e.OrderId == id).ToListAsync();
+        }
     }
 }

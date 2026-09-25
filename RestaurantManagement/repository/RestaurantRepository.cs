@@ -31,5 +31,10 @@ namespace RestaurantManagement.Repository
         {
             return await  _db.Restaurants.Where(e => e.IsActive).ToListAsync();
         }
+        public async Task<string> GetRestaurantName(int id)
+        {
+            return await _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.Name).FirstOrDefaultAsync();
+        }
     }
+
 }

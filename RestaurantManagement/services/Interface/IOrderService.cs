@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 
 namespace RestaurantManagement.Services.Interface
 {
-  public interface IOrderService
-    {
-        Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid);
-    }
+        public interface IOrderService
+        {
+                Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid);
+                Task<List<GetOrderResponse>> GetOrder(int id);
+                Task<List<GetOrderItemResponse>> GetOrderItem(int id);
+                Task OrderCancel(int id, int userid);
+        }
 }

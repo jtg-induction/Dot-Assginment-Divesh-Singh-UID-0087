@@ -1,8 +1,11 @@
-﻿using RestaurantManagement.Data;
+﻿using NMemory.Linq;
+using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -24,6 +27,19 @@ namespace RestaurantManagement.Repository
         public async Task PlacedOrder(Order order)
         {
             _db.Orders.Add(order);
+            await _db.SaveChangesAsync();
+        }
+        public async Task<List<Order>> GetOrder(int id)
+        {
+            return await _db.Orders.Include(e=>e.Restaurant).Where(e => e.UserId == id).ToListAsync();
+        }
+        public async Task<Order> GetOrderDetail(int id)
+        {
+            return await _db.Orders.FindAsync(id);
+        }
+       public async Task CancelOrder(Order order)
+        {
+            order.Status = OrderStatus.Cancelled;
             await _db.SaveChangesAsync();
         }
     }

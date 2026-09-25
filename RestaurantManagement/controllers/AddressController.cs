@@ -15,12 +15,12 @@ namespace RestaurantManagement.Controllers
 {
     [Authorize]
     [RoutePrefix("api/address")]
-    public class AddressController:ApiController
+    public class AddressController : ApiController
     {
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly IClaimHelper _claimHelper;
-        public AddressController( IAddressService addressService, IUserAddressService userAddressService,IClaimHelper claimHelper)
+        public AddressController(IAddressService addressService, IUserAddressService userAddressService, IClaimHelper claimHelper)
         {
             _addressService = addressService;
             _userAddressService = userAddressService;
@@ -31,7 +31,7 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> AddAddress(AddAddressRequest addAddressRequest)
         {
             int userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            await _addressService.AddUserAddress(addAddressRequest,userId);
+            await _addressService.AddUserAddress(addAddressRequest, userId);
             var response = new BaseResponse<string>
             {
                 success = true,
@@ -45,7 +45,7 @@ namespace RestaurantManagement.Controllers
         {
             int userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
             var data = await _userAddressService.GetAddress(userId);
-          
+
             var response = new BaseResponse<List<AddressResponse>>
             {
                 success = true,

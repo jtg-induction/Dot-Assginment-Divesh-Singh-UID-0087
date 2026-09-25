@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace RestaurantManagement.Repository.Interface
 {
-    public interface IRestaurantRepository
-    {
-        Task<List<Restaurant>> GetRestaurantsAsync();
-        Task<bool> IsRestaurantActive(int id);
+        public interface IRestaurantRepository
+        {
+                Task<List<Restaurant>> GetRestaurantsAsync();
+                Task<string> GetRestaurantName(int id);
+                Task<bool> IsRestaurantActive(int id);
 
 
-    }
+        }
 }

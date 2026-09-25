@@ -25,7 +25,6 @@ namespace RestaurantManagement.tests.Repository
         [TestInitialize]
         public void setup()
         {
-            // Effort creates a lightweight, schema-compliant in-memory relational instance for EF6
             DbConnection connection = Effort.DbConnectionFactory.CreateTransient();
             _context = new ApplicationDbContext(connection);
             _userrepo = new UserRepository(_context);

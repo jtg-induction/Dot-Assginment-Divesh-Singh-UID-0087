@@ -1,12 +1,13 @@
-﻿using RestaurantManagement.Data;
+﻿using Effort;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Repository;
+using RestaurantManagement.Repository.Interface;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Effort;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace RestaurantManagement.tests.Repository
 {
@@ -128,6 +129,47 @@ namespace RestaurantManagement.tests.Repository
             var result = await _repository.IsRestaurantActive(1);
 
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public async Task RestaurantIsActive_WhenRestaurantDoesNotExist_ReturnsFalse()
+        {
+            // Act
+            var result = await _repository.IsRestaurantActive(999);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+        [TestMethod]
+        public async Task GetRestaurantName_WhenRestaurantDoesNotExist_ReturnsNull()
+        {
+            _context.Addresses.Add(new Address
+            {
+                AddressId = 1,
+                Street = "123 Main Road",
+                City = "Mumbai",
+                State = "Maharashtra",
+                PinCode = "400001",
+                Country = "India",
+                AddressType = AddressType.Home
+            });
+
+            _context.Restaurants.Add(new Restaurant
+            {
+                RestaurantId = 1,
+                Name = "Inactive Rest",
+                AddressId = 1,
+                Email = "inactive@test.com",
+                PhoneNumber = "8888888888",
+                IsActive = true
+            });
+
+            _context.SaveChanges();
+            // Act
+            var result = await _repository.GetRestaurantName(1);
+
+            // Assert
+            Assert.IsNotNull(result);
         }
     }
 }

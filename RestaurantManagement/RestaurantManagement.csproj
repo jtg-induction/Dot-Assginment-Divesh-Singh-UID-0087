@@ -367,6 +367,8 @@
     <Compile Include="Models\Response\AddressResponse.cs" />
     <Compile Include="Models\Response\BaseResponse.cs" />
     <Compile Include="Models\Response\GetMenuItemResponse.cs" />
+    <Compile Include="Models\Response\GetOrderItemResponse.cs" />
+    <Compile Include="Models\Response\GetOrderResponse.cs" />
     <Compile Include="Models\Response\LoginResponse.cs" />
     <Compile Include="Models\Response\OrderResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -38,10 +38,11 @@ namespace RestaurantManagement.repository
 
                 Task<User> GetUserAsync(int id);
                 Task<bool> IsActiveAsync(int id);
-        Task UpdateAccount(User user, UpdateAccountDto updateaccount);
+                Task UpdateAccount(User user, UpdateAccountDto updateaccount);
                 Task Deactivate(User user);
                 Task Activate(User user);
-        Task<User> GetUserWithLock(int id);
+                Task<User> GetUserWithLock(int id);
+                Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount);
 
 
         }

@@ -109,8 +109,14 @@ namespace RestaurantManagement.Repository
         public async Task<User> GetUserWithLock(int id)
         {
             return await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
-          
+
         }
-      
+        public async Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount)
+        {
+            var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+            user.Balance += totalamount;
+            await _db.SaveChangesAsync();
+        }
+
     }
 }

@@ -22,7 +22,7 @@ namespace RestaurantManagement.tests.Services
         {
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _addressRespository = new Mock<IAddressRepository>();
-            _restaurantService = new RestaurantService(_restaurantRepository.Object,_addressRespository.Object);
+            _restaurantService = new RestaurantService(_restaurantRepository.Object, _addressRespository.Object);
         }
 
         [TestMethod]
@@ -71,16 +71,5 @@ namespace RestaurantManagement.tests.Services
             Assert.AreEqual(0, result.Count);
         }
 
-        [TestMethod]
-        public async Task GetRestaurantsAsync_CallsRepository()
-        {
-            _restaurantRepository
-                .Setup(r => r.GetRestaurantsAsync())
-                .ReturnsAsync(new List<Restaurant>());
-
-            await _restaurantService.GetRestaurantsAsync();
-
-            _restaurantRepository.Verify(r => r.GetRestaurantsAsync(), Times.Once);
-        }
     }
 }

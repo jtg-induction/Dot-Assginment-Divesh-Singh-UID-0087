@@ -11,5 +11,6 @@ namespace RestaurantManagement.Services.Interface
     public interface IRestaurantService
     {
         Task<List<ActiveRestaurantResponse>> GetRestaurantsAsync();
+       
     }
 }

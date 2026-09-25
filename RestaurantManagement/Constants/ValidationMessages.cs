@@ -57,6 +57,18 @@
         public const string RestaurantNotFound = "Restaurant Not Found!!";
         public const string ItemIdZero = "Quantity can not be negative or zero!!";
         public const string InvalidAddress = "Invalid Address";
+        public const string OrderCancelled = "Order is Already cancel!!";
+        public const string OrderMismatch = "Order Not Realated to customer!!";
+        public const string OrderFetchSuccess = "Order data fetch successfully.";
+        public const string OrderCancelSuccess = "Order Cancel successfully.";
+        public const string OrderNotFound = "Order Not Found!!";
+        public const string OrderRejected = "Order is Already Rejected By Restaurant!!";
+        public const string OrderDispatched = "Order is Already Out For Delivery You Cant Cancel!!";
+        public const string OrderDelivered = "Order is Already Delivered!!";
+        public const string InvalidOrderId = "Order Id can not be negative and zero!!";
+        
+
+
 
     }
 }
