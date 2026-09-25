@@ -41,7 +41,7 @@ namespace RestaurantManagement.Controllers
             return Ok(response);
         }
         [HttpGet]
-        [Route("{id}/menu-items")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> GetMenuByRestaurantId(int id)
         {
             if (id <= 0)
@@ -60,7 +60,7 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize(Roles ="Admin")]
         [HttpPost]
-        [Route("add")]
+        [Route("")]
         public async Task<IHttpActionResult> AddRestaurant(AddRestaurantRequest addRestaurant)
         {
             await _restaurantService.AddRestaurant(addRestaurant);
@@ -73,7 +73,7 @@ namespace RestaurantManagement.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("add-owner")]
+        [Route("owners")]
         public async Task<IHttpActionResult> AddRestaurantOwner(AddRestaurantOwnerRequest addRestaurantOwnerRequest)
         {
             await _restaurantService.AddRestaurantowner(addRestaurantOwnerRequest);
@@ -82,7 +82,7 @@ namespace RestaurantManagement.Controllers
                 success = true,
                 message = ValidationMessages.RestaurantOwnerUpdateSuccess
             };
-            return Created(string.Empty, response);
+            return Ok( response);
         }
 
 

@@ -9,6 +9,7 @@ namespace RestaurantManagement.Services.Interface
 {
     public interface IAddressService
     {
-        Task<int> AddUserAddress(AddAddressRequest addAddress);
+        Task AddUserAddress(AddAddressRequest addAddress, int userid);
+
     }
 }

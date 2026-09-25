@@ -11,7 +11,7 @@ namespace RestaurantManagement.Models.Dto
     public class AddAddressRequest
     {
         [Required(ErrorMessage =ValidationMessages.StreetRequired)]
-        [StringLength(EntityConstants.MaxStateLength ,MinimumLength = EntityConstants.MinStateLength,ErrorMessage =ValidationMessages.StreetLength)]
+        [StringLength(EntityConstants.MaxStreetLength ,MinimumLength = EntityConstants.MinStreetLength,ErrorMessage =ValidationMessages.StreetLength)]
         public string Street { get; set; }
         [Required(ErrorMessage =ValidationMessages.CityRequired)]
         [StringLength(EntityConstants.MaxCityLength, MinimumLength =  EntityConstants.MinCityLength,ErrorMessage =ValidationMessages.CityLength)]
@@ -25,7 +25,7 @@ namespace RestaurantManagement.Models.Dto
         [Required(ErrorMessage = ValidationMessages.AddressTypeRequired)]
         public AddressType AddressType { get; set; }
         [Required(ErrorMessage =ValidationMessages.CountryRequired)]
-        [StringLength(EntityConstants.MaxCountryLength,MinimumLength = EntityConstants.MinCountryLength,ErrorMessage =ValidationMessages.PincodeLength)]
+        [StringLength(EntityConstants.MaxCountryLength,MinimumLength = EntityConstants.MinCountryLength,ErrorMessage =ValidationMessages.CountryLength)]
         public string Country { get; set; }
     }
 }

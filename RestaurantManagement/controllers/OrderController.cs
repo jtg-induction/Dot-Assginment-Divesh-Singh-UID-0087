@@ -16,6 +16,7 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
+     [Authorize]
     [RoutePrefix("api/orders")]
     public class OrderController : ApiController
     {
@@ -26,13 +27,12 @@ namespace RestaurantManagement.Controllers
             _orderService = orderService;
             _claimHelper = claimHelper;
         }
-        [Authorize]
         [HttpPost]
-        [Route("add")]
+        [Route("")]
         public async Task<IHttpActionResult> AddOrder(AddOrderRequest addorder)
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            var data = await _orderService.AddOrder(addorder.ItemAndQuantity, addorder.AddressId, userid);
+            var data = await _orderService.AddOrder(addorder, userid);
             var response = new BaseResponse<OrderResponse>()
             {
                 success = true,
@@ -43,10 +43,9 @@ namespace RestaurantManagement.Controllers
 
             return Created("", response);
         }
-        [Authorize]
         [HttpGet]
-        [Route("get")]
-        public async Task<IHttpActionResult> GetOrderDetail()
+        [Route("")]
+        public async Task<IHttpActionResult> GetOrder()
         {
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             var data = await _orderService.GetOrder(userid);
@@ -58,11 +57,14 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [Authorize]
         [HttpGet]
-        [Route("{id}/get")]
-        public async Task<IHttpActionResult> GetOrderItemDetail(int id)
+        [Route("{id}")]
+        public async Task<IHttpActionResult> GetOrderItem(int id)
         {
+            if (id <= 0)
+            {
+                throw new InvalidOperationException(ValidationMessages.InvalidOrderId);
+            }
             var data = await _orderService.GetOrderItem(id);
 
             var response = new BaseResponse<List<GetOrderItemResponse>>
@@ -73,11 +75,14 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [Authorize(Roles = "Customer")]
-        [HttpPut]
-        [Route("{id}/cancel")]
+        [HttpPatch]
+        [Route("{id}")]
         public async Task<IHttpActionResult> CancelOrder(int id)
         {
+            if (id <= 0)
+            {
+                throw new InvalidOperationException(ValidationMessages.InvalidOrderId);
+            }
             int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
             await _orderService.OrderCancel(id, userid);
             var response = new BaseResponse<string>

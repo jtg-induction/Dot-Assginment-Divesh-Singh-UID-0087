@@ -31,7 +31,7 @@ namespace RestaurantManagement.Repository
         }
         public async Task<List<Order>> GetOrder(int id)
         {
-            return await _db.Orders.Where(e => e.UserId == id).ToListAsync();
+            return await _db.Orders.Include(e=>e.Restaurant).Where(e => e.UserId == id).ToListAsync();
         }
         public async Task<Order> GetOrderDetail(int id)
         {

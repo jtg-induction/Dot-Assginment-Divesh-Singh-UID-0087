@@ -23,21 +23,21 @@ namespace RestaurantManagement.Repository
         {
             _db = context;
         }
-        public async Task<bool> EmailExixts(string email)
+        public async Task<bool> EmailExists(string email)
         {
             return await _db.Restaurants.AnyAsync(e => e.Email == email);
         }
-        public async Task<bool> PhoneNumberExixts(string ph)
+        public async Task<bool> PhoneNumberExists(string ph)
         {
             return await _db.Restaurants.AnyAsync(e => e.PhoneNumber == ph);
         }
-        public async Task<bool> RestaurantIsActive(int id)
+        public async Task<bool> IsRestaurantActive(int id)
         {
             return await _db.Restaurants.Where(e => e.RestaurantId == id).Select(e => e.IsActive).FirstOrDefaultAsync();
         }
-        public async Task<Restaurant> RestaurantIsActive(string email)
+        public async Task<Restaurant> IsRestaurantActive(string email)
         {
-            return await _db.Restaurants.Where(e => e.Email==email).FirstOrDefaultAsync();
+            return await _db.Restaurants.Where(e => e.Email == email && e.IsActive==true).FirstOrDefaultAsync();
         }
         public async Task<List<Restaurant>> GetRestaurantsAsync()
         {

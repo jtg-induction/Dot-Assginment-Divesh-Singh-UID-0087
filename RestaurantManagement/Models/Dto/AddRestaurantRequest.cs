@@ -11,9 +11,11 @@ namespace RestaurantManagement.Models.Dto
     public class AddRestaurantRequest :AddAddressRequest
     {
         [Required(ErrorMessage =ValidationMessages.NameRequired)]
+        [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]
         public string Name { get; set; }
         [Required(ErrorMessage = ValidationMessages.EmailRequired)]
         [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [RegularExpression(ValidationRules.PasswordRegexPattern, ErrorMessage = ValidationMessages.PasswordComplexity)]
         public string Email { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.PhoneRequired)]

@@ -74,7 +74,7 @@ namespace RestaurantManagement.tests.Controller
             var result = await _restaurantController.AddRestaurantOwner(It.IsAny<AddRestaurantOwnerRequest>());
 
             // Assert
-            var createdResult = result as CreatedNegotiatedContentResult<BaseResponse<string>>;
+            var createdResult = result as OkNegotiatedContentResult<BaseResponse<string>>;
             Assert.IsNotNull(createdResult);
         }
     }

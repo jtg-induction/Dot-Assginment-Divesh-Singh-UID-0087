@@ -28,7 +28,7 @@ namespace RestaurantManagement.Repository
         }
         public async Task<List<Address>> GetUserAddress(int id)
         {
-            List<Address> address = await _db.UserAddresses.Where(e => e.UserId == id).Select(e => e.Address).ToListAsync();            return address;
+             return await _db.UserAddresses.Where(e => e.UserId == id).Select(e => e.Address).ToListAsync();           
         }
         public async Task AddUserAddressAysnc(UserAddress userAddress)
         {

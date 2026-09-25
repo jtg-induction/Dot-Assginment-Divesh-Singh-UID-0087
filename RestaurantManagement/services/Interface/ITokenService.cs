@@ -17,6 +17,7 @@ namespace RestaurantManagement.Services.Interface
                 Task RevokedAsync(string token);
                 Task<string> RefreshTheTokenAsync(string token);
                 Task<RefreshToken> GetTokenDetailAsync(string token);
+        Task RevokedAllToken(int userid);
 
 
         }

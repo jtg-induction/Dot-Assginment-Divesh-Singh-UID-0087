@@ -4,6 +4,7 @@ using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Response;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -24,9 +25,9 @@ namespace RestaurantManagement.Services
         }
         public async Task<List<GetMenuItemResponse>> GetMenuItemsAsync(int id)
         {
-            if (!(await _restaurantRepository.RestaurantIsActive(id)))
+            if (!(await _restaurantRepository.IsRestaurantActive(id)))
             {
-                throw new ResourceException(ValidationMessages.RestaurantNotFound);
+                throw new NotFoundException(ValidationMessages.RestaurantNotFound);
             }
             List<MenuItem> menu = await _menuRepository.GetMenuItem(id);
             List<GetMenuItemResponse> menuitem = new List<GetMenuItemResponse>();
