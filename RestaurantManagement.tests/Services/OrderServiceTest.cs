@@ -23,6 +23,7 @@ namespace RestaurantManagement.Tests.Services
         private Mock<IOrderRepository> _mockOrderRepository;
         private Mock<IOrderItemRepository> _mockOrderItemRepository;
         private Mock<IRestaurantRepository> _restaurantRepository;
+        private Mock<IRestaurantOwnerRepository> _restaurantownerRepository;
         private OrderService _orderService;
 
         [TestInitialize]
@@ -34,6 +35,8 @@ namespace RestaurantManagement.Tests.Services
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockOrderItemRepository = new Mock<IOrderItemRepository>();
             _restaurantRepository = new Mock<IRestaurantRepository>();
+            _restaurantownerRepository = new Mock<IRestaurantOwnerRepository>();
+            
 
             _orderService = new OrderService(
                 _mockMenuRepository.Object,
@@ -41,7 +44,8 @@ namespace RestaurantManagement.Tests.Services
                 _mockUserRepository.Object,
                 _mockOrderRepository.Object,
                 _mockOrderItemRepository.Object,
-                _restaurantRepository.Object
+                _restaurantRepository.Object,
+                _restaurantownerRepository.Object
             );
         }
 
@@ -95,7 +99,7 @@ namespace RestaurantManagement.Tests.Services
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            OrderResponse response = await _orderService.AddOrder(userOrder, addressId, userId);
+            GetOrderResponse response = await _orderService.AddOrder(userOrder, addressId, userId);
 
             Assert.IsNotNull(response);
         }

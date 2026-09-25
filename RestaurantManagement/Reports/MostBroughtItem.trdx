@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report Width="17cm" Name="MostBroughtItem" xmlns="http://schemas.telerik.com/reporting/2026/3.0">
+  <DataSources>
+    <SqlDataSource QueryDesignerState="null" ParameterValues="null" ConnectionString="DefaultConnection" SelectCommand="WITH ORDERP AS(&#xD;&#xA;SELECT ORDERID,STRING_AGG(ITEMNAME,',') WITHIN GROUP (ORDER BY ITEMNAME) AS ITEM_NAMES,COUNT(ITEMID) AS TOTAL_ITEMS&#xD;&#xA;FROM ORDERITEMS&#xD;&#xA;GROUP BY ORDERID&#xD;&#xA;)&#xD;&#xA;SELECT ITEM_NAMES,COUNT(*) AS FREQUENT_BROUGHT_TOGETHER FROM ORDERP&#xD;&#xA;WHERE TOTAL_ITEMS &gt;=2&#xD;&#xA;GROUP BY ITEM_NAMES&#xD;&#xA;ORDER BY COUNT(*) DESC;&#xD;&#xA;" Name="sqlDataSource1" />
+  </DataSources>
+  <Items>
+    <PageHeaderSection Height="2cm" Name="pageHeaderSection1">
+      <Items>
+        <TextBox Width="4.8cm" Height="0.6cm" Left="7cm" Top="0.7cm" Value="Frequently Bought Together" Name="textBox9" />
+      </Items>
+    </PageHeaderSection>
+    <DetailSection Height="5cm" Name="detailSection1">
+      <Items>
+        <Table DataSource="sqlDataSource1" Width="13.5cm" Height="2.3cm" Left="0.8cm" Top="0.7cm" Name="table1" StyleName="BlueOpal.TableNormal">
+          <Body>
+            <Cells>
+              <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="6.75cm" Height="1.15cm" Left="0cm" Top="0cm" Value="= Fields.ITEM_NAMES" Name="textBox3" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="6.75cm" Height="1.15cm" Left="0cm" Top="0cm" Value="= Fields.FREQUENT_BROUGHT_TOGETHER" Name="textBox4" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+            </Cells>
+            <Columns>
+              <Column Width="6.75cm" />
+              <Column Width="6.75cm" />
+            </Columns>
+            <Rows>
+              <Row Height="1.15cm" />
+            </Rows>
+          </Body>
+          <Corner />
+          <RowGroups>
+            <TableGroup Name="detail">
+              <Groupings>
+                <Grouping />
+              </Groupings>
+            </TableGroup>
+          </RowGroups>
+          <ColumnGroups>
+            <TableGroup Name="iTEM_NAMES">
+              <ReportItem>
+                <TextBox Width="6.75cm" Height="1.15cm" Left="0cm" Top="0cm" Value="ITEM_NAMES" Name="textBox1" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="fREQUENT_BROUGHT_TOGETHER">
+              <ReportItem>
+                <TextBox Width="6.75cm" Height="1.15cm" Left="0cm" Top="0cm" Value="FREQUENT_BROUGHT_TOGETHER" Name="textBox2" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+          </ColumnGroups>
+        </Table>
+      </Items>
+    </DetailSection>
+    <PageFooterSection Height="2cm" Name="pageFooterSection1" />
+  </Items>
+  <PageSettings PaperKind="A4" Landscape="False">
+    <Margins>
+      <MarginsU Left="2cm" Right="2cm" Top="2cm" Bottom="2cm" />
+    </Margins>
+  </PageSettings>
+  <StyleSheet>
+    <StyleRule>
+      <Style>
+        <Padding Left="2pt" Right="2pt" />
+      </Style>
+      <Selectors>
+        <TypeSelector Type="TextItemBase" />
+        <TypeSelector Type="HtmlTextBox" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <StyleSelector Type="Table" StyleName="BlueOpal.TableNormal" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableBody" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style BackgroundColor="233, 244, 249" Color="0, 63, 89" VerticalAlign="Middle">
+        <Font Name="Segoe UI" Size="10pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableHeader" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+  </StyleSheet>
+</Report>

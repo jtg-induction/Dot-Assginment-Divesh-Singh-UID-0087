@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report Width="17cm" Name="Top10OrderItem" xmlns="http://schemas.telerik.com/reporting/2026/3.0">
+  <DataSources>
+    <SqlDataSource QueryDesignerState="null" ParameterValues="{&quot;@EXCULDEITEM&quot;:&quot;1,2&quot;}" ConnectionString="DefaultConnection" SelectCommand="SELECT TOP(10) ITEMID,ITEMNAME,ROUND(AVG(PRICE),3) AS AVG_PRICE,SUM(QUANTITY) AS TOTAL_QUANTITY &#xD;&#xA;FROM ORDERITEMS&#xD;&#xA;WHERE ITEMID NOT IN &#xD;&#xA;(SELECT VALUE FROM STRING_SPLIT(@EXCULDEITEM,','))&#xD;&#xA;GROUP BY ITEMID,ITEMNAME&#xD;&#xA;ORDER BY SUM(QUANTITY) DESC;" Name="sqlDataSource1">
+      <Parameters>
+        <SqlDataSourceParameter DbType="String" Name="@EXCULDEITEM" />
+      </Parameters>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <PageHeaderSection Height="2cm" Name="pageHeaderSection1">
+      <Items>
+        <TextBox Width="4.6cm" Height="1cm" Left="6.3cm" Top="0.8cm" Value="TOP 10 ORDERED ITEM" Name="textBox9" />
+      </Items>
+    </PageHeaderSection>
+    <DetailSection Height="5cm" Name="detailSection1">
+      <Items>
+        <Table DataSource="sqlDataSource1" Width="12.1cm" Height="1.3cm" Left="2cm" Top="2cm" Name="table1" StyleName="BlueOpal.TableNormal">
+          <Body>
+            <Cells>
+              <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="= Fields.ITEMID" Name="textBox5" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="= Fields.ITEMNAME" Name="textBox6" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="= Fields.AVG_PRICE" Name="textBox7" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="3" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="= Fields.TOTAL_QUANTITY" Name="textBox8" StyleName="BlueOpal.TableBody" />
+                </ReportItem>
+              </TableCell>
+            </Cells>
+            <Columns>
+              <Column Width="3.025cm" />
+              <Column Width="3.025cm" />
+              <Column Width="3.025cm" />
+              <Column Width="3.025cm" />
+            </Columns>
+            <Rows>
+              <Row Height="0.65cm" />
+            </Rows>
+          </Body>
+          <Corner />
+          <RowGroups>
+            <TableGroup Name="detail">
+              <Groupings>
+                <Grouping />
+              </Groupings>
+            </TableGroup>
+          </RowGroups>
+          <ColumnGroups>
+            <TableGroup Name="iTEMID">
+              <ReportItem>
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEMID" Name="textBox1" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="iTEMNAME">
+              <ReportItem>
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEMNAME" Name="textBox2" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="aVG_PRICE">
+              <ReportItem>
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="AVG_PRICE" Name="textBox3" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="tOTAL_QUANTITY">
+              <ReportItem>
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="TOTAL_QUANTITY" Name="textBox4" StyleName="BlueOpal.TableHeader" />
+              </ReportItem>
+            </TableGroup>
+          </ColumnGroups>
+        </Table>
+      </Items>
+    </DetailSection>
+    <PageFooterSection Height="2cm" Name="pageFooterSection1" />
+  </Items>
+  <PageSettings PaperKind="A4" Landscape="False">
+    <Margins>
+      <MarginsU Left="2cm" Right="2cm" Top="2cm" Bottom="2cm" />
+    </Margins>
+  </PageSettings>
+  <StyleSheet>
+    <StyleRule>
+      <Style>
+        <Padding Left="2pt" Right="2pt" />
+      </Style>
+      <Selectors>
+        <TypeSelector Type="TextItemBase" />
+        <TypeSelector Type="HtmlTextBox" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <StyleSelector Type="Table" StyleName="BlueOpal.TableNormal" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableBody" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style BackgroundColor="233, 244, 249" Color="0, 63, 89" VerticalAlign="Middle">
+        <Font Name="Segoe UI" Size="10pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableHeader" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+  </StyleSheet>
+</Report>

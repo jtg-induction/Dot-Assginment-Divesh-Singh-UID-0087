@@ -66,6 +66,8 @@
                 public const string OrderCancelled = "Order is Already cancel!!";
                 public const string OrderMismatch = "Order Not Found!!";
                 public const string OrderStatusUpdate = "Order Status Updated";
+                public const string OrderIdRequired = "Order Id Required!!";
+               public const string UpdateOrderStatusRequired = "Update Order Status Required";
 
 
         }
