@@ -99,7 +99,7 @@ namespace RestaurantManagement.Tests.Services
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest {ItemAndQuantity=userOrder,AddressId=addressId }, user.UserId);
+            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest {RestaurantId=5,ItemAndQuantity=userOrder,AddressId=addressId }, user.UserId);
 
             Assert.IsNotNull(response);
         }
@@ -110,7 +110,7 @@ namespace RestaurantManagement.Tests.Services
             int orderId = 1;
             var mockOrders = new List<Order>
             {
-                new Order { OrderId = 10, RestaurantId = 5, TotalAmount = 100.00m, Address = "123 St", Status = OrderStatus.Placed }
+                new Order { OrderId = 10, RestaurantId = 5,Restaurant= new Restaurant{Name="kiji"}, TotalAmount = 100.00m, Address = "123 St", Status = OrderStatus.Placed }
             };
 
             _mockOrderRepository.Setup(r => r.GetOrder(orderId)).ReturnsAsync(mockOrders);

@@ -45,10 +45,10 @@ namespace RestaurantManagement.Tests.Controllers
             var mockOrderResponse = new OrderResponse
             {
                 OrderId = 777,
-                RestaurantId = 5,
+             
                 TotalAmount = 25.00m,
                 Status = "Placed",
-                Address = "123 Main St"
+                
             };
             // Setup Claim Helper behavior
             _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);

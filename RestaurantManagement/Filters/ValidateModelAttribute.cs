@@ -20,7 +20,7 @@ namespace RestaurantManagement.Filters
                         // CLEANUP: Splits "adduser.Name" at the dot, takes "Name", 
                         // and turns it into clean front-end camelCase "name"
                         kvp => {
-                            System.Diagnostics.Debug.WriteLine(kvp.Key.Split('.').Count());
+                            //System.Diagnostics.Debug.WriteLine(kvp.Key);
                             var rawKey = kvp.Key.Split('.').LastOrDefault() ?? kvp.Key;
                             return string.IsNullOrEmpty(rawKey)
                                 ? ""

@@ -41,7 +41,7 @@ namespace RestaurantManagement.Controllers
             return Ok(response);
         }
         [HttpGet]
-        [Route("{id}/menu-items")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> GetMenuByRestaurantId(int id)
         {
             if (id <= 0)

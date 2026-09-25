@@ -58,7 +58,7 @@ namespace RestaurantManagement.Controllers
             return Ok(response);
         }
         [HttpGet]
-        [Route("{id}/order-items")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> GetOrderItem(int id)
         {
             if (id <= 0)
@@ -75,8 +75,8 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [HttpPut]
-        [Route("{id}/cancel")]
+        [HttpPatch]
+        [Route("{id}")]
         public async Task<IHttpActionResult> CancelOrder(int id)
         {
             if (id <= 0)

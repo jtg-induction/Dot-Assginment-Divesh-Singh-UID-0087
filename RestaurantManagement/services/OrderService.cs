@@ -8,6 +8,7 @@ using RestaurantManagement.Models.Response;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace RestaurantManagement.Services
         public async Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid)
         {
             var item = addOrder.ItemAndQuantity;
-            int addressid = addOrder.AddressId;
+            int? addressid = addOrder.AddressId;
             if (item.Count < 0)
             {
                 throw new InvalidOperationException(ValidationMessages.ItemRequired);
@@ -55,37 +56,41 @@ namespace RestaurantManagement.Services
             var orderResponse = new OrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var data = await _addressRepository.GetAddressAsync(addressid, userid);
+                var data = await _addressRepository.GetAddressAsync((int)addressid, userid);
                 if (data == null)
                 {
-                    throw new ResourceException(ValidationMessages.InvalidAddress);
+                    throw new NotFoundException(ValidationMessages.InvalidAddress);
                 }
                 string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
 
                 var menu = await _menuRepository.GetItemDetail(item);
                 if (menu.Count != item.Count)
                 {
-                    throw new ResourceException(ValidationMessages.MenuListInvalid);
-                }
-                int prev = 0;
-                foreach (MenuItem i in menu)
-                {
-                    if (!(prev == 0 || prev == i.RestaurantId))
+                    string notfound = "";
+                    foreach (int i in item.Keys)
                     {
-                        throw new ResourceException(ValidationMessages.OneRestaurant);
+                        if (!menu.Any(e => e.ItemId == i))
+                        {
+                            notfound += $"Item Id {i} Not Found!!,";
+                        }
                     }
-                    if (item[i.ItemId] > i.AvailableQuantity)
-                    {
-                        throw new ResourceException($"{i.DishName} Are Not Available !!");
-                    }
-                    i.AvailableQuantity -= item[i.ItemId];
+                    throw new NotFoundException(notfound);
                 }
                 decimal totalamount = 0;
                 foreach (MenuItem i in menu)
                 {
+
+                    if ((addOrder.RestaurantId != i.RestaurantId))
+                    {
+                        throw new InvalidOperationException(ValidationMessages.OneRestaurant);
+                    }
+                    if (item[i.ItemId] > i.AvailableQuantity)
+                    {
+                        throw new NotFoundException($"{i.DishName} Are Not Available !!");
+                    }
+                    i.AvailableQuantity -= item[i.ItemId];
                     totalamount += (i.Price * item[i.ItemId]);
                 }
-
                 var user = await _userRepository.GetUserWithLock(userid);
                 if (user.Balance < totalamount)
                 {
@@ -118,10 +123,8 @@ namespace RestaurantManagement.Services
                 orderResponse = new OrderResponse()
                 {
                     OrderId = order.OrderId,
-                    RestaurantId = order.RestaurantId,
                     TotalAmount = order.TotalAmount,
-                    Status = order.Status.ToString(),
-                    Address = order.Address
+                    Status = order.Status.ToString()
                 };
                 transactionScope.Complete();
             }
@@ -137,7 +140,7 @@ namespace RestaurantManagement.Services
                 data.Add(new GetOrderResponse
                 {
                     OrderId = i.OrderId,
-                    RestaurantName = await _restaurantRepository.GetRestaurantName(i.RestaurantId),
+                    RestaurantName = i.Restaurant.Name,
                     TotalAmount = i.TotalAmount,
                     Address = i.Address,
                     Status = i.Status.ToString()
@@ -171,27 +174,27 @@ namespace RestaurantManagement.Services
                 Order order = await _orderRepository.GetOrderDetail(id);
                 if (order == null)
                 {
-                    throw new ResourceException(ValidationMessages.OrderNotFound);
+                    throw new NotFoundException(ValidationMessages.OrderNotFound);
                 }
                 if (userid != order.UserId)
                 {
-                    throw new ResourceException(ValidationMessages.OrderMismatch);
+                    throw new InvalidOperationException(ValidationMessages.OrderMismatch);
                 }
                 if (order.Status == OrderStatus.Cancelled)
                 {
-                    throw new ResourceException(ValidationMessages.OrderCancelled);
+                    throw new InvalidOperationException(ValidationMessages.OrderCancelled);
                 }
                 if (order.Status == OrderStatus.Rejected)
                 {
-                    throw new ResourceException(ValidationMessages.OrderRejected);
+                    throw new InvalidOperationException(ValidationMessages.OrderRejected);
                 }
                 if (order.Status == OrderStatus.Dispatched)
                 {
-                    throw new ResourceException(ValidationMessages.OrderDispatched);
+                    throw new InvalidOperationException(ValidationMessages.OrderDispatched);
                 }
                 if (order.Status == OrderStatus.Delivery)
                 {
-                    throw new Exception(ValidationMessages.OrderDelivered);
+                    throw new InvalidOperationException(ValidationMessages.OrderDelivered);
                 }
                 List<OrderItem> orderItems = await _orderItemRepository.GetOrderItem(order.OrderId);
                 Dictionary<int, int> item = new Dictionary<int, int>();
