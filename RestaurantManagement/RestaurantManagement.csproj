@@ -402,6 +402,7 @@
     <Compile Include="Repository\TokenRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Services\AddressService.cs" />
+    <Compile Include="Services\Exceptions\NotFoundException.cs" />
     <Compile Include="Services\Exceptions\ResourceException.cs" />
     <Compile Include="Services\Interface\IAddressService.cs" />
     <Compile Include="Services\Interface\IOrderService.cs" />

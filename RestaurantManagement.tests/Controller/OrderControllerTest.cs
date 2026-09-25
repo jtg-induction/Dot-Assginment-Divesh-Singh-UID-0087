@@ -3,7 +3,7 @@ using Moq;
 using RestaurantManagement.Controllers;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Response;
-using RestaurantManagement.Services.Interface; 
+using RestaurantManagement.Services.Interface;
 using RestaurantManagement.Helper;
 using RestaurantManagement.Constants;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace RestaurantManagement.Tests.Controllers
             _mockClaimHelper = new Mock<IClaimHelper>();
 
             _controller = new OrderController(_mockOrderService.Object, _mockClaimHelper.Object);
-          
+
         }
 
         [TestMethod]
@@ -42,13 +42,13 @@ namespace RestaurantManagement.Tests.Controllers
                 ItemAndQuantity = new Dictionary<int, int> { { 101, 2 } }
             };
 
-            var mockOrderResponse = new GetOrderResponse
+            var mockOrderResponse = new OrderResponse
             {
                 OrderId = 777,
-                RestaurantName = "jbg",
+
                 TotalAmount = 25.00m,
                 Status = "Placed",
-                Address = "123 Main St"
+
             };
             // Setup Claim Helper behavior
             _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(mockUserId);
@@ -56,14 +56,14 @@ namespace RestaurantManagement.Tests.Controllers
 
             // Setup Order Service behavior
             _mockOrderService
-                .Setup(s => s.AddOrder(requestPayload.ItemAndQuantity, requestPayload.AddressId, mockUserId))
+                .Setup(s => s.AddOrder(requestPayload, mockUserId))
                 .ReturnsAsync(mockOrderResponse);
 
             // 2. ACT
             IHttpActionResult actionResult = await _controller.AddOrder(requestPayload);
 
             // 3. ASSERT
-            var createdResult = actionResult as CreatedNegotiatedContentResult<BaseResponse<GetOrderResponse>>;
+            var createdResult = actionResult as CreatedNegotiatedContentResult<BaseResponse<OrderResponse>>;
 
             Assert.IsNotNull(createdResult);
         }
@@ -85,12 +85,12 @@ namespace RestaurantManagement.Tests.Controllers
                 .ReturnsAsync(mockOrders);
 
             // Act
-            var result = await _controller.GetOrderDetail();
+            var result = await _controller.GetOrder();
 
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderResponse>>>;
             Assert.IsNotNull(okResult);
-         
+
         }
         [TestMethod]
         public async Task GetOrderItemDetail_WhenItemsExist_ReturnsOkWithItemsList()
@@ -108,12 +108,12 @@ namespace RestaurantManagement.Tests.Controllers
                 .ReturnsAsync(mockItems);
 
             // Act
-            var result = await _controller.GetOrderItemDetail(orderId);
+            var result = await _controller.GetOrderItem(orderId);
 
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderItemResponse>>>;
             Assert.IsNotNull(okResult);
-           
+
         }
         [TestMethod]
         public async Task CancelOrder_WhenCalled_ExecutesSuccessfullyAndReturnsOk()
@@ -135,7 +135,7 @@ namespace RestaurantManagement.Tests.Controllers
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<string>>;
             Assert.IsNotNull(okResult);
-          
+
         }
         [TestMethod]
         public async Task GetAllOrder_ValidParams_ReturnsOkWithCorrectData()

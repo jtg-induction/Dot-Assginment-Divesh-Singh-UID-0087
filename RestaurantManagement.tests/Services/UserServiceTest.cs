@@ -258,6 +258,7 @@ namespace RestaurantManagement.Tests.Services
         {
             User user = new User
             {
+                UserId=1,
                 Email = "ndkjbvid@abc.com",
                 PhoneNumber = "8786765544"
             };
@@ -265,6 +266,7 @@ namespace RestaurantManagement.Tests.Services
             {
                 Email = "abc@abc.com"
             };
+            _userRepositoryMock.Setup(e => e.IsActiveAsync(user.UserId)).ReturnsAsync(true);
             _userRepositoryMock.Setup(e => e.EmailExistsAsync(user.Email)).ReturnsAsync(false);
             _userRepositoryMock.Setup(e => e.PhoneNumberExistsAsync(user.PhoneNumber)).ReturnsAsync(false);
             _userRepositoryMock.Setup(e => e.UpdateAccount(user, update));

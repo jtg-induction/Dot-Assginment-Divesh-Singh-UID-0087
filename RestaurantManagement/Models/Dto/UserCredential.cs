@@ -14,6 +14,7 @@ namespace RestaurantManagement.Models
         /// </summary>
         [Required(ErrorMessage = ValidationMessages.EmailRequired)]
         [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [RegularExpression(ValidationRules.EmailRegexPattern, ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         public string Email { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.PasswordRequired)]

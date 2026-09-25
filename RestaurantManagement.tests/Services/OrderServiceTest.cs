@@ -52,7 +52,11 @@ namespace RestaurantManagement.Tests.Services
         [TestMethod]
         public async Task AddOrder_ValidInput_SuccessfullyPlacesOrderAndDeductsBalance()
         {
-            int userId = 1;
+            User user = new User
+            {
+                UserId = 1,
+                Balance = 1000
+            };
             int addressId = 10;
 
             var userOrder = new Dictionary<int, int>
@@ -68,7 +72,7 @@ namespace RestaurantManagement.Tests.Services
             };
 
             _mockAddressRepository
-                .Setup(repo => repo.GetAddress(addressId))
+                .Setup(repo => repo.GetAddressAsync(addressId, user.UserId))
                 .ReturnsAsync(new Address
                 {
                     AddressId = addressId,
@@ -82,8 +86,8 @@ namespace RestaurantManagement.Tests.Services
                 .ReturnsAsync(mockMenuItems);
 
             _mockUserRepository
-                .Setup(repo => repo.UpdateBalance(userId, 25.00m))
-                .Returns(Task.CompletedTask);
+                .Setup(repo => repo.GetUserWithLock(user.UserId))
+                .ReturnsAsync(user);
 
             _mockOrderRepository
                 .Setup(repo => repo.PlacedOrder(It.IsAny<Order>()))
@@ -99,7 +103,7 @@ namespace RestaurantManagement.Tests.Services
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            GetOrderResponse response = await _orderService.AddOrder(userOrder, addressId, userId);
+            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest { RestaurantId = 5, ItemAndQuantity = userOrder, AddressId = addressId }, user.UserId);
 
             Assert.IsNotNull(response);
         }
@@ -110,7 +114,7 @@ namespace RestaurantManagement.Tests.Services
             int orderId = 1;
             var mockOrders = new List<Order>
             {
-                new Order { OrderId = 10, RestaurantId = 5, TotalAmount = 100.00m, Address = "123 St", Status = OrderStatus.Placed }
+                new Order { OrderId = 10, RestaurantId = 5,Restaurant= new Restaurant{Name="kiji"}, TotalAmount = 100.00m, Address = "123 St", Status = OrderStatus.Placed }
             };
 
             _mockOrderRepository.Setup(r => r.GetOrder(orderId)).ReturnsAsync(mockOrders);
@@ -156,7 +160,7 @@ namespace RestaurantManagement.Tests.Services
                 caughtException = ex;
             }
 
-            Assert.IsNull(caughtException);
+            Assert.IsNotNull(caughtException);
         }
 
         [TestMethod]
