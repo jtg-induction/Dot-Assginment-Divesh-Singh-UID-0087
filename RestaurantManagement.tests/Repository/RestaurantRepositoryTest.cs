@@ -99,5 +99,35 @@ namespace RestaurantManagement.tests.Repository
 
             Assert.AreEqual(0, result.Count);
         }
+        [TestMethod]
+        public async Task IsActive()
+        {
+            _context.Addresses.Add(new Address
+            {
+                AddressId = 1,
+                Street = "123 Main Road",
+                City = "Mumbai",
+                State = "Maharashtra",
+                PinCode = "400001",
+                Country = "India",
+                AddressType = AddressType.Home
+            });
+
+            _context.Restaurants.Add(new Restaurant
+            {
+                RestaurantId = 1,
+                Name = "Inactive Rest",
+                AddressId = 1,
+                Email = "inactive@test.com",
+                PhoneNumber = "8888888888",
+                IsActive = false
+            });
+
+            _context.SaveChanges();
+
+            var result = await _repository.IsRestaurantActive(1);
+
+            Assert.IsFalse(result);
+        }
     }
 }

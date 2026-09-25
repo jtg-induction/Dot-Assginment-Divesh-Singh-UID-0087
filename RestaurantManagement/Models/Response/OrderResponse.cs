@@ -13,9 +13,8 @@ namespace RestaurantManagement.Models.Response
     public class OrderResponse
     {
          public int OrderId { get; set; }
-        public int RestaurantId { get; set; }
         public decimal TotalAmount { get; set; }
         public string Status { get; set; }
-        public string Address { get; set; }
+       
     }
 }

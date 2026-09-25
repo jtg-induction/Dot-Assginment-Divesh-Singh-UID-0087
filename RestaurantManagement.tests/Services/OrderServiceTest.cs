@@ -94,7 +94,7 @@ namespace RestaurantManagement.Tests.Services
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest {ItemAndQuantity=userOrder,AddressId=addressId }, user.UserId);
+            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest {RestaurantId=5,ItemAndQuantity=userOrder,AddressId=addressId }, user.UserId);
 
             Assert.IsNotNull(response);
            

@@ -7,6 +7,7 @@ using RestaurantManagement.Models.Response;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
+using RestaurantManagement.Services.Exceptions;
 using RestaurantManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace RestaurantManagement.Services
         public async Task<OrderResponse> AddOrder(AddOrderRequest addOrder,int userid)
         {
             var item = addOrder.ItemAndQuantity;
-            int addressid = addOrder.AddressId;
+            int? addressid = addOrder.AddressId;
             if (item.Count < 0)
             {
                 throw new InvalidOperationException(ValidationMessages.ItemRequired);
@@ -52,37 +53,41 @@ namespace RestaurantManagement.Services
             var orderResponse=new OrderResponse();
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-            var data = await _addressRepository.GetAddressAsync(addressid,userid);
+            var data = await _addressRepository.GetAddressAsync((int)addressid,userid);
                 if (data == null)
                 {
-                    throw new ResourceException(ValidationMessages.InvalidAddress);
+                    throw new NotFoundException(ValidationMessages.InvalidAddress);
                 }
                 string address = $"{data.Street},{data.City},{data.State},{data.Country},{data.PinCode},{data.AddressType}";
 
                 var menu = await _menuRepository.GetItemDetail(item);
                 if (menu.Count != item.Count)
                 {
-                    throw new ResourceException(ValidationMessages.MenuListInvalid);
+                    string notfound = "";
+                    foreach (int i in item.Keys)
+                    {
+                        if (!menu.Any(e=>e.ItemId==i))
+                        {
+                            notfound+=$"Item Id {i} Not Found!!,";
+                        }
+                    }
+                    throw new NotFoundException(notfound);
                 }
-                int prev = 0;
+                decimal totalamount = 0;
                 foreach (MenuItem i in menu)
                 {
-                    if (!(prev == 0 || prev == i.RestaurantId))
+                    
+                    if ((addOrder.RestaurantId != i.RestaurantId))
                     {
                         throw new ResourceException(ValidationMessages.OneRestaurant);
                     }
                     if (item[i.ItemId] > i.AvailableQuantity)
                     {
-                        throw new ResourceException($"{i.DishName} Are Not Available !!");
+                        throw new NotFoundException($"{i.DishName} Are Not Available !!");
                     }
                     i.AvailableQuantity -= item[i.ItemId];
-                }
-                decimal totalamount = 0;
-                foreach (MenuItem i in menu)
-                {
                     totalamount += (i.Price * item[i.ItemId]);
                 }
-
                 var user = await _userRepository.GetUserWithLock(userid);
                 if (user.Balance < totalamount)
                 {
@@ -115,10 +120,8 @@ namespace RestaurantManagement.Services
                orderResponse = new OrderResponse()
                 {
                     OrderId = order.OrderId,
-                    RestaurantId = order.RestaurantId,
                     TotalAmount = order.TotalAmount,
-                    Status = order.Status.ToString(),
-                    Address = order.Address
+                    Status = order.Status.ToString()
                 };
                 transactionScope.Complete();
             }

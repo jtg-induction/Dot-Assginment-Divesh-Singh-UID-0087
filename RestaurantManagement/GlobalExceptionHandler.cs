@@ -26,6 +26,16 @@ namespace RestaurantManagement.Handlers
                 Success = false,
                 Message = exception.Message
             };
+            if (exception is NotFoundException)
+            {
+
+                var unauthorizedResponse = context.Request.CreateResponse(
+                    HttpStatusCode.NotFound,
+                   errorPayload
+                );
+                context.Result = new ResponseMessageResult(unauthorizedResponse);
+                return;
+            }
             // 1. Intercept service-level authentication exceptions
             if (exception is UnauthenticatedException)
             {

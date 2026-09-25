@@ -11,7 +11,7 @@
         public const string PhoneRequired = "Phone number is required.";
         public const string InvalidPhoneFormat = "Invalid phone number format. It must contain only 10 digits.";
         public const string InternalServerError = "An unexpected error occurred on the server. Please try again later.";
-        public const string NameRequired = "Name cannot be empty.";
+        public const string NameRequired = "Name is Required.";
         public const string PasswordRequired = "Password is required.";
         public const string PasswordLength = "Password does not meet the length requirements.";
         public const string StreetLength = "Street does not meet the length requirements.";
