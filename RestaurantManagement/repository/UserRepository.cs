@@ -1,4 +1,6 @@
-﻿using RestaurantManagement.Data;
+﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Data;
+using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.repository;
@@ -104,5 +106,11 @@ namespace RestaurantManagement.Repository
             user.IsActive = true;
             await _db.SaveChangesAsync();
         }
+        public async Task<User> GetUserWithLock(int id)
+        {
+            return await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+          
+        }
+      
     }
 }

@@ -9,11 +9,11 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
-    public class GetMenuItemResponse 
+    public class GetMenuItemResponse
     {
-       public int ItemId { get; set; }
-       public string DishName { get; set; }
-       public decimal Price { get; set; }
-       public int AvailableQuantity { get; set; }
+        public int ItemId { get; set; }
+        public string DishName { get; set; }
+        public decimal Price { get; set; }
+        public int AvailableQuantity { get; set; }
     }
 }

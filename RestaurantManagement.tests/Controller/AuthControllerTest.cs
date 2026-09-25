@@ -222,7 +222,7 @@ namespace RestaurantManagement.tests.Controller
             };
 
             _claimhelpermock.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
-            _userServiceMock.Setup(e => e.DeactivateAccount(1)).ReturnsAsync(It.IsAny<User>());
+            _userServiceMock.Setup(e => e.DeactivateAccount(1));
 
             var response = await _authController.DeactivateAccount();
             //Assert.Fail(response.GetType().FullName);
@@ -240,7 +240,7 @@ namespace RestaurantManagement.tests.Controller
             };
 
             _claimhelpermock.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
-            _userServiceMock.Setup(e => e.DeactivateAccount(1)).ReturnsAsync(It.IsAny<User>());
+            _userServiceMock.Setup(e => e.DeactivateAccount(1));
 
             var response = await _authController.ActivateAccount(update);
             //Assert.Fail(response.GetType().FullName);

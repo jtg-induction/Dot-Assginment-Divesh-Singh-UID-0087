@@ -18,14 +18,14 @@ namespace RestaurantManagement.Services
     {
         private readonly IMenuRepository _menuRepository;
         private readonly IRestaurantRepository _restaurantRepository;
-        public MenuService(IMenuRepository menuRepository,IRestaurantRepository restaurantRepository)
+        public MenuService(IMenuRepository menuRepository, IRestaurantRepository restaurantRepository)
         {
             _menuRepository = menuRepository;
             _restaurantRepository = restaurantRepository;
         }
         public async Task<List<GetMenuItemResponse>> GetMenuItemsAsync(int id)
         {
-            if(!(await _restaurantRepository.IsRestaurantActive(id)))
+            if (!(await _restaurantRepository.IsRestaurantActive(id)))
             {
                 throw new NotFoundException(ValidationMessages.RestaurantNotFound);
             }
@@ -39,7 +39,7 @@ namespace RestaurantManagement.Services
                     DishName = items.DishName,
                     Price = items.Price,
                     AvailableQuantity = items.AvailableQuantity,
-                 
+
 
                 };
                 menuitem.Add(item);

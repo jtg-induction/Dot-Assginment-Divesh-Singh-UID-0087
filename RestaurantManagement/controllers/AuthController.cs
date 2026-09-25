@@ -88,7 +88,7 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [HttpPost]
+        [HttpPatch]
         [Route("refresh")]
         public async Task<IHttpActionResult> Refresh()
         {
@@ -117,10 +117,9 @@ namespace RestaurantManagement.Controllers
         public async Task<IHttpActionResult> DeactivateAccount()
         {
             int currentUserId = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            string currentRefreshToken = _tokenService.GetRefreshTokenFromCookie();
-            await _tokenService.RevokedAsync(currentRefreshToken);
+            await _userService.DeactivateAccount(currentUserId);
+            await _tokenService.RevokedAllToken(currentUserId);
             _tokenService.ClearRefreshTokenCookie();
-            var user = await _userService.DeactivateAccount(currentUserId);
             var response = new BaseResponse<string>
             {
                 success = true,

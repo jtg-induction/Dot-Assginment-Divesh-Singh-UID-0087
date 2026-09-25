@@ -2,16 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace RestaurantManagement.Repository.Interface
 {
-    public interface IMenuRepository
+    public interface IUserAddressRepository
     {
-        Task<List<MenuItem>> GetMenuItem(int id);
-
-        Task<List<MenuItem>> GetItemDetail(Dictionary<int, int> item);
-
+        Task<List<Address>> GetUserAddress(int id);
+        Task AddUserAddressAysnc(UserAddress userAddress);
     }
 }

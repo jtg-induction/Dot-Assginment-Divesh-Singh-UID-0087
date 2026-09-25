@@ -107,6 +107,10 @@ namespace RestaurantManagement.Services
             }
 
         }
+        public async Task RevokedAllToken(int userid)
+        {
+            await _tokenRepository.RevokedAllToken(userid);
+        }
 
         public async Task<RefreshToken> GetTokenDetailAsync(string token)
         {

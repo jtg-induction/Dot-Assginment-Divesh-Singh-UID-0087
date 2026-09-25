@@ -64,15 +64,16 @@ namespace RestaurantManagement.Services
             await _userrepository.AddUserAsync(userentity);
 
 
-
         }
         public async Task<User> LoginUserAsync(UserCredential userCredential)
         {
             User user = await _userrepository.GetUserAsync(userCredential.Email);
             if (user == null || !await _userrepository.IsActiveAsync(user.UserId))
             {
-                throw new UnauthenticatedException(ValidationMessages.InvalidDetail);
+                throw new UnauthenticatedException(ValidationMessages.UserNotFound);
+
             }
+
             if (!_passwordService.VerifyPassword(userCredential.Password, user.Password))
             {
                 throw new UnauthenticatedException(ValidationMessages.UserNotFound);
@@ -80,21 +81,22 @@ namespace RestaurantManagement.Services
             return user;
         }
 
-        public async Task<User> DeactivateAccount(int id)
+        public async Task DeactivateAccount(int id)
         {
             User userdetail = await _userrepository.GetUserAsync(id);
 
-            if (userdetail == null)
+            if (userdetail == null ||! await _userrepository.IsActiveAsync(id)) 
             {
                 throw new UnauthenticatedException(ValidationMessages.UserNotFound);
             }
             await _userrepository.Deactivate(userdetail);
-            return userdetail;
+
+
         }
         public async Task<User> ActivateAccount(UserCredential user)
         {
             User userdetail = await _userrepository.GetUserAsync(user.Email);
-            if (userdetail == null || !_passwordService.VerifyPassword(user.Password, userdetail.Password))
+            if (userdetail == null)
             {
                 throw new UnauthenticatedException(ValidationMessages.UserNotFound);
             }

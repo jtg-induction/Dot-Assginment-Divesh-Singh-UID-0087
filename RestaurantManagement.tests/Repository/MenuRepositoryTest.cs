@@ -62,8 +62,11 @@ namespace RestaurantManagement.tests.Repository
             _context.SaveChanges();
 
             var result = await _menuRepository.GetMenuItem(1);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(2, result.Count());
         }
-
+          
+        }
     }
-}
+
+
+

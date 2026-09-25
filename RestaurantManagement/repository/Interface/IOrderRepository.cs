@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace RestaurantManagement.Repository.Interface
 {
-    public interface IMenuRepository
+    public interface IOrderRepository
     {
-        Task<List<MenuItem>> GetMenuItem(int id);
-
-        Task<List<MenuItem>> GetItemDetail(Dictionary<int, int> item);
-
+        Task PlacedOrder(Order order);
     }
 }
