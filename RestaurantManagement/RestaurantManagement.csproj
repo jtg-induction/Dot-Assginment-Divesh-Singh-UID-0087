@@ -371,6 +371,7 @@
     <Compile Include="Repository\RestaurantRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
+    <Compile Include="Services\Exceptions\NotFoundException.cs" />
     <Compile Include="Services\Exceptions\ResourceException.cs" />
     <Compile Include="Services\Interface\IRestaurantService.cs" />
     <Compile Include="Services\Interface\IMenuService.cs" />

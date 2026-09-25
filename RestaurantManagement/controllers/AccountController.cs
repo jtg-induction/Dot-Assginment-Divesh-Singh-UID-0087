@@ -24,7 +24,7 @@ namespace RestaurantManagement.Controllers
             _userservice = userservice;
             _claimHelper = claimHelper;
         }
-        [HttpPut]
+        [HttpPatch]
         [Route("update")]
         public async Task<IHttpActionResult> UpdateAccount(UpdateAccountDto model)
         { 

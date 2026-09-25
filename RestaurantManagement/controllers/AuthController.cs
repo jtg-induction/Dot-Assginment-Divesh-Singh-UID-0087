@@ -130,7 +130,7 @@ namespace RestaurantManagement.Controllers
 
 
         }
-        [HttpPut]
+        [HttpPatch]
         [Route("activate")]
         public async Task<IHttpActionResult> ActivateAccount(UserCredential login)
         {

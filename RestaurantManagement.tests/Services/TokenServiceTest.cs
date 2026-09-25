@@ -127,6 +127,20 @@ namespace RestaurantManagement.Tests.Services
             // ASSERT
             Assert.IsNotNull(exception);
         }
+        [TestMethod]
+        public async Task GetTokenDetail()
+        {
+            // ARRANGE
+            string token1 = "ksndff";
+                var token = new RefreshToken { Token = "jffrufnrf" };
+            _tokenRepositoryMock.Setup(r => r.GetTokenAsync(token1)).ReturnsAsync(token);
+
+            // ACT
+            var generatedToken = await _tokenService.GetTokenDetailAsync(token1);
+
+            // ASSERT
+            Assert.IsNotNull(generatedToken);
+        }
 
 
     }
