@@ -42,11 +42,11 @@ namespace RestaurantManagement.repository
                 Task UpdateAccount(User user, UpdateAccountDto updateaccount);
                 Task Deactivate(User user);
                 Task Activate(User user);
-                Task UpdateBalance(int id, decimal totalamount);
+                Task<User> GetUserWithLock(int id);
                 Task<bool> UserExists(List<int> id);
-                 Task ChangeRoleToOwner(List<string> id);
+                Task ChangeRoleToOwner(List<string> id);
                 Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount);
-
+        Task<Dictionary<string, int>> ListOfUserWIthEmailAndUserId(List<string> email);
 
         }
 }

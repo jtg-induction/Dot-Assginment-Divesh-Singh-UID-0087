@@ -59,5 +59,9 @@ namespace RestaurantManagement.Repository
 
             return (DateTime.UtcNow - refreshtoken.UpdatedAt).TotalSeconds > 604800;
         }
+        public async Task RevokedAllToken(int id)
+        {
+            await _db.Database.ExecuteSqlCommandAsync($"UPDATE REFRESHTOKENS SET ISREVOKED=TRUE WHERE USERID={id}");
+        }
     }
 }

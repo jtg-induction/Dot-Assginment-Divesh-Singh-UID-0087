@@ -61,8 +61,8 @@ namespace RestaurantManagement.Tests.Controllers
 
 
             _mockAddressService
-                .Setup(s => s.AddUserAddress(requestPayload))
-                .ReturnsAsync(mockGeneratedAddressId);
+                .Setup(s => s.AddUserAddress(requestPayload, 1));
+             
 
             _mockUserAddressService
                 .Setup(s => s.AddUserAdress(mockUserId, mockGeneratedAddressId))
