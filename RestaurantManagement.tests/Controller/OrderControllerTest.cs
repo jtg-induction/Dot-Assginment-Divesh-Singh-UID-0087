@@ -42,16 +42,16 @@ namespace RestaurantManagement.Tests.Controllers
                 ItemAndQuantity = new Dictionary<int, int> { { 101, 2 } }
             };
 
-            var mockOrderResponse = new OrderResponse
+            var mockOrderResponse = new GetOrderResponse
             {
                 OrderId = 777,
-                RestaurantId = 5,
+                RestaurantName = "jbg",
                 TotalAmount = 25.00m,
                 Status = "Placed",
                 Address = "123 Main St"
             };
             // Setup Claim Helper behavior
-            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(mockUserId);
 
 
             // Setup Order Service behavior
@@ -63,7 +63,7 @@ namespace RestaurantManagement.Tests.Controllers
             IHttpActionResult actionResult = await _controller.AddOrder(requestPayload);
 
             // 3. ASSERT
-            var createdResult = actionResult as CreatedNegotiatedContentResult<BaseResponse<OrderResponse>>;
+            var createdResult = actionResult as CreatedNegotiatedContentResult<BaseResponse<GetOrderResponse>>;
 
             Assert.IsNotNull(createdResult);
         }
@@ -136,6 +136,39 @@ namespace RestaurantManagement.Tests.Controllers
             var okResult = result as OkNegotiatedContentResult<BaseResponse<string>>;
             Assert.IsNotNull(okResult);
           
+        }
+        [TestMethod]
+        public async Task GetAllOrder_ValidParams_ReturnsOkWithCorrectData()
+        {
+            // Arrange
+            int userId = 42;
+            var paginationParams = new PaginationParams { pageNumber = 1, pageSize = 5 };
+
+            var expectedPaginatedData = new GetPaginatedResponse<GetOrderResponseForOwner>
+            {
+                order = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
+                pagination = new PaginationMetaData { TotalItems = 1, PageSize = 5, CurrentPage = 1, TotalPages = 1 }
+            };
+
+            _mockClaimHelper
+                .Setup(c => c.GetUserIdFromClaim(_controller.User.Identity))
+                .ReturnsAsync(userId);
+
+            _mockOrderService
+                .Setup(s => s.GetAllOrder(paginationParams, userId))
+                .ReturnsAsync(expectedPaginatedData);
+
+            // Act
+            IHttpActionResult actionResult = await _controller.GetAllOrder(paginationParams);
+
+            // Assert
+            var contentResult = actionResult as OkNegotiatedContentResult<BaseResponse<GetPaginatedResponse<GetOrderResponseForOwner>>>;
+
+
+            Assert.IsNotNull(contentResult.Content);
+            Assert.IsTrue(contentResult.Content.success);
+            Assert.AreEqual(ValidationMessages.OrderFetchSuccess, contentResult.Content.message);
+            Assert.AreEqual(expectedPaginatedData, contentResult.Content.data);
         }
     }
 }
