@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Constants;
+using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,11 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
-    public class UpdateOrderStatusRequest
-    {
-        [Required(ErrorMessage =ValidationMessages.OrderIdRequired)]
-        public int OrderId { get; set; }
-        [Required(ErrorMessage =ValidationMessages.OrderStatusUpdate)]
-        public OrderStatus OrderStatus { get; set; }
-    }
+        public class UpdateOrderStatusRequest
+        {
+                [Required(ErrorMessage = ValidationMessages.OrderIdRequired)]
+                public int? OrderId { get; set; }
+                [Required(ErrorMessage = ValidationMessages.OrderStatusUpdate)]
+                public OrderStatus OrderStatus { get; set; }
+        }
 }

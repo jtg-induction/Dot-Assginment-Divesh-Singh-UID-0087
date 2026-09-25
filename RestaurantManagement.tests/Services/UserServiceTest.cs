@@ -258,6 +258,7 @@ namespace RestaurantManagement.Tests.Services
         {
             User user = new User
             {
+                UserId=1,
                 Email = "ndkjbvid@abc.com",
                 PhoneNumber = "8786765544"
             };
@@ -265,6 +266,7 @@ namespace RestaurantManagement.Tests.Services
             {
                 Email = "abc@abc.com"
             };
+            _userRepositoryMock.Setup(e => e.IsActiveAsync(user.UserId)).ReturnsAsync(true);
             _userRepositoryMock.Setup(e => e.EmailExistsAsync(user.Email)).ReturnsAsync(false);
             _userRepositoryMock.Setup(e => e.PhoneNumberExistsAsync(user.PhoneNumber)).ReturnsAsync(false);
             _userRepositoryMock.Setup(e => e.UpdateAccount(user, update));
@@ -293,5 +295,38 @@ namespace RestaurantManagement.Tests.Services
             Assert.IsNotNull(response);
 
         }
-    }
+        [TestMethod]
+        public async Task UpdateAccount_WhenFieldsAreEmpty_FallsBackToUserPropertiesAndSucceeds()
+        {
+            // Arrange
+            var existingUser = new User
+            {
+                UserId = 1,
+                Name = "John Doe",
+                Email = "john@example.com",
+                PhoneNumber = "5551234",
+                BirthDate = new DateTime(1990, 1, 1)
+            };
+
+            // DTO has empty strings and default DateTime
+            var updateDto = new UpdateAccountDto
+            {
+                Name = "", // Assuming .IsEmpty() handles empty strings
+                Email = "",
+                PhoneNumber = "",
+                BirthDate = DateTime.MinValue
+            };
+
+            _userRepositoryMock.Setup(repo => repo.IsActiveAsync(existingUser.UserId)).ReturnsAsync(true);
+            _userRepositoryMock.Setup(repo => repo.EmailExistsAsync(updateDto.Email)).ReturnsAsync(false);
+            _userRepositoryMock.Setup(repo => repo.PhoneNumberExistsAsync(updateDto.PhoneNumber)).ReturnsAsync(false);
+
+            // Act
+            await _userService.UpdateAccount(existingUser, updateDto);
+
+            // Assert
+            // Verify values were successfully copied from 'existingUser' to 'updateDto' before saving
+            Assert.AreEqual(existingUser.Name, updateDto.Name);
+        }
+        }
 }

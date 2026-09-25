@@ -60,12 +60,12 @@
           <ColumnGroups>
             <TableGroup Name="iTEMID">
               <ReportItem>
-                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEMID" Name="textBox1" StyleName="BlueOpal.TableHeader" />
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEM_ID" Name="textBox1" StyleName="BlueOpal.TableHeader" />
               </ReportItem>
             </TableGroup>
             <TableGroup Name="iTEMNAME">
               <ReportItem>
-                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEMNAME" Name="textBox2" StyleName="BlueOpal.TableHeader" />
+                <TextBox Width="3.025cm" Height="0.65cm" Left="0cm" Top="0cm" Value="ITEM_NAME" Name="textBox2" StyleName="BlueOpal.TableHeader" />
               </ReportItem>
             </TableGroup>
             <TableGroup Name="aVG_PRICE">

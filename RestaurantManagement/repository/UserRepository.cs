@@ -3,6 +3,7 @@ using RestaurantManagement.Data;
 using RestaurantManagement.Exceptions;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
+using RestaurantManagement.Models.Enum;
 using RestaurantManagement.repository;
 using System;
 using System.Collections.Generic;
@@ -111,23 +112,20 @@ namespace RestaurantManagement.Repository
             user.IsActive = true;
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateBalance(int id, decimal totalamount)
+        public async Task<User> GetUserWithLock(int id)
         {
-            var user = await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
+            return await _db.Users.SqlQuery($"SELECT * FROM Users WITH (UPDLOCk,ROWLOCK) WHERE USERID= {id}").FirstOrDefaultAsync();
 
-            if (user.Balance < totalamount)
-            {
-                throw new ResourceException(ValidationMessages.InsufficientBalance);
-            }
-            user.Balance -= totalamount;
-            await _db.SaveChangesAsync();
         }
         public async Task ChangeRoleToOwner(List<string> id)
         {
-            // 1. Transform each email to be wrapped in single quotes: 'email'
-            var quotedEmails = id.Select(e => $"'{e}'");
-            var ids = String.Join(",", quotedEmails);
-            await _db.Database.ExecuteSqlCommandAsync($"UPDATE  USERS SET ROLE=2 WHERE EMAIL IN ({ids})");
+            foreach(string email in id)
+            {
+                var user = await _db.Users.Include(e => e.Role).FirstOrDefaultAsync();
+                user.Role = UserRole.Owner;
+
+            }
+           await _db.SaveChangesAsync();
         }
         public async Task UpdateBalanceWhileCancelOrder(int id, decimal totalamount)
         {
@@ -135,6 +133,9 @@ namespace RestaurantManagement.Repository
             user.Balance += totalamount;
             await _db.SaveChangesAsync();
         }
-
+        public async Task<Dictionary<string,int>> ListOfUserWIthEmailAndUserId(List<string>email)
+        {
+            return await _db.Users.Where(e => email.Contains(e.Email)).ToDictionaryAsync(e=>e.Email,e=>e.UserId);
+        }
     }
 }

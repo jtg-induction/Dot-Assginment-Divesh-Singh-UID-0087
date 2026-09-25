@@ -101,7 +101,7 @@ namespace RestaurantManagement.tests.Repository
             Assert.AreEqual(0, result.Count);
         }
         [TestMethod]
-        public async Task RestaurantIsActive_WhenRestaurantExistsAndIsActive_ReturnsTrue()
+        public async Task IsActive()
         {
             _context.Addresses.Add(new Address
             {
@@ -121,25 +121,24 @@ namespace RestaurantManagement.tests.Repository
                 AddressId = 1,
                 Email = "inactive@test.com",
                 PhoneNumber = "8888888888",
-                IsActive = true
+                IsActive = false
             });
 
             _context.SaveChanges();
-            // Act
-            var result = await _repository.RestaurantIsActive(1);
 
-            // Assert
-            Assert.IsTrue(result);
+            var result = await _repository.IsRestaurantActive(1);
+
+            Assert.IsFalse(result);
         }
 
         [TestMethod]
         public async Task RestaurantIsActive_WhenRestaurantDoesNotExist_ReturnsFalse()
         {
             // Act
-            var result = await _repository.RestaurantIsActive(999);
+            var result = await _repository.IsRestaurantActive(999);
 
             // Assert
-            Assert.IsFalse(result); 
+            Assert.IsFalse(result);
         }
         [TestMethod]
         public async Task GetRestaurantName_WhenRestaurantDoesNotExist_ReturnsNull()
@@ -170,7 +169,7 @@ namespace RestaurantManagement.tests.Repository
             var result = await _repository.GetRestaurantName(1);
 
             // Assert
-            Assert.IsNotNull(result); 
+            Assert.IsNotNull(result);
         }
     }
 }

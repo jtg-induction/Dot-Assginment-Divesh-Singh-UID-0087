@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 
 namespace RestaurantManagement.Services
@@ -14,28 +15,36 @@ namespace RestaurantManagement.Services
     public class AddressService: IAddressService
     {
         private readonly IAddressRepository _addressRepository;
-        public AddressService(IAddressRepository addressRepository)
+        private readonly IUserAddressRepository _userAddressRepository;
+        public AddressService(IAddressRepository addressRepository,IUserAddressRepository userAddressRepository)
         {
             _addressRepository = addressRepository;
-        }
-        //public async Task<Address> GetAddressAsync(int id)
-        //{
-        //    return 
-        //}
-        public async Task<int> AddUserAddress(AddAddressRequest addAddress)
-        {
-            Address address = new Address()
-            {
-                Street = addAddress.Street,
-                City = addAddress.City,
-                State=addAddress.State,
-                AddressType=addAddress.AddressType,
-                PinCode = addAddress.Pincode,
-                Country = addAddress.Country
+            _userAddressRepository = userAddressRepository;
 
-            };
-            await _addressRepository.AddAddressAysnc(address);
-            return address.AddressId;
+        }
+        public async Task AddUserAddress(AddAddressRequest addAddress,int userid)
+        {
+            using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                Address address = new Address()
+                {
+                    Street = addAddress.Street,
+                    City = addAddress.City,
+                    State = addAddress.State,
+                    AddressType = addAddress.AddressType,
+                    PinCode = addAddress.Pincode,
+                    Country = addAddress.Country
+
+                };
+                await _addressRepository.AddAddressAsync(address);
+                var adduseraddress = new UserAddress
+                {
+                    UserId = userid,
+                    AddressId = address.AddressId
+                };
+                await _userAddressRepository.AddUserAddressAysnc(adduseraddress);
+                transaction.Complete();
+            }
         }
     }
 }
