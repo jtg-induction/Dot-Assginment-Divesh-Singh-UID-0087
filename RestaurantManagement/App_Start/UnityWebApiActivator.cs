@@ -2,6 +2,7 @@ using System.Web.Http;
 
 using Unity.AspNet.WebApi;
 
+//it just application just to load these file configuration
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RestaurantManagement.UnityWebApiActivator), nameof(RestaurantManagement.UnityWebApiActivator.Start))]
 [assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(RestaurantManagement.UnityWebApiActivator), nameof(RestaurantManagement.UnityWebApiActivator.Shutdown))]
 

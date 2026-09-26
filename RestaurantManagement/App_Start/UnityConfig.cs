@@ -17,6 +17,7 @@ namespace RestaurantManagement
     public static class UnityConfig
     {
         #region Unity Container
+        //lazy container just create container at the asking of first instance not jus while while application spinup
         private static Lazy<IUnityContainer> container =
           new Lazy<IUnityContainer>(() =>
           {
@@ -37,33 +38,33 @@ namespace RestaurantManagement
         /// <param name="container">The unity container to configure.</param>
         public static void RegisterTypes(IUnityContainer container)
         {
-            // 1. Register Data Context with HTTP Request Scope
+            // 1. Register Data Context with HTTP Request Scope it create one instance of an dbcontext for per http request
             container.RegisterType<ApplicationDbContext>(new HierarchicalLifetimeManager());
 
-            // 2. Register the Repository Layer with HTTP Request Scope
-            container.RegisterType<IUserRepository, UserRepository>(new HierarchicalLifetimeManager());
-            container.RegisterType<ITokenRepository, TokenRepository>(new HierarchicalLifetimeManager());
-
-            // 3. Register the Service Layer
-            container.RegisterType<IUserService, UserService>();
-            // 4. Register your Password Hasher
-            container.RegisterType<IPasswordService, PasswordService>();
-            container.RegisterType<ITokenService, TokenService>();
+            /* 2. Register the Repository Layer  all are transient by default it means if
+             an repo call create an new instance and then dispose after the excution.
+             */
+            container.RegisterType<IUserRepository, UserRepository>();
             container.RegisterType<ITokenRepository, TokenRepository>();
-            container.RegisterType<IObtainJwtService, ObtainJwtService>();
             container.RegisterType<IRestaurantRepository, RestaurantRepository>();
-            container.RegisterType<IRestaurantService, RestaurantService>();
             container.RegisterType<IMenuRepository, MenuRepository>();
-            container.RegisterType<IMenuService, MenuService>();
-            container.RegisterType<IOrderService, OrderService>();
             container.RegisterType<IOrderItemRepository, OrderItemRepository>();
-            container.RegisterType<IOrderRepository, OrderRepository>();
             container.RegisterType<IAddressRepository, AddressRepository>();
-            container.RegisterType<IAddressService, AddressService>();
-            container.RegisterType<IClaimHelper, ClaimHelper>();
-            container.RegisterType<IUserAddressService, UserAddressService>();
             container.RegisterType<IUserAddressRepository, UserAddressRepository>();
             container.RegisterType<IRestaurantOwnerRepository, RestaurantOwnerRepository>();
+            container.RegisterType<IOrderRepository, OrderRepository>();
+            // 3. Register the Service Layer
+            container.RegisterType<IUserService, UserService>();
+            container.RegisterType<IPasswordService, PasswordService>();
+            container.RegisterType<ITokenService, TokenService>();
+            container.RegisterType<IObtainJwtService, ObtainJwtService>();
+            container.RegisterType<IRestaurantService, RestaurantService>();
+            container.RegisterType<IMenuService, MenuService>();
+            container.RegisterType<IOrderService, OrderService>();
+            container.RegisterType<IAddressService, AddressService>();
+            container.RegisterType<IUserAddressService, UserAddressService>();
+            //4. claim just used for finding out usefull cliam from jwt
+            container.RegisterType<IClaimHelper, ClaimHelper>();
 
         }
     }

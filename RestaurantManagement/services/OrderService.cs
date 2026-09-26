@@ -1,11 +1,12 @@
-﻿using NMemory.Transactions;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using NMemory.Transactions;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Models;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
-using RestaurantManagement.Models;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
@@ -43,7 +44,7 @@ namespace RestaurantManagement.Services
         {
             var item = addOrder.ItemAndQuantity;
             int? addressid = addOrder.AddressId;
-            if (item.Count < 0)
+            if (item.Count <=0)
             {
                 throw new InvalidOperationException(ValidationMessages.ItemRequired);
             }
@@ -152,11 +153,16 @@ namespace RestaurantManagement.Services
             }
             return data;
         }
-        public async Task<List<GetOrderItemResponse>> GetOrderItem(int id)
+        public async Task<List<GetOrderItemResponse>> GetOrderItem(int id,int userid)
         {
-            var order = await _orderItemRepository.GetOrderItem(id);
+            var order = await _orderRepository.GetOrderDetail(id);
+            if (order==null || order.UserId!=userid)
+            {
+                throw new NotFoundException("Order Not Found");
+            }
+            var orderitem = await _orderItemRepository.GetOrderItem(id);
             var data = new List<GetOrderItemResponse>();
-            foreach (OrderItem i in order)
+            foreach (OrderItem i in orderitem)
             {
                 data.Add(new GetOrderItemResponse
                 {
@@ -195,23 +201,15 @@ namespace RestaurantManagement.Services
                 {
                     throw new InvalidOperationException(ValidationMessages.OrderDispatched);
                 }
-                if (order.Status == OrderStatus.Delivery)
+                if (order.Status == OrderStatus.Delivered)
                 {
                     throw new InvalidOperationException(ValidationMessages.OrderDelivered);
                 }
-                List<OrderItem> orderItems = await _orderItemRepository.GetOrderItem(order.OrderId);
-                Dictionary<int, int> item = new Dictionary<int, int>();
-                foreach (OrderItem i in orderItems)
-                {
-                    item[i.ItemId] = i.Quantity;
-                }
+                Dictionary<int, int> item = await _orderItemRepository.GetOrderItemAsItemIdAndQuantity(id);
                 await _orderRepository.CancelOrder(order);
                 await _userRepository.UpdateBalanceWhileCancelOrder(userid, order.TotalAmount);
                 List<MenuItem> menu = await _menuRepository.GetItemDetail(item);
-                foreach (MenuItem i in menu)
-                {
-                    i.AvailableQuantity += item[i.ItemId];
-                }
+                await _menuRepository.UpdateQuantityOfMenuItem(menu, item);
                 transaction.Complete();
 
             }
@@ -276,7 +274,7 @@ namespace RestaurantManagement.Services
                         }
                         goto default;
                     }
-                case OrderStatus.Delivery:
+                case OrderStatus.Delivered:
                     {
 
                         if (order.Status == OrderStatus.Dispatched)
@@ -294,6 +292,13 @@ namespace RestaurantManagement.Services
             }
             if (call)
             {
+                if (updateOrderStatus.OrderStatus == OrderStatus.Rejected)
+                {
+                    Dictionary<int, int> item = await _orderItemRepository.GetOrderItemAsItemIdAndQuantity(order.OrderId);
+                    await _userRepository.UpdateBalanceWhileCancelOrder(order.UserId, order.TotalAmount);
+                    List<MenuItem> menu = await _menuRepository.GetItemDetail(item);
+                    await _menuRepository.UpdateQuantityOfMenuItem(menu, item);
+                }
 
                 await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
             }

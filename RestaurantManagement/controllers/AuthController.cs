@@ -88,7 +88,7 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [HttpPatch]
+        [HttpPost]
         [Route("refresh")]
         public async Task<IHttpActionResult> Refresh()
         {

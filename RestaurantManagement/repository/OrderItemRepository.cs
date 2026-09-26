@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Data;
+﻿using Kendo.Mvc.Extensions;
+using RestaurantManagement.Data;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Repository.Interface;
 using System;
@@ -30,6 +31,10 @@ namespace RestaurantManagement.Repository
         public async Task<List<OrderItem>> GetOrderItem(int id)
         {
             return await _db.OrderItems.Where(e => e.OrderId == id).ToListAsync();
+        }
+        public async Task<Dictionary<int,int>> GetOrderItemAsItemIdAndQuantity(int id)
+        {
+            return await _db.OrderItems.Where(e => e.OrderId == id).ToDictionaryAsync(e => e.ItemId, e => e.Quantity);
         }
     }
 }

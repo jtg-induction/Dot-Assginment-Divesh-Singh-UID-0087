@@ -12,6 +12,6 @@ namespace RestaurantManagement.Repository.Interface
         Task<List<MenuItem>> GetMenuItem(int id);
 
         Task<List<MenuItem>> GetItemDetail(Dictionary<int, int> item);
-
+        Task UpdateQuantityOfMenuItem(List<MenuItem> menu, Dictionary<int, int> item);
     }
 }

@@ -14,7 +14,7 @@
         //An order has been dispatched.
         Dispatched = 4,
         // <summary>An order is out for delivery.
-        Delivery = 5,
+        Delivered = 5,
         // <summary>An order has been cancelled.
         Cancelled = 6
 

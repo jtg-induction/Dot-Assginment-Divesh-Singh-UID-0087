@@ -81,7 +81,7 @@ namespace RestaurantManagement.tests.Repository
             };
 
             _context.SaveChanges();
-            _orderRepository.PlacedOrder(testOrder);
+           _orderRepository.PlacedOrder(testOrder);
         }
 
         [TestMethod]
@@ -273,7 +273,7 @@ namespace RestaurantManagement.tests.Repository
             _context.Orders.AddRange(new List<Order>
         {
             new Order { OrderId = 101, UserId = 1, RestaurantId = 1, TotalAmount = 50.00m, Status = OrderStatus.Accepted, Address = "123 Lane", CreatedAt = new DateTime(2026, 1, 1), UpdatedAt = new DateTime(2026, 1, 1) },
-            new Order { OrderId = 102, UserId = 1, RestaurantId = 1, TotalAmount = 150.00m, Status = OrderStatus.Delivery, Address = "456 Blvd", CreatedAt = new DateTime(2026, 1, 2), UpdatedAt = new DateTime(2026, 1, 2) },
+            new Order { OrderId = 102, UserId = 1, RestaurantId = 1, TotalAmount = 150.00m, Status = OrderStatus.Delivered, Address = "456 Blvd", CreatedAt = new DateTime(2026, 1, 2), UpdatedAt = new DateTime(2026, 1, 2) },
             new Order { OrderId = 103, UserId = 1, RestaurantId = 1, TotalAmount = 25.00m, Status = OrderStatus.Accepted, Address = "789 St", CreatedAt = new DateTime(2026, 1, 3), UpdatedAt = new DateTime(2026, 1, 3) }
         });
 
@@ -338,7 +338,7 @@ namespace RestaurantManagement.tests.Repository
             _context.Orders.AddRange(new List<Order>
         {
             new Order { OrderId = 101, UserId = 1, RestaurantId = 1, TotalAmount = 50.00m, Status = OrderStatus.Accepted, Address = "123 Lane", CreatedAt = new DateTime(2026, 1, 1), UpdatedAt = new DateTime(2026, 1, 1) },
-            new Order { OrderId = 102, UserId = 1, RestaurantId = 1, TotalAmount = 150.00m, Status = OrderStatus.Delivery, Address = "456 Blvd", CreatedAt = new DateTime(2026, 1, 2), UpdatedAt = new DateTime(2026, 1, 2) },
+            new Order { OrderId = 102, UserId = 1, RestaurantId = 1, TotalAmount = 150.00m, Status = OrderStatus.Delivered, Address = "456 Blvd", CreatedAt = new DateTime(2026, 1, 2), UpdatedAt = new DateTime(2026, 1, 2) },
             new Order { OrderId = 103, UserId = 1, RestaurantId = 1, TotalAmount = 25.00m, Status = OrderStatus.Accepted, Address = "789 St", CreatedAt = new DateTime(2026, 1, 3), UpdatedAt = new DateTime(2026, 1, 3) }
         });
 

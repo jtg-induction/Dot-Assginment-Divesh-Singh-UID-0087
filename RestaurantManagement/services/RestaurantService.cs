@@ -108,7 +108,9 @@ namespace RestaurantManagement.Services
                     });
                 }
                 await _restaurantOwnerRepository.AddRestaurantOwner(restaurantOwners);
+
                 await _userRepository.ChangeRoleToOwner(addRestaurant.UserEmail);
+                System.Diagnostics.Debug.WriteLine("ll");
                 transaction.Complete();
             }
         }

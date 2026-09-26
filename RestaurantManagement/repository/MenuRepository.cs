@@ -35,6 +35,14 @@ namespace RestaurantManagement.Repository
             return await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
           
         }
+        public async Task UpdateQuantityOfMenuItem(List<MenuItem> menu,Dictionary<int,int> item)
+        {
+            foreach(MenuItem  i in menu)
+            {
+                i.AvailableQuantity += item[i.ItemId];
+            }
+            await _db.SaveChangesAsync();
+        }
 
 
 

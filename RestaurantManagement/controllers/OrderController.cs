@@ -65,7 +65,9 @@ namespace RestaurantManagement.Controllers
             {
                 throw new InvalidOperationException(ValidationMessages.InvalidOrderId);
             }
-            var data = await _orderService.GetOrderItem(id);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+
+            var data = await _orderService.GetOrderItem(id,userid);
 
             var response = new BaseResponse<List<GetOrderItemResponse>>
             {

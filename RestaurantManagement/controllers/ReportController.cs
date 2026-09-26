@@ -34,7 +34,11 @@ namespace RestaurantManagement.Controllers
                 var serializer = new ReportXmlSerializer();
                 report = (Telerik.Reporting.Report)serializer.Deserialize(stream);
             }
-            var exclude =exportRequest.OrderId;
+            var exclude = "";
+            if (!string.IsNullOrWhiteSpace(exportRequest.OrderId))
+            {
+                exclude = exportRequest.OrderId;
+            }
             var foundItems = report.Items.Find("sqlDataSource1", true);
 
             var sqlDataSource = report.GetDataSources()
@@ -87,7 +91,11 @@ namespace RestaurantManagement.Controllers
                 var serializer = new ReportXmlSerializer();
                 report = (Telerik.Reporting.Report)serializer.Deserialize(stream);
             }
-            var exclude =exportRequest.RestaurantId;
+            var exclude = "";
+            if (!string.IsNullOrWhiteSpace(exportRequest.RestaurantId))
+            {
+                exclude = exportRequest.RestaurantId;
+            }
             var foundItems = report.Items.Find("sqlDataSource1", true);
 
             var sqlDataSource = report.GetDataSources()
@@ -115,8 +123,8 @@ namespace RestaurantManagement.Controllers
             RenderingResult result = processor.RenderReport(exportRequest.Format, reportsource, null);
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new ByteArrayContent(result.DocumentBytes);
-            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"application/{exportRequest.Format}");
+            response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
             response.Content.Headers.ContentDisposition.FileName = "MostBroughtItem" + "." + exportRequest.Format;
 
 

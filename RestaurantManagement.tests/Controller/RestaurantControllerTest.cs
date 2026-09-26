@@ -51,7 +51,7 @@ namespace RestaurantManagement.tests.Controller
 
            _restaurantService
                 .Setup(s => s.AddRestaurant(It.IsAny<AddRestaurantRequest>()))
-                .Returns(Task.CompletedTask); // Simulates an async void (Task) return
+                .Returns(Task.CompletedTask);
 
             // Act
             var result = await _restaurantController.AddRestaurant(It.IsAny<AddRestaurantRequest>());

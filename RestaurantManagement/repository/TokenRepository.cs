@@ -61,7 +61,7 @@ namespace RestaurantManagement.Repository
         }
         public async Task RevokedAllToken(int id)
         {
-            await _db.Database.ExecuteSqlCommandAsync($"UPDATE REFRESHTOKENS SET ISREVOKED=TRUE WHERE USERID={id}");
+            await _db.Database.ExecuteSqlCommandAsync($"UPDATE REFRESHTOKENS SET ISREVOKED=1 WHERE USERID={id}");
         }
     }
 }

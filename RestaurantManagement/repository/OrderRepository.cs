@@ -52,7 +52,7 @@ namespace RestaurantManagement.Repository
                         join ro in _db.RestaurantOwners on r.RestaurantId equals ro.RestaurantId
                         where ro.UserId==id
                         select o;
-          return  await  query.CountAsync();
+          return  await  query.Distinct().CountAsync();
                       
         }
         public async Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(OrderRequestForOwner paginationParams, int userid)
@@ -216,7 +216,7 @@ namespace RestaurantManagement.Repository
                     UpdatedAt=e.order.UpdatedAt
                    
                 }
-            ).ToListAsync();
+            ).Distinct().ToListAsync();
         }
         public async Task UpdateOrderStatus(Order order,OrderStatus orderStatus)
         {

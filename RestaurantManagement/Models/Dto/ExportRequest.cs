@@ -7,15 +7,12 @@ namespace RestaurantManagement.Models.Dto
 {
     public class ExportRequest
     {
-        [Required(ErrorMessage = ValidationMessages.ExportFormat)]
         [RegularExpression(ValidationRules.FormatRegexPattern, ErrorMessage =ValidationMessages.InvalidFormat)]
         public string Format { get; set; } = "PDF";
 
-        [Required(ErrorMessage = ValidationMessages.OrderIdRequird)]
-        public string OrderId { get; set; } = string.Empty;
+        public string OrderId { get; set; } ="";
 
-        [Required(ErrorMessage = ValidationMessages.RestaurantIdRequired)]
-        public string RestaurantId { get; set; } = string.Empty;
+        public string RestaurantId { get; set; } = "";
 
     }
 }
