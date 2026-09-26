@@ -107,5 +107,19 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
+        [Authorize(Roles ="Owner")]
+        [HttpPatch]
+        [Route("owner")]
+        public async Task<IHttpActionResult> UpdateOrderStatus(UpdateOrderStatusRequest updateOrderStatus)
+        {
+            var userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            await _orderService.UpdateStatus(updateOrderStatus,userId);
+            var response = new BaseResponse<string>
+            {
+                success = true,
+                message = ValidationMessages.OrderStatusUpdate
+            };
+            return Ok(response);
+        }
     }
 }

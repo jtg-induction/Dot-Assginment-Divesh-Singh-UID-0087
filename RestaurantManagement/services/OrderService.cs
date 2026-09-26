@@ -235,5 +235,69 @@ namespace RestaurantManagement.Services
             };
             return response;
         }
+        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus, int userid)
+        {
+            Order order = await _orderRepository.GetOrderDetail((int)updateOrderStatus.OrderId);
+            if (order == null || !(await _restaurantOwnerRepository.GetRestaurantId(userid)).Contains(order.RestaurantId))
+            {
+                throw new NotFoundException(ValidationMessages.OrderNotFound);
+            }
+            bool call = false;
+            switch (updateOrderStatus.OrderStatus)
+            {
+                case OrderStatus.Accepted:
+                    {
+
+                        if (order.Status == OrderStatus.Placed)
+                        {
+                            call = true;
+                            break;
+
+                        }
+                        goto default;
+                    }
+                case OrderStatus.Rejected:
+                    {
+
+                        if (order.Status == OrderStatus.Placed)
+                        {
+                            call = true;
+                            break;
+                        }
+                        goto default;
+                    }
+                case OrderStatus.Dispatched:
+                    {
+
+                        if (order.Status == OrderStatus.Accepted)
+                        {
+                            call = true;
+                            break;
+                        }
+                        goto default;
+                    }
+                case OrderStatus.Delivery:
+                    {
+
+                        if (order.Status == OrderStatus.Dispatched)
+                        {
+                            call = true;
+                            break;
+                        }
+                        goto default;
+                    }
+
+                default:
+
+                    throw new ResourceException($"Can Not Change the  Status From {order.Status.ToString()} to {updateOrderStatus.OrderStatus.ToString()}");
+
+            }
+            if (call)
+            {
+
+                await _orderRepository.UpdateOrderStatus(order, updateOrderStatus.OrderStatus);
+            }
+
+        }
     }
 }
