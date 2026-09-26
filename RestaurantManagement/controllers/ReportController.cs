@@ -1,4 +1,5 @@
 ﻿using RestaurantManagement.Models.Dto;
+using RestaurantManagement.Models.Enum;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,12 +15,12 @@ using Telerik.Reporting.XmlSerialization;
 
 namespace RestaurantManagement.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Owner")]
     [RoutePrefix("api/reports")]
     public class ReportController :ApiController
     {
         [HttpGet]
-        [Route("Top10MostOrderedItems")]
+        [Route("Top-10-Most-Ordered-Items")]
         public HttpResponseMessage Top10MostOrderedItems([FromUri] ExportRequest exportRequest)
         {
             string reportpath = HostingEnvironment.MapPath($"~/Reports/Top10OrderItem.trdx");
@@ -33,7 +34,7 @@ namespace RestaurantManagement.Controllers
                 var serializer = new ReportXmlSerializer();
                 report = (Telerik.Reporting.Report)serializer.Deserialize(stream);
             }
-            var exclude =exportRequest.Parameters;
+            var exclude =exportRequest.OrderId;
             var foundItems = report.Items.Find("sqlDataSource1", true);
 
             var sqlDataSource = report.GetDataSources()
@@ -61,7 +62,7 @@ namespace RestaurantManagement.Controllers
             RenderingResult result = processor.RenderReport(exportRequest.Format, reportsource, null);
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new ByteArrayContent(result.DocumentBytes);
-            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"application/{exportRequest.Format}");
             response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
             response.Content.Headers.ContentDisposition.FileName = "Top10OrderItem" + "." + exportRequest.Format;
 
@@ -72,7 +73,7 @@ namespace RestaurantManagement.Controllers
         }
 
         [HttpGet]
-        [Route("FrequentlyBoughtTogether")]
+        [Route("Frequently-Bought-Together")]
         public HttpResponseMessage FrequentlyBoughtTogether([FromUri]ExportRequest exportRequest)
         {
             string reportpath = HostingEnvironment.MapPath($"~/Reports/MostBroughtItem.trdx");
@@ -86,7 +87,7 @@ namespace RestaurantManagement.Controllers
                 var serializer = new ReportXmlSerializer();
                 report = (Telerik.Reporting.Report)serializer.Deserialize(stream);
             }
-            var exclude = String.Join(",", exportRequest.Parameters);
+            var exclude =exportRequest.RestaurantId;
             var foundItems = report.Items.Find("sqlDataSource1", true);
 
             var sqlDataSource = report.GetDataSources()
@@ -101,7 +102,7 @@ namespace RestaurantManagement.Controllers
                 // 3. Inject the clean runtime parameter token matching your SQL variable
                 sqlDataSource.Parameters.Add(new Telerik.Reporting.SqlDataSourceParameter
                 {
-                    Name = "@EXCULDEITEM",
+                    Name = "@RESTAURANTID",
                     DbType = System.Data.DbType.String,
                     Value = exclude
                 });
@@ -115,7 +116,7 @@ namespace RestaurantManagement.Controllers
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new ByteArrayContent(result.DocumentBytes);
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
-            response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"application/{exportRequest.Format}");
             response.Content.Headers.ContentDisposition.FileName = "MostBroughtItem" + "." + exportRequest.Format;
 
 

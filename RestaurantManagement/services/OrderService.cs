@@ -217,30 +217,30 @@ namespace RestaurantManagement.Services
             }
 
         }
-        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(PaginationParams paginationParams, int id)
+        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(OrderRequestForOwner orderRequestForOwner, int id)
         {
-            var data = await _orderRepository.GetPaginatedOrder(paginationParams, id);
-            var size = data.Count();
+            var size = await _orderRepository.GetAllOrderByOwner(id);
+            var data = await _orderRepository.GetPaginatedOrder(orderRequestForOwner, id);
             var metadata = new PaginationMetaData
             {
                 TotalItems = size,
-                TotalPages = (int)Math.Ceiling((double)size / paginationParams.pageSize),
-                CurrentPage = paginationParams.pageNumber,
-                PageSize = paginationParams.pageSize
+                TotalPages = (int)Math.Ceiling((double)size / orderRequestForOwner.pageSize),
+                CurrentPage = orderRequestForOwner.pageNumber,
+                PageSize = orderRequestForOwner.pageSize
             };
-            var data1 = new GetPaginatedResponse<GetOrderResponseForOwner>
+            var response = new GetPaginatedResponse<GetOrderResponseForOwner>
             {
                 pagination = metadata,
                 order = data
             };
-            return data1;
+            return response;
         }
-        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus,int userid)
+        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus, int userid)
         {
             Order order = await _orderRepository.GetOrderDetail((int)updateOrderStatus.OrderId);
-            if (order == null || !(await _restaurantOwnerRepository.GetRestaurantId(userid)).Contains((int)updateOrderStatus.OrderId))
+            if (order == null || !(await _restaurantOwnerRepository.GetRestaurantId(userid)).Contains(order.RestaurantId))
             {
-                throw new   NotFoundException(ValidationMessages.OrderNotFound);
+                throw new NotFoundException(ValidationMessages.OrderNotFound);
             }
             bool call = false;
             switch (updateOrderStatus.OrderStatus)
@@ -251,9 +251,10 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Placed)
                         {
                             call = true;
+                            break;
 
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Rejected:
                     {
@@ -261,8 +262,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Placed)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Dispatched:
                     {
@@ -270,8 +272,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Accepted)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Delivery:
                     {
@@ -279,8 +282,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Dispatched)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
 
                 default:

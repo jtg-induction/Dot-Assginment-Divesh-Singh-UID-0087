@@ -420,8 +420,8 @@
     <Compile Include="Models\Dto\AddUserRequest.cs" />
     <Compile Include="Models\Dto\ExportRequest.cs" />
     <Compile Include="Models\Dto\UpdateOrderStatusRequest.cs" />
+    <Compile Include="Models\Dto\OrderRequestForOwner.cs" />
     <Compile Include="Models\Enum\FilterBy.cs" />
-    <Compile Include="Models\Enum\FilterOrder.cs" />
     <Compile Include="Models\Enum\OrderSortType.cs" />
     <Compile Include="Models\Enum\SearchBY.cs" />
     <Compile Include="Models\Enum\SortOrder.cs" />

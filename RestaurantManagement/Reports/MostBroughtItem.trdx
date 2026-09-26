@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report Width="17cm" Name="MostBroughtItem" xmlns="http://schemas.telerik.com/reporting/2026/3.0">
   <DataSources>
-    <SqlDataSource QueryDesignerState="null" ParameterValues="{&quot;@EXCULDEITEM&quot;:&quot;11&quot;}" ConnectionString="DefaultConnection" SelectCommand="WITH ORDERP AS(&#xD;&#xA;SELECT O.ORDERID,STRING_AGG(ITEMNAME,',') WITHIN GROUP (ORDER BY ITEMNAME) AS ITEM_NAMES,COUNT(ITEMID) AS TOTAL_ITEMS&#xD;&#xA;FROM ORDERITEMS AS OI&#xD;&#xA;JOIN ORDERS AS O&#xD;&#xA;ON OI.ORDERID=O.ORDERID&#xD;&#xA;WHERE O.RESTAURANTID IN &#xD;&#xA;(SELECT VALUE FROM STRING_SPLIT(@EXCULDEITEM,','))&#xD;&#xA;GROUP BY O.ORDERID&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;SELECT ITEM_NAMES,COUNT(*) AS FREQUENT_BROUGHT_TOGETHER FROM ORDERP&#xD;&#xA;WHERE TOTAL_ITEMS &gt;=2&#xD;&#xA;GROUP BY ITEM_NAMES&#xD;&#xA;ORDER BY COUNT(*) DESC;&#xD;&#xA;" Name="sqlDataSource1">
+    <SqlDataSource QueryDesignerState="null" ParameterValues="{&quot;@RESTAURANTID&quot;:&quot;11&quot;}" ConnectionString="DefaultConnection" SelectCommand="WITH ORDERP AS(&#xD;&#xA;SELECT O.ORDERID,STRING_AGG(ITEMNAME,',') WITHIN GROUP (ORDER BY ITEMNAME) AS ITEM_NAMES,COUNT(ITEMID) AS TOTAL_ITEMS&#xD;&#xA;FROM ORDERITEMS AS OI&#xD;&#xA;JOIN ORDERS AS O&#xD;&#xA;ON OI.ORDERID=O.ORDERID&#xD;&#xA;WHERE O.RESTAURANTID IN &#xD;&#xA;(SELECT VALUE FROM STRING_SPLIT(@RESTAURANTID,','))&#xD;&#xA;GROUP BY O.ORDERID&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;SELECT ITEM_NAMES,COUNT(*) AS FREQUENT_BROUGHT_TOGETHER FROM ORDERP&#xD;&#xA;WHERE TOTAL_ITEMS &gt;=2&#xD;&#xA;GROUP BY ITEM_NAMES&#xD;&#xA;ORDER BY COUNT(*) DESC;&#xD;&#xA;" Name="sqlDataSource1">
       <Parameters>
-        <SqlDataSourceParameter DbType="String" Name="@EXCULDEITEM" />
+        <SqlDataSourceParameter DbType="String" Name="@RESTAURANTID" />
       </Parameters>
     </SqlDataSource>
   </DataSources>

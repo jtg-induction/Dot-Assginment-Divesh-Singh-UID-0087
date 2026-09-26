@@ -55,7 +55,7 @@ namespace RestaurantManagement.Repository
           return  await  query.CountAsync();
                       
         }
-        public async Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(PaginationParams paginationParams,int userid)
+        public async Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(OrderRequestForOwner paginationParams, int userid)
         {
             var query = from o in _db.Orders
                         join r in _db.Restaurants on o.RestaurantId equals r.RestaurantId
@@ -70,41 +70,36 @@ namespace RestaurantManagement.Repository
                         };
 
             //searching
-            switch (paginationParams.searchby)
+            if (paginationParams.id.HasValue)
             {
-                case SearchBY.CustomerName:
-                    {
-                        query = query.Where(e => e.user.Name.Contains(paginationParams.search));
-                        break;
-                    }
-                case SearchBY.RestaurantName:
-                    {
-                        query = query.Where(e => e.RestuarantName.Contains(paginationParams.search));
-
-                        break;
-                    }
-                case SearchBY.Address:
-                {
-
-                        query = query.Where(e => e.order.Address.Contains(paginationParams.search));
-
-                        break;
+                query = query.Where(e => e.order.OrderId ==paginationParams.id);
             }
-                case SearchBY.OrderId:
-                    {
+            if (paginationParams.Status.HasValue)
+            {
+                query = query.Where(e => e.order.Status == paginationParams.Status);
+            }
+            if (!string.IsNullOrWhiteSpace(paginationParams.search) && paginationParams.searchby.HasValue)
+            {
+                switch (paginationParams.searchby)
+                {
+                    case SearchBY.CustomerName:
+                        {
+                                query = query.Where(e => e.user.Name.Contains(paginationParams.search));
+                            break;
+                        }
+                    case SearchBY.RestaurantName:
+                        {
+                                query = query.Where(e => e.RestuarantName.Contains(paginationParams.search));
 
-                        query = query.Where(e => e.order.OrderId==paginationParams.id);
+                            break;
+                        }
+                    case SearchBY.Address:
+                        {
+                                query = query.Where(e => e.order.Address.Contains(paginationParams.search));
 
-                        break;
-                    }
-                case SearchBY.Status:
-                    {
-
-                        query = query.Where(e => e.order.Status==paginationParams.Status);
-
-                        break;
-                    }
-
+                            break;
+                        }
+                }
             }
             //sorting
             switch (paginationParams.sortby)
@@ -151,7 +146,6 @@ namespace RestaurantManagement.Repository
                 case OrderSortType.UpdatedAt:
                     {
 
-
                         if (paginationParams.sortOrder == SortOrder.asc)
                         {
                             query = query.OrderBy(e => e.order.UpdatedAt);
@@ -165,44 +159,46 @@ namespace RestaurantManagement.Repository
 
             }
             //filtering
-            switch (paginationParams.filterby)
+            if (paginationParams.minamount.HasValue)
             {
-                case FilterBy.TotalAmount:
-                    {
-                        if (paginationParams.filterorder == FilterOrder.lt)
+                query = query.Where(e => e.order.TotalAmount >= paginationParams.minamount);
+            }
+            if (paginationParams.maxamount.HasValue)
+            {
+                query = query.Where(e => e.order.TotalAmount <= paginationParams.maxamount);
+            }
+            if (paginationParams.filterby.HasValue)
+            {
+                switch (paginationParams.filterby)
+                {
+                    case FilterBy.CreatedAt:
                         {
-                            query = query.Where(e => e.order.TotalAmount<paginationParams.amount);
+                            if (paginationParams.mindate.HasValue)
+                            {
+                                query = query.Where(e => e.order.CreatedAt >= paginationParams.mindate);
+                            }
+                            if (paginationParams.maxdate.HasValue)
+                            {
+                                query = query.Where(e => e.order.CreatedAt <= paginationParams.maxdate);
+
+                            }
+                            break;
                         }
-                        else
+                    case FilterBy.UpdatedAt:
                         {
-                            query = query.Where(e => e.order.TotalAmount >=paginationParams.amount);
+
+                            if (paginationParams.mindate.HasValue)
+                            {
+                                query = query.Where(e => e.order.UpdatedAt >= paginationParams.mindate);
+                            }
+                            if (paginationParams.maxdate.HasValue)
+                            {
+                                query = query.Where(e => e.order.UpdatedAt <= paginationParams.maxdate);
+
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case FilterBy.CreatedAt:
-                    {
-                        if (paginationParams.filterorder == FilterOrder.lt)
-                        {
-                            query = query.Where(e => e.order.CreatedAt < paginationParams.date);
-                        }
-                        else
-                        {
-                            query = query.Where(e => e.order.CreatedAt >= paginationParams.date);
-                        }
-                        break;
-                    }
-                case FilterBy.UpdatedAt:
-                    {
-                        if (paginationParams.filterorder == FilterOrder.lt)
-                        {
-                            query = query.Where(e => e.order.UpdatedAt < paginationParams.date);
-                        }
-                        else
-                        {
-                            query = query.Where(e => e.order.UpdatedAt >= paginationParams.date);
-                        }
-                        break;
-                    }
+                }
             }
 
             //pagination
