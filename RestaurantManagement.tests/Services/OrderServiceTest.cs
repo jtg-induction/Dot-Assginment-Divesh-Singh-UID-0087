@@ -280,7 +280,88 @@ namespace RestaurantManagement.Tests.Services
 
             _mockOrderRepository.Verify(repo => repo.GetPaginatedOrder(paginationParams, ownerId), Times.Once);
         }
+        [TestMethod]
+        public async Task updateorder()
+        {
+            var request = new UpdateOrderStatusRequest
+            {
+                OrderId = 1,
+                OrderStatus = OrderStatus.Accepted
+            };
+            int orderId = 1;
+            int userId = 99;
+            var mockOrder = new Order { UserId = 88, Status = OrderStatus.Placed };
+            List<int> mocklist = new List<int>();
+            mocklist.Add(11);
+            _restaurantOwnerRepository.Setup(e => e.GetRestaurantId(userId)).ReturnsAsync(mocklist);
+            _mockOrderRepository.Setup(r => r.GetOrderDetail(orderId)).ReturnsAsync(mockOrder);
 
+            Exception caughtException = null;
+            try
+            {
+                await _orderService.UpdateStatus(request, userId);
+            }
+            catch (Exception ex)
+            {
+                caughtException = ex;
+            }
+
+            Assert.IsNotNull(caughtException);
+        }
+        [TestMethod]
+        public async Task updateorderaccepted()
+        {
+            var request = new UpdateOrderStatusRequest
+            {
+                OrderId = 1,
+                OrderStatus = OrderStatus.Accepted
+            };
+            int orderId = 1;
+            int userId = 99;
+            var mockOrder = new Order { OrderId=1,UserId = 99,RestaurantId=1, Status = OrderStatus.Placed };
+            List<int> mocklist = new List<int>();
+            mocklist.Add(1);
+            _restaurantOwnerRepository.Setup(e => e.GetRestaurantId(userId)).ReturnsAsync(mocklist);
+            _mockOrderRepository.Setup(r => r.GetOrderDetail(orderId)).ReturnsAsync(mockOrder);
+
+            Exception caughtException = null;
+            try
+            {
+                await _orderService.UpdateStatus(request, userId);
+            }
+            catch (Exception ex)
+            {
+                caughtException = ex;
+            }
+            Assert.IsNull(caughtException);
+        }
+        [TestMethod]
+        public async Task updateorderwrong()
+        {
+            var request = new UpdateOrderStatusRequest
+            {
+                OrderId = 1,
+                OrderStatus = OrderStatus.Delivery
+            };
+            int orderId = 1;
+            int userId = 99;
+            var mockOrder = new Order { OrderId = 1, UserId = 99, RestaurantId = 1, Status = OrderStatus.Delivery };
+            List<int> mocklist = new List<int>();
+            mocklist.Add(1);
+            _restaurantOwnerRepository.Setup(e => e.GetRestaurantId(userId)).ReturnsAsync(mocklist);
+            _mockOrderRepository.Setup(r => r.GetOrderDetail(orderId)).ReturnsAsync(mockOrder);
+
+            Exception caughtException = null;
+            try
+            {
+                await _orderService.UpdateStatus(request, userId);
+            }
+            catch (Exception ex)
+            {
+                caughtException = ex;
+            }
+            Assert.IsNotNull(caughtException);
+        }
 
     }
 }

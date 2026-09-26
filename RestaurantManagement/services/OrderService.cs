@@ -235,12 +235,12 @@ namespace RestaurantManagement.Services
             };
             return data1;
         }
-        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus,int userid)
+        public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus, int userid)
         {
             Order order = await _orderRepository.GetOrderDetail((int)updateOrderStatus.OrderId);
-            if (order == null || !(await _restaurantOwnerRepository.GetRestaurantId(userid)).Contains((int)updateOrderStatus.OrderId))
+            if (order == null || !(await _restaurantOwnerRepository.GetRestaurantId(userid)).Contains(order.RestaurantId))
             {
-                throw new   NotFoundException(ValidationMessages.OrderNotFound);
+                throw new NotFoundException(ValidationMessages.OrderNotFound);
             }
             bool call = false;
             switch (updateOrderStatus.OrderStatus)
@@ -251,9 +251,10 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Placed)
                         {
                             call = true;
+                            break;
 
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Rejected:
                     {
@@ -261,8 +262,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Placed)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Dispatched:
                     {
@@ -270,8 +272,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Accepted)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
                 case OrderStatus.Delivery:
                     {
@@ -279,8 +282,9 @@ namespace RestaurantManagement.Services
                         if (order.Status == OrderStatus.Dispatched)
                         {
                             call = true;
+                            break;
                         }
-                        break;
+                        goto default;
                     }
 
                 default:
