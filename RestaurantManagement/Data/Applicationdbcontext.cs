@@ -13,6 +13,9 @@ namespace RestaurantManagement.Data
         public ApplicationDbContext() : base("name=DefaultConnection")
         {
         }
+        // Connection-string constructor (required by Telerik Reporting)
+        public ApplicationDbContext(string connectionString) : base(connectionString) { }
+
 
         /// <summary>
         /// Initializes a new instance using the configured default database connection.

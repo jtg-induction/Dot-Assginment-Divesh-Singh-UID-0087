@@ -74,6 +74,9 @@
                 public const string PageNumberZero = "PageNumber can not be zero or negative!!";
                 public const string PageSizeZero = "Pagesize can not be zero or negative";
                 public const string MinAmountZero = "Amount can not be zero or negative";
+                public const string ExportFormat = "Export format is required.";
+                public const string InvalidFormat = "Invalid format. Supported formats are PDF, CSV, and XLSX.";
+                public const string OrderIdRequird = "Order Id Required!!";
 
 
 
