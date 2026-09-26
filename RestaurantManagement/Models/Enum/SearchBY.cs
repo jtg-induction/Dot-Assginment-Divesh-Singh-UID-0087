@@ -9,9 +9,7 @@ namespace RestaurantManagement.Models.Enum
     {
         CustomerName=1,
         RestaurantName=2,
-        Address=3,
-        OrderId=4,
-        Status=5
+        Address=3
 
     }
 }

@@ -217,23 +217,23 @@ namespace RestaurantManagement.Services
             }
 
         }
-        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(PaginationParams paginationParams, int id)
+        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(OrderRequestForOwner orderRequestForOwner, int id)
         {
-            var data = await _orderRepository.GetPaginatedOrder(paginationParams, id);
-            var size = data.Count();
+            var size = await _orderRepository.GetAllOrderByOwner(id);
+            var data = await _orderRepository.GetPaginatedOrder(orderRequestForOwner, id);
             var metadata = new PaginationMetaData
             {
                 TotalItems = size,
-                TotalPages = (int)Math.Ceiling((double)size / paginationParams.pageSize),
-                CurrentPage = paginationParams.pageNumber,
-                PageSize = paginationParams.pageSize
+                TotalPages = (int)Math.Ceiling((double)size / orderRequestForOwner.pageSize),
+                CurrentPage = orderRequestForOwner.pageNumber,
+                PageSize = orderRequestForOwner.pageSize
             };
-            var data1 = new GetPaginatedResponse<GetOrderResponseForOwner>
+            var response = new GetPaginatedResponse<GetOrderResponseForOwner>
             {
                 pagination = metadata,
                 order = data
             };
-            return data1;
+            return response;
         }
         public async Task UpdateStatus(UpdateOrderStatusRequest updateOrderStatus, int userid)
         {
