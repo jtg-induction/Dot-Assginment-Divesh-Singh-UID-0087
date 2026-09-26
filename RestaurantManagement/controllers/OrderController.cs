@@ -95,12 +95,10 @@ namespace RestaurantManagement.Controllers
         [Authorize(Roles = "Owner")]
         [HttpGet]
         [Route("Owner")]
-        public async Task<IHttpActionResult> GetAllOrder([FromUri] PaginationParams paginationParams)
+        public async Task<IHttpActionResult> GetAllOrder([FromUri] OrderRequestForOwner orderRequestForOwner)
         {
-            if (paginationParams.pageNumber < 1) paginationParams.pageNumber = 1;
-            if (paginationParams.pageSize < 1) paginationParams.pageSize = 10;
             var userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
-            var data = await _orderService.GetAllOrder(paginationParams, userId);
+            var data = await _orderService.GetAllOrder(orderRequestForOwner, userId);
             var response = new BaseResponse<GetPaginatedResponse<GetOrderResponseForOwner>>
             {
                 success = true,

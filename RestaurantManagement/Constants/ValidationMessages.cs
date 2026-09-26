@@ -69,6 +69,10 @@
         public const string RestaurantCreatedSuccess = "Restaurant Created Successfully!!";
         public const string RestaurantOwnerUpdateSuccess = "Restaurant Owner Updated SuccessFully!!";
         public const string UserEmailRequired = "User Email Required!!";
+        public const string PageNumberZero = "PageNumber can not be zero or negative!!";
+        public const string PageSizeZero = "Pagesize can not be zero or negative";
+        public const string MinAmountZero = "Amount can not be zero or negative";
+
 
 
     }

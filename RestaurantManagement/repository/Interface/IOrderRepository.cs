@@ -16,6 +16,6 @@ namespace RestaurantManagement.Repository.Interface
         Task CancelOrder(Order order);
         Task<Order> GetOrderDetail(int id);
         Task<int> GetAllOrderByOwner(int id);
-        Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(PaginationParams paginationParams, int userid);
+        Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(OrderRequestForOwner paginationParams, int userid);
     }
 }

@@ -142,7 +142,7 @@ namespace RestaurantManagement.Tests.Controllers
         {
             // Arrange
             int userId = 42;
-            var paginationParams = new PaginationParams { pageNumber = 1, pageSize = 5 };
+            var paginationParams = new OrderRequestForOwner { pageNumber = 1, pageSize = 5 };
 
             var expectedPaginatedData = new GetPaginatedResponse<GetOrderResponseForOwner>
             {

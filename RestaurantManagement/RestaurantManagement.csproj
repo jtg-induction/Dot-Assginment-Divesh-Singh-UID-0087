@@ -350,8 +350,8 @@
     <Compile Include="Models\Dto\AddRestaurantOwnerRequest.cs" />
     <Compile Include="Models\Dto\AddRestaurantRequest.cs" />
     <Compile Include="Models\Dto\AddUserRequest.cs" />
+    <Compile Include="Models\Dto\OrderRequestForOwner.cs" />
     <Compile Include="Models\Enum\FilterBy.cs" />
-    <Compile Include="Models\Enum\FilterOrder.cs" />
     <Compile Include="Models\Enum\OrderSortType.cs" />
     <Compile Include="Models\Enum\SearchBY.cs" />
     <Compile Include="Models\Enum\SortOrder.cs" />

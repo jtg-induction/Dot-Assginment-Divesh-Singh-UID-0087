@@ -279,7 +279,7 @@ namespace RestaurantManagement.tests.Repository
 
             _context.SaveChanges();
             // Arrange:
-            var paginationParams = new PaginationParams
+            var paginationParams = new OrderRequestForOwner
             {
                 pageNumber = 1,
                 pageSize = 2,
@@ -344,7 +344,7 @@ namespace RestaurantManagement.tests.Repository
 
             _context.SaveChanges();
             // Arrange:
-            var paginationParams = new PaginationParams
+            var paginationParams = new OrderRequestForOwner
             {
                 pageNumber = 1,
                 pageSize = 2,
