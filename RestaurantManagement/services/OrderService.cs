@@ -5,6 +5,7 @@ using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
+using RestaurantManagement.Models;
 using RestaurantManagement.repository;
 using RestaurantManagement.Repository;
 using RestaurantManagement.Repository.Interface;
@@ -27,7 +28,8 @@ namespace RestaurantManagement.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IRestaurantRepository _restaurantRepository;
-        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IRestaurantRepository restaurantRepository)
+        private readonly IRestaurantOwnerRepository _restaurantOwnerRepository;
+        public OrderService(IMenuRepository menuRepository, IAddressRepository addressRepository, IUserRepository userRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IRestaurantRepository restaurantRepository, IRestaurantOwnerRepository restaurantOwnerRepository)
         {
             _menuRepository = menuRepository;
             _addressRepository = addressRepository;
@@ -35,6 +37,7 @@ namespace RestaurantManagement.Services
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
             _restaurantRepository = restaurantRepository;
+            _restaurantOwnerRepository = restaurantOwnerRepository;
         }
         public async Task<OrderResponse> AddOrder(AddOrderRequest addOrder, int userid)
         {
@@ -213,6 +216,24 @@ namespace RestaurantManagement.Services
 
             }
 
+        }
+        public async Task<GetPaginatedResponse<GetOrderResponseForOwner>> GetAllOrder(OrderRequestForOwner orderRequestForOwner, int id)
+        {
+            var size = await _orderRepository.GetAllOrderByOwner(id);
+            var data = await _orderRepository.GetPaginatedOrder(orderRequestForOwner, id);
+            var metadata = new PaginationMetaData
+            {
+                TotalItems = size,
+                TotalPages = (int)Math.Ceiling((double)size / orderRequestForOwner.pageSize),
+                CurrentPage = orderRequestForOwner.pageNumber,
+                PageSize = orderRequestForOwner.pageSize
+            };
+            var response = new GetPaginatedResponse<GetOrderResponseForOwner>
+            {
+                pagination = metadata,
+                order = data
+            };
+            return response;
         }
     }
 }

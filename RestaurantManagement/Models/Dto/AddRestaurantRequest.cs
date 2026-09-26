@@ -22,6 +22,8 @@ namespace RestaurantManagement.Models.Dto
         [RegularExpression(ValidationRules.PhoneRegexPattern, ErrorMessage = ValidationMessages.InvalidPhoneFormat)]
         public string PhoneNumber { get; set; }
         [Required(ErrorMessage =ValidationMessages.UserEmailRequired)]
+        [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [RegularExpression(ValidationRules.PasswordRegexPattern, ErrorMessage = ValidationMessages.PasswordComplexity)]
         public List<string> UserEmail { get; set; }
     }
 }

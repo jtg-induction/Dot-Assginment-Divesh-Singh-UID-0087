@@ -2,6 +2,7 @@
 using Moq;
 using RestaurantManagement.Constants;
 using RestaurantManagement.Exceptions;
+using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Entity;
 using RestaurantManagement.Models.Enum;
 using RestaurantManagement.Models.Response;
@@ -23,6 +24,7 @@ namespace RestaurantManagement.Tests.Services
         private Mock<IOrderRepository> _mockOrderRepository;
         private Mock<IOrderItemRepository> _mockOrderItemRepository;
         private Mock<IRestaurantRepository> _restaurantRepository;
+        private Mock<IRestaurantOwnerRepository> _restaurantOwnerRepository;
         private OrderService _orderService;
 
         [TestInitialize]
@@ -34,6 +36,7 @@ namespace RestaurantManagement.Tests.Services
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockOrderItemRepository = new Mock<IOrderItemRepository>();
             _restaurantRepository = new Mock<IRestaurantRepository>();
+            _restaurantOwnerRepository = new Mock<IRestaurantOwnerRepository>();
 
             _orderService = new OrderService(
                 _mockMenuRepository.Object,
@@ -41,7 +44,8 @@ namespace RestaurantManagement.Tests.Services
                 _mockUserRepository.Object,
                 _mockOrderRepository.Object,
                 _mockOrderItemRepository.Object,
-                _restaurantRepository.Object
+                _restaurantRepository.Object,
+                _restaurantOwnerRepository.Object
             );
         }
 
@@ -68,7 +72,7 @@ namespace RestaurantManagement.Tests.Services
             };
 
             _mockAddressRepository
-                .Setup(repo => repo.GetAddressAsync(addressId,user.UserId))
+                .Setup(repo => repo.GetAddressAsync(addressId, user.UserId))
                 .ReturnsAsync(new Address
                 {
                     AddressId = addressId,
@@ -99,7 +103,7 @@ namespace RestaurantManagement.Tests.Services
                 .Setup(repo => repo.AddOrderItem(It.IsAny<List<OrderItem>>()))
                 .Returns(Task.CompletedTask);
 
-            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest {RestaurantId=5,ItemAndQuantity=userOrder,AddressId=addressId }, user.UserId);
+            OrderResponse response = await _orderService.AddOrder(new Models.Dto.AddOrderRequest { RestaurantId = 5, ItemAndQuantity = userOrder, AddressId = addressId }, user.UserId);
 
             Assert.IsNotNull(response);
         }
@@ -245,7 +249,33 @@ namespace RestaurantManagement.Tests.Services
 
             Assert.IsNotNull(caughtException);
         }
+        [TestMethod]
+        public async Task GetAllOrder_WhenOrdersExist_ReturnsCorrectPaginationAndData()
+        {
+            // Arrange
+            int ownerId = 1;
+            var paginationParams = new OrderRequestForOwner{ pageNumber = 1, pageSize = 2 };
 
+            var mockOrders = new List<GetOrderResponseForOwner>
+        {
+            new GetOrderResponseForOwner {  },
+            new GetOrderResponseForOwner {  }
+        };
+
+            _mockOrderRepository
+                .Setup(repo => repo.GetPaginatedOrder(paginationParams, ownerId))
+                .ReturnsAsync(mockOrders);
+
+            // Act
+            var result = await _orderService.GetAllOrder(paginationParams, ownerId);
+
+            // Assert
+            Assert.IsNotNull(result);
+         
+
+        }
+      
+   
 
     }
 }

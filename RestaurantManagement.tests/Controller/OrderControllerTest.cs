@@ -3,7 +3,7 @@ using Moq;
 using RestaurantManagement.Controllers;
 using RestaurantManagement.Models.Dto;
 using RestaurantManagement.Models.Response;
-using RestaurantManagement.Services.Interface; 
+using RestaurantManagement.Services.Interface;
 using RestaurantManagement.Helper;
 using RestaurantManagement.Constants;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace RestaurantManagement.Tests.Controllers
             _mockClaimHelper = new Mock<IClaimHelper>();
 
             _controller = new OrderController(_mockOrderService.Object, _mockClaimHelper.Object);
-          
+
         }
 
         [TestMethod]
@@ -45,13 +45,13 @@ namespace RestaurantManagement.Tests.Controllers
             var mockOrderResponse = new OrderResponse
             {
                 OrderId = 777,
-             
+
                 TotalAmount = 25.00m,
                 Status = "Placed",
-                
+
             };
             // Setup Claim Helper behavior
-            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(123);
+            _mockClaimHelper.Setup(e => e.GetUserIdFromClaim(It.IsAny<System.Security.Principal.IIdentity>())).ReturnsAsync(mockUserId);
 
 
             // Setup Order Service behavior
@@ -90,7 +90,7 @@ namespace RestaurantManagement.Tests.Controllers
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderResponse>>>;
             Assert.IsNotNull(okResult);
-         
+
         }
         [TestMethod]
         public async Task GetOrderItemDetail_WhenItemsExist_ReturnsOkWithItemsList()
@@ -113,7 +113,7 @@ namespace RestaurantManagement.Tests.Controllers
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<List<GetOrderItemResponse>>>;
             Assert.IsNotNull(okResult);
-           
+
         }
         [TestMethod]
         public async Task CancelOrder_WhenCalled_ExecutesSuccessfullyAndReturnsOk()
@@ -135,7 +135,40 @@ namespace RestaurantManagement.Tests.Controllers
             // Assert
             var okResult = result as OkNegotiatedContentResult<BaseResponse<string>>;
             Assert.IsNotNull(okResult);
-          
+
+        }
+        [TestMethod]
+        public async Task GetAllOrder_ValidParams_ReturnsOkWithCorrectData()
+        {
+            // Arrange
+            int userId = 42;
+            var paginationParams = new OrderRequestForOwner { pageNumber = 1, pageSize = 5 };
+
+            var expectedPaginatedData = new GetPaginatedResponse<GetOrderResponseForOwner>
+            {
+                order = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
+                pagination = new PaginationMetaData { TotalItems = 1, PageSize = 5, CurrentPage = 1, TotalPages = 1 }
+            };
+
+            _mockClaimHelper
+                .Setup(c => c.GetUserIdFromClaim(_controller.User.Identity))
+                .ReturnsAsync(userId);
+
+            _mockOrderService
+                .Setup(s => s.GetAllOrder(paginationParams, userId))
+                .ReturnsAsync(expectedPaginatedData);
+
+            // Act
+            IHttpActionResult actionResult = await _controller.GetAllOrder(paginationParams);
+
+            // Assert
+            var contentResult = actionResult as OkNegotiatedContentResult<BaseResponse<GetPaginatedResponse<GetOrderResponseForOwner>>>;
+
+
+            Assert.IsNotNull(contentResult.Content);
+            Assert.IsTrue(contentResult.Content.success);
+            Assert.AreEqual(ValidationMessages.OrderFetchSuccess, contentResult.Content.message);
+            Assert.AreEqual(expectedPaginatedData, contentResult.Content.data);
         }
     }
 }

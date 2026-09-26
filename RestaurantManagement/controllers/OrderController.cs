@@ -16,7 +16,7 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
-     [Authorize]
+    [Authorize]
     [RoutePrefix("api/orders")]
     public class OrderController : ApiController
     {
@@ -91,8 +91,21 @@ namespace RestaurantManagement.Controllers
                 message = ValidationMessages.OrderCancelSuccess
             };
             return Ok(response);
-
-
+        }
+        [Authorize(Roles = "Owner")]
+        [HttpGet]
+        [Route("Owner")]
+        public async Task<IHttpActionResult> GetAllOrder([FromUri] OrderRequestForOwner orderRequestForOwner)
+        {
+            var userId = await _claimHelper.GetUserIdFromClaim(User.Identity);
+            var data = await _orderService.GetAllOrder(orderRequestForOwner, userId);
+            var response = new BaseResponse<GetPaginatedResponse<GetOrderResponseForOwner>>
+            {
+                success = true,
+                message = ValidationMessages.OrderFetchSuccess,
+                data = data
+            };
+            return Ok(response);
         }
     }
 }

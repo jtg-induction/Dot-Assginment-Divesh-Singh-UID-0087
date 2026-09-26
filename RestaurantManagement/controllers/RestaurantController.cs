@@ -30,8 +30,8 @@ namespace RestaurantManagement.Controllers
         [Route("")]
         public async Task<IHttpActionResult> GetRestaurants()
         {
-           var Data = await _restaurantService.GetRestaurantsAsync();
-           
+            var Data = await _restaurantService.GetRestaurantsAsync();
+
             var response = new BaseResponse<List<ActiveRestaurantResponse>>()
             {
                 success = true,
@@ -58,7 +58,7 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("")]
         public async Task<IHttpActionResult> AddRestaurant(AddRestaurantRequest addRestaurant)
@@ -82,9 +82,9 @@ namespace RestaurantManagement.Controllers
                 success = true,
                 message = ValidationMessages.RestaurantOwnerUpdateSuccess
             };
-            return Ok( response);
+            return Ok(response);
         }
 
 
-    } 
+    }
 }
