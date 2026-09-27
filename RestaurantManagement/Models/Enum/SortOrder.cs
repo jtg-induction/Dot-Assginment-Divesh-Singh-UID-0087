@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Enum
 {
+    /// <summary>
+    /// help in choose how will you sort the column
+    /// </summary>
     public enum SortOrder
     {
         asc = 1,

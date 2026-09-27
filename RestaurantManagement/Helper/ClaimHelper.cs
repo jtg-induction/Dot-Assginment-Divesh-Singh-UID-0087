@@ -8,6 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Helper
 {
+    /// <summary>
+    /// Help to find out the user claim  from jwt playload
+    /// </summary>
     public class ClaimHelper :IClaimHelper
     {
         public  async Task<int> GetUserIdFromClaim(System.Security.Principal.IIdentity User)

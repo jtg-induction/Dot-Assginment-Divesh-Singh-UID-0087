@@ -7,6 +7,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// This request boody help in place order by user
+    /// </summary>
     public class AddOrderRequest
     {
         [Required(ErrorMessage =ValidationMessages.RestaurantIdRequired)]

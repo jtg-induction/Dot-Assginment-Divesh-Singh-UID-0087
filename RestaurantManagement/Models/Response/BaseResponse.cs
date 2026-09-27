@@ -6,6 +6,10 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
+  /// <summary>
+  /// base/generic response used to send response
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
     public class BaseResponse<T>
     {
         public bool success { get; set; }

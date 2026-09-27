@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
+    /// <summary>
+    /// order response for owner
+    /// </summary>
     public class GetOrderResponseForOwner
     {
         public int OrderId { get; set; }

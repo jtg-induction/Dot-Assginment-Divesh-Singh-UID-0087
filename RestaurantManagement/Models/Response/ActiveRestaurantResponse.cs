@@ -8,6 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
+    /// <summary>
+    /// response model for show active restaurant
+    /// </summary>
     public class ActiveRestaurantResponse
     {
         public int RestaurantId { get; set; }

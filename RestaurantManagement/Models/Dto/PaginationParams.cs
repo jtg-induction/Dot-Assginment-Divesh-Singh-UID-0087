@@ -8,6 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// Pagination paramas
+    /// </summary>
     public class PaginationParams
     {
         [Range(1,int.MaxValue,ErrorMessage = ValidationMessages.PageNumberZero)]

@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Constants
 {
+    /// <summary>
+    /// Contains validation rules of the applicstion
+    /// </summary>
     public class ValidationRules
     {
         public const string PhoneRegexPattern = @"^\d{10}$";

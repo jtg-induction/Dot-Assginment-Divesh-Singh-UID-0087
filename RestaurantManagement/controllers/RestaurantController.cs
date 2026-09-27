@@ -14,6 +14,10 @@ using System.Web.Http;
 using System.Web.Http.Results;
 namespace RestaurantManagement.Controllers
 {
+    /// <summary>
+    /// this help to get all active restaurant and their menu for user 
+    /// and admin can onboard restaurant and their owner
+    /// </summary>
     [RoutePrefix("api/restaurants")]
     public class RestaurantController : ApiController
     {

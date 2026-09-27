@@ -14,6 +14,9 @@ using System.Web.Http;
 
 namespace RestaurantManagement
 {
+    /// <summary>
+    /// authorization while requesting api endpoint
+    /// </summary>
     public class Startup
     {
         public void Configuration(IAppBuilder app)

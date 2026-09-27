@@ -9,6 +9,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
+    /// <summary>
+    /// response model while get the ordered item detail
+    /// </summary>
     public class GetOrderItemResponse
     {
          public int OrderItemId { get; set; }

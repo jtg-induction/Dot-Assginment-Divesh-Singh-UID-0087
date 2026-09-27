@@ -8,6 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// Request model used for add address by user
+    /// </summary>
     public class AddAddressRequest
     {
         [Required(ErrorMessage =ValidationMessages.StreetRequired)]

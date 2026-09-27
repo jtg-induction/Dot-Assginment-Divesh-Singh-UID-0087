@@ -9,6 +9,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// this request boody help in update order status by owner
+    /// </summary>
         public class UpdateOrderStatusRequest
         {
                 [Required(ErrorMessage = ValidationMessages.OrderIdRequird)]

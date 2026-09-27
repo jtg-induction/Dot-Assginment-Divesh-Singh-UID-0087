@@ -6,6 +6,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Enum
 {
+    /// <summary>
+    /// this help in to sort the order by which column
+    /// </summary>
     public enum OrderSortType
     {
         RestaurantName = 1,

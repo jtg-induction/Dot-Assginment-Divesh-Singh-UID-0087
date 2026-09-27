@@ -7,6 +7,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// this request body help in update their account info
+    /// </summary>
     public class UpdateAccountDto
     {
         [StringLength(EntityConstants.MaxNameLength, MinimumLength = EntityConstants.MinNameLength)]

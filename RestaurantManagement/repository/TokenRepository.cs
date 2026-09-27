@@ -12,6 +12,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// add ,update ,revoke refresh token
+    /// </summary>
     public class TokenRepository : ITokenRepository
     {
         private readonly ApplicationDbContext _db;

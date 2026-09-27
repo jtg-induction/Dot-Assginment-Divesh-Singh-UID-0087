@@ -8,6 +8,10 @@ using System.Web.WebPages;
 
 namespace RestaurantManagement.Filters
 {
+    /// <summary>
+    /// This is used for check error in request body or if not fullfilling
+    /// then create an error message and list of error..
+    /// </summary>
     public class ValidateModelAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(HttpActionContext actionContext)

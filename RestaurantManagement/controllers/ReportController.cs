@@ -15,6 +15,9 @@ using Telerik.Reporting.XmlSerialization;
 
 namespace RestaurantManagement.Controllers
 {
+    /// <summary>
+    /// This API endpoint provide reports of top 10 order items and frequently bought together for owner.
+    /// </summary>
     [Authorize(Roles ="Owner")]
     [RoutePrefix("api/reports")]
     public class ReportController :ApiController

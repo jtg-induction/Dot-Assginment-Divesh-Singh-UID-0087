@@ -7,6 +7,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    ///This Request model help to onboard restaurant owners
+    /// </summary>
     public class AddRestaurantOwnerRequest
     {
         [Required(ErrorMessage ="RestaurantEmail Required!!")]
