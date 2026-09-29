@@ -121,7 +121,7 @@ namespace RestaurantManagement.Repository
         {
             foreach(string email in id)
             {
-                var user = await _db.Users.Include(e => e.Role).FirstOrDefaultAsync();
+                var user = await _db.Users.Where(e=>e.Email==email).FirstOrDefaultAsync();
                 user.Role = UserRole.Owner;
 
             }

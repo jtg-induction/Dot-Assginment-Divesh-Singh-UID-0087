@@ -12,6 +12,10 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
+
+    /// <summary>
+    /// logic for User-address-related service
+    /// </summary>
     public class UserAddressService : IUserAddressService
     {
         private readonly IUserAddressRepository _userAddressRepository;

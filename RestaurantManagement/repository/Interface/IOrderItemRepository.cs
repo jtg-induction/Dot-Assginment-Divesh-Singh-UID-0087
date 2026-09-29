@@ -11,5 +11,6 @@ namespace RestaurantManagement.Repository.Interface
     {
         Task AddOrderItem(List<OrderItem> orderItems);
         Task<List<OrderItem>> GetOrderItem(int id);
+        Task<Dictionary<int, int>> GetOrderItemAsItemIdAndQuantity(int id);
     }
 }

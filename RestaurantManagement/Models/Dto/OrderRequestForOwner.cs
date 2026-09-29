@@ -8,6 +8,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// This request params help to show order detail according to their filtering,sorting and searching
+    /// </summary>
     public class OrderRequestForOwner:PaginationParams
     {
         public OrderSortType sortby { get; set; } = OrderSortType.CreatedAt;

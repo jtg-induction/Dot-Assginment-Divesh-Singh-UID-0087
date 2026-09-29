@@ -15,6 +15,9 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
+    /// <summary>
+    /// manage account updation by user
+    /// </summary>
     [Authorize]
     [RoutePrefix("api/accounts")]
     public class AccountController : ApiController

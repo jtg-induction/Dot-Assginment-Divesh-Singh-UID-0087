@@ -14,7 +14,10 @@ using System.Web.Http;
 using System.Web.Http.Results;
 namespace RestaurantManagement.Controllers
 {
-    [Authorize]
+    /// <summary>
+    /// this help to get all active restaurant and their menu for user 
+    /// and admin can onboard restaurant and their owner
+    /// </summary>
     [RoutePrefix("api/restaurants")]
     public class RestaurantController : ApiController
     {
@@ -26,6 +29,7 @@ namespace RestaurantManagement.Controllers
             _restaurantService = restaurantService;
             _menuService = menuService;
         }
+        [Authorize]
         [HttpGet]
         [Route("")]
         public async Task<IHttpActionResult> GetRestaurants()
@@ -40,6 +44,7 @@ namespace RestaurantManagement.Controllers
             };
             return Ok(response);
         }
+        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public async Task<IHttpActionResult> GetMenuByRestaurantId(int id)

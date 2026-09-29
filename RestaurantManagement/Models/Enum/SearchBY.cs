@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Enum
 {
+    /// <summary>
+    /// help in choose search in which option
+    /// </summary>
     public enum SearchBY
     {
         CustomerName=1,

@@ -10,6 +10,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// add ,get restaurant owner
+    /// </summary>
     public class RestaurantOwnerRepository:IRestaurantOwnerRepository
     {
         private readonly ApplicationDbContext _db;

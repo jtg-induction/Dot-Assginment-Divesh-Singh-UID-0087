@@ -9,11 +9,14 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
-    public class UpdateOrderStatusRequest
-    {
-        [Required(ErrorMessage ="Order Id Required")]
-        public int? OrderId { get; set; }
-        [Required(ErrorMessage ="Provide the Order Status Updating")]
-        public OrderStatus OrderStatus { get; set; }
-    }
+    /// <summary>
+    /// this request boody help in update order status by owner
+    /// </summary>
+        public class UpdateOrderStatusRequest
+        {
+                [Required(ErrorMessage = ValidationMessages.OrderIdRequird)]
+                public int? OrderId { get; set; }
+                [Required(ErrorMessage = ValidationMessages.OrderStatusUpdate)]
+                public OrderStatus OrderStatus { get; set; }
+        }
 }

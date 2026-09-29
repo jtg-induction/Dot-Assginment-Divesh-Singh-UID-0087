@@ -16,6 +16,11 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
+    /// <summary>
+    /// API used for place order ,order detail and their 
+    /// items for user and owner and can update status of order by 
+    /// owner and cancel order by user.
+    /// </summary>
     [Authorize]
     [RoutePrefix("api/orders")]
     public class OrderController : ApiController
@@ -65,7 +70,9 @@ namespace RestaurantManagement.Controllers
             {
                 throw new InvalidOperationException(ValidationMessages.InvalidOrderId);
             }
-            var data = await _orderService.GetOrderItem(id);
+            int userid = await _claimHelper.GetUserIdFromClaim(User.Identity);
+
+            var data = await _orderService.GetOrderItem(id,userid);
 
             var response = new BaseResponse<List<GetOrderItemResponse>>
             {

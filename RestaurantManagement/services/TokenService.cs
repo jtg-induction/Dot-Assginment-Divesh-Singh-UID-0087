@@ -15,6 +15,10 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
+
+    /// <summary>
+    /// logic for token-related service
+    /// </summary>
     public class TokenService : ITokenService
     {
 

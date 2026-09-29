@@ -7,16 +7,17 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    ///This Request model help to onboard restaurant owners
+    /// </summary>
     public class AddRestaurantOwnerRequest
     {
         [Required(ErrorMessage ="RestaurantEmail Required!!")]
         [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
-        [RegularExpression(ValidationRules.PasswordRegexPattern, ErrorMessage = ValidationMessages.PasswordComplexity)]
+        [RegularExpression(ValidationRules.EmailRegexPattern, ErrorMessage = ValidationMessages.InvalidEmailFormat)]    
         public string RestaurantEmail { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.UserEmailRequired)]
-        [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
-        [RegularExpression(ValidationRules.PasswordRegexPattern, ErrorMessage = ValidationMessages.PasswordComplexity)]
         public List<string> UserEmail { get; set; }
     }
 }

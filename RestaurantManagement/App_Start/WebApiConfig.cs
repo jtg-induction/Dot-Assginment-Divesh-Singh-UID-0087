@@ -20,8 +20,9 @@ namespace RestaurantManagement
             // Web API configuration and services
             // Force Web API to trust and read the "Bearer" token principal verified by OWIN
             config.Filters.Add(new HostAuthenticationFilter("Bearer"));
-
+            //overwrite to Iexceptionhandler to custom gloobal handler
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+            //adding filter for model state validation
             config.Filters.Add(new Filters.ValidateModelAttribute());
             // Web API routes
             config.MapHttpAttributeRoutes();

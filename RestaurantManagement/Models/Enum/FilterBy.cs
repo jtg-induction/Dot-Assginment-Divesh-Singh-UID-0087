@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Enum
 {
+    /// <summary>
+    /// this help in to filter the page
+    /// </summary>
     public enum FilterBy
     {
         CreatedAt=2,

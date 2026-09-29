@@ -10,6 +10,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Response
 {
+    /// <summary>
+    /// response model use while placing order
+    /// </summary>
     public class OrderResponse
     {
          public int OrderId { get; set; }

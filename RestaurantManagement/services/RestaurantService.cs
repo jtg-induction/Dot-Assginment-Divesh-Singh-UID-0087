@@ -24,6 +24,9 @@ using System.Web.WebPages;
 namespace RestaurantManagement.Services
 {
 
+    /// <summary>
+    /// logic for restaurant-related service
+    /// </summary>
 
     public class RestaurantService : IRestaurantService
     {
@@ -108,7 +111,9 @@ namespace RestaurantManagement.Services
                     });
                 }
                 await _restaurantOwnerRepository.AddRestaurantOwner(restaurantOwners);
+
                 await _userRepository.ChangeRoleToOwner(addRestaurant.UserEmail);
+                System.Diagnostics.Debug.WriteLine("ll");
                 transaction.Complete();
             }
         }

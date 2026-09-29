@@ -13,6 +13,9 @@ using System.Web.Http;
 
 namespace RestaurantManagement.Controllers
 {
+    /// <summary>
+    /// This help to add user address and get all address of user
+    /// </summary>
     [Authorize]
     [RoutePrefix("api/address")]
     public class AddressController : ApiController

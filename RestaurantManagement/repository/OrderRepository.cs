@@ -12,9 +12,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI.WebControls;
+using System.Web.WebPages;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// place, get and update status of order
+    /// </summary>
     public class OrderRepository :IOrderRepository
     {
         private readonly ApplicationDbContext _db;
@@ -43,6 +47,7 @@ namespace RestaurantManagement.Repository
        public async Task CancelOrder(Order order)
         {
             order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
         public async Task<int> GetAllOrderByOwner(int id)
@@ -52,7 +57,7 @@ namespace RestaurantManagement.Repository
                         join ro in _db.RestaurantOwners on r.RestaurantId equals ro.RestaurantId
                         where ro.UserId==id
                         select o;
-          return  await  query.CountAsync();
+          return  await  query.Distinct().CountAsync();
                       
         }
         public async Task<List<GetOrderResponseForOwner>> GetPaginatedOrder(OrderRequestForOwner paginationParams, int userid)
@@ -68,6 +73,7 @@ namespace RestaurantManagement.Repository
                             RestuarantName = r.Name,
                             user=u
                         };
+            query = query.Distinct();
 
             //searching
             if (paginationParams.id.HasValue)
@@ -175,7 +181,9 @@ namespace RestaurantManagement.Repository
                         {
                             if (paginationParams.mindate.HasValue)
                             {
-                                query = query.Where(e => e.order.CreatedAt >= paginationParams.mindate);
+                               
+                                query = query.Where(e => e.order.CreatedAt >= DbFunctions.TruncateTime(paginationParams.mindate));
+                                System.Diagnostics.Debug.WriteLine(query);
                             }
                             if (paginationParams.maxdate.HasValue)
                             {
@@ -189,6 +197,7 @@ namespace RestaurantManagement.Repository
 
                             if (paginationParams.mindate.HasValue)
                             {
+
                                 query = query.Where(e => e.order.UpdatedAt >= paginationParams.mindate);
                             }
                             if (paginationParams.maxdate.HasValue)
@@ -221,6 +230,7 @@ namespace RestaurantManagement.Repository
         public async Task UpdateOrderStatus(Order order,OrderStatus orderStatus)
         {
             order.Status = orderStatus;
+            order.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
     }

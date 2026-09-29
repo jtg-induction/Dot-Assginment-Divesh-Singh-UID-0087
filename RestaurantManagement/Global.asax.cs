@@ -6,11 +6,9 @@ namespace RestaurantManagement
     {
         protected void Application_Start()
         {
-            //AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
-            var resolver = new UnityHierarchicalDependencyResolver(UnityConfig.Container);
-            GlobalConfiguration.Configuration.DependencyResolver = resolver;
+          
 
 
         }

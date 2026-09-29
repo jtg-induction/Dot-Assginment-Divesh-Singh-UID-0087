@@ -14,6 +14,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// get and add user address
+    /// </summary>
     public class UserAddressRepository : IUserAddressRepository
     {
         private readonly ApplicationDbContext _db;

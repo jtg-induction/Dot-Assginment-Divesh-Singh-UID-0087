@@ -7,6 +7,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models
 {
+    /// <summary>
+    /// this help in login and activate thier account
+    /// </summary>
     public class UserCredential
     {
         /// <summary>

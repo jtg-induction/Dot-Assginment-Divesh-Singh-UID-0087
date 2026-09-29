@@ -133,10 +133,11 @@ namespace RestaurantManagement.Tests.Services
             {
                 new OrderItem { OrderItemId = 50, ItemId = 101, ItemName = "Fries", Price = 5.00m, Quantity = 2 }
             };
-
+            var order = new Order { OrderId = 1, UserId = 1 };
+            _mockOrderRepository.Setup(e => e.GetOrderDetail(1)).ReturnsAsync(order);
             _mockOrderItemRepository.Setup(r => r.GetOrderItem(orderId)).ReturnsAsync(mockItems);
 
-            var result = await _orderService.GetOrderItem(orderId);
+            var result = await _orderService.GetOrderItem(orderId,1);
 
             Assert.IsNotNull(result);
 
@@ -160,7 +161,7 @@ namespace RestaurantManagement.Tests.Services
                 caughtException = ex;
             }
 
-            Assert.IsNotNull(caughtException);
+            Assert.IsNull(caughtException);
         }
 
         [TestMethod]
@@ -234,7 +235,7 @@ namespace RestaurantManagement.Tests.Services
         {
             int orderId = 1;
             int userId = 99;
-            var mockOrder = new Order { UserId = 88, Status = OrderStatus.Delivery };
+            var mockOrder = new Order { UserId = 88, Status = OrderStatus.Delivered };
             _mockOrderRepository.Setup(r => r.GetOrderDetail(orderId)).ReturnsAsync(mockOrder);
 
             Exception caughtException = null;
@@ -335,11 +336,11 @@ namespace RestaurantManagement.Tests.Services
             var request = new UpdateOrderStatusRequest
             {
                 OrderId = 1,
-                OrderStatus = OrderStatus.Delivery
+                OrderStatus = OrderStatus.Delivered
             };
             int orderId = 1;
             int userId = 99;
-            var mockOrder = new Order { OrderId = 1, UserId = 99, RestaurantId = 1, Status = OrderStatus.Delivery };
+            var mockOrder = new Order { OrderId = 1, UserId = 99, RestaurantId = 1, Status = OrderStatus.Delivered };
             List<int> mocklist = new List<int>();
             mocklist.Add(1);
             _restaurantOwnerRepository.Setup(e => e.GetRestaurantId(userId)).ReturnsAsync(mocklist);

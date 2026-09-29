@@ -5,6 +5,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// metadata fo pagination result
+    /// </summary>
     public class PaginationMetaData
     {
         public int TotalItems { get; set; }

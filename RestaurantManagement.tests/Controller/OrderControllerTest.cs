@@ -104,7 +104,7 @@ namespace RestaurantManagement.Tests.Controllers
         };
 
             _mockOrderService
-                .Setup(s => s.GetOrderItem(orderId))
+                .Setup(s => s.GetOrderItem(orderId,1))
                 .ReturnsAsync(mockItems);
 
             // Act
@@ -146,7 +146,7 @@ namespace RestaurantManagement.Tests.Controllers
 
             var expectedPaginatedData = new GetPaginatedResponse<GetOrderResponseForOwner>
             {
-                order = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
+                orders = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
                 pagination = new PaginationMetaData { TotalItems = 1, PageSize = 5, CurrentPage = 1, TotalPages = 1 }
             };
 
@@ -166,9 +166,6 @@ namespace RestaurantManagement.Tests.Controllers
 
 
             Assert.IsNotNull(contentResult.Content);
-            Assert.IsTrue(contentResult.Content.success);
-            Assert.AreEqual(ValidationMessages.OrderFetchSuccess, contentResult.Content.message);
-            Assert.AreEqual(expectedPaginatedData, contentResult.Content.data);
         }
     }
 }

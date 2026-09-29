@@ -12,6 +12,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// get restaurant ,order menu and updtae their quantity while cancel and rejected
+    /// </summary>
     public class MenuRepository : IMenuRepository
     {
         private readonly ApplicationDbContext _db;
@@ -34,6 +37,14 @@ namespace RestaurantManagement.Repository
             var ids = string.Join(",", item.Keys);
             return await _db.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH(UPDLOCK,ROWLOCK) WHERE ITEMID IN ({ids})").ToListAsync();
           
+        }
+        public async Task UpdateQuantityOfMenuItem(List<MenuItem> menu,Dictionary<int,int> item)
+        {
+            foreach(MenuItem  i in menu)
+            {
+                i.AvailableQuantity += item[i.ItemId];
+            }
+            await _db.SaveChangesAsync();
         }
 
 

@@ -10,6 +10,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// add and get user address 
+    /// </summary>
     public class AddressRepository : IAddressRepository
     {
         private readonly ApplicationDbContext _db;
