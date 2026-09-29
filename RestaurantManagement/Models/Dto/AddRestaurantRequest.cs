@@ -9,6 +9,9 @@ using System.Web;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// This request body help in onboard restaueant 
+    /// </summary>
     public class AddRestaurantRequest : AddAddressRequest
     {
         [Required(ErrorMessage = ValidationMessages.NameRequired)]

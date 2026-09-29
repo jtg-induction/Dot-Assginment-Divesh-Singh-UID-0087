@@ -14,6 +14,10 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
+
+    /// <summary>
+    /// logic for menu-related service
+    /// </summary>
     public class MenuService : IMenuService
     {
         private readonly IMenuRepository _menuRepository;

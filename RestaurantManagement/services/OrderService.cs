@@ -21,6 +21,10 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
+
+    /// <summary>
+    /// logic for order-related service
+    /// </summary>
     public class OrderService : IOrderService
     {
         private readonly IMenuRepository _menuRepository;
@@ -86,7 +90,7 @@ namespace RestaurantManagement.Services
 
                     if ((addOrder.RestaurantId != i.RestaurantId))
                     {
-                        throw new InvalidOperationException(ValidationMessages.OneRestaurant);
+                        throw new InvalidOperationException($"This  Order Id {i.ItemId} does not available in Reataurant {i.RestaurantId}");
                     }
                     if (item[i.ItemId] > i.AvailableQuantity)
                     {
@@ -229,7 +233,7 @@ namespace RestaurantManagement.Services
             var response = new GetPaginatedResponse<GetOrderResponseForOwner>
             {
                 pagination = metadata,
-                order = data
+                orders = data
             };
             return response;
         }

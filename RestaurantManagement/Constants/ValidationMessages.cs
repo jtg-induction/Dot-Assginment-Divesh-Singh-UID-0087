@@ -26,7 +26,7 @@
                 public const string CityRequired = "City address is required.";
                 public const string PinCodeRequired = "Pincode address is required.";
                 public const string AddressTypeRequired = "AddressType address is required.";
-                public const string CountryRequired = "Country address is required.";
+                public const string CountryRequired = "Country name is required.";
                 public const string RestaurantIdRequired = "Restaurant Id is required.";
 
                 public const string InvalidEmailFormat = "Please provide a valid email address format.";

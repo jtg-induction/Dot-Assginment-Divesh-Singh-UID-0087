@@ -12,6 +12,9 @@ using System.Web;
 
 namespace RestaurantManagement.Services
 {
+    /// <summary>
+    /// logic for address-related service
+    /// </summary>
     public class AddressService: IAddressService
     {
         private readonly IAddressRepository _addressRepository;

@@ -24,6 +24,9 @@ using System.Web.WebPages;
 namespace RestaurantManagement.Services
 {
 
+    /// <summary>
+    /// logic for restaurant-related service
+    /// </summary>
 
     public class RestaurantService : IRestaurantService
     {

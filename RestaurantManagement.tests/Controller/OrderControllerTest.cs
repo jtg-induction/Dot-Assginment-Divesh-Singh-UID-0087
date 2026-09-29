@@ -146,7 +146,7 @@ namespace RestaurantManagement.Tests.Controllers
 
             var expectedPaginatedData = new GetPaginatedResponse<GetOrderResponseForOwner>
             {
-                order = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
+                orders = new List<GetOrderResponseForOwner> { new GetOrderResponseForOwner() },
                 pagination = new PaginationMetaData { TotalItems = 1, PageSize = 5, CurrentPage = 1, TotalPages = 1 }
             };
 

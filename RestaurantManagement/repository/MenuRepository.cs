@@ -12,6 +12,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// get restaurant ,order menu and updtae their quantity while cancel and rejected
+    /// </summary>
     public class MenuRepository : IMenuRepository
     {
         private readonly ApplicationDbContext _db;

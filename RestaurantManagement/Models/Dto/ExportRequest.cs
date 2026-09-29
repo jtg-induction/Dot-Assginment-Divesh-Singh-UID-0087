@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RestaurantManagement.Models.Dto
 {
+    /// <summary>
+    /// this request body help in show report 
+    /// </summary>
     public class ExportRequest
     {
         [RegularExpression(ValidationRules.FormatRegexPattern, ErrorMessage =ValidationMessages.InvalidFormat)]

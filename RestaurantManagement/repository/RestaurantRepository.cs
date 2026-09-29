@@ -11,6 +11,9 @@ using System.Web;
 
 namespace RestaurantManagement.Repository
 {
+    /// <summary>
+    /// add ,get restaurant 
+    /// </summary>
     public class RestaurantRepository : IRestaurantRepository
     {
         private readonly ApplicationDbContext _db;
